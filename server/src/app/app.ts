@@ -3,16 +3,21 @@ import cors from "cors";
 import asyncHandler from "express-async-handler";
 import createError from "http-errors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import { successResponse } from "../helper/responseHandler";
 import { errorHandler } from "../middlewares/errorHandler";
 import corsOptions from "../config/cors";
+import routes from "./routes";
 
 // app initialization
 const app = express();
 
+// cookie parser
+app.use(cookieParser());
+
 // json data
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 // cors setup
 app.use(cors(corsOptions));
@@ -30,6 +35,11 @@ app.get(
     });
   })
 );
+
+// routes
+routes.forEach((router) => {
+  app.use(router.path, router.route);
+});
 
 app.use(
   asyncHandler(async () => {
