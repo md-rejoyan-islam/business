@@ -48,6 +48,29 @@ const productApi = productSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products", "Product"],
     }),
+    updateMultipleThaanDataToProduct: builder.mutation({
+      query: (data) => ({
+        url: "/thaans-update",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Products", "Product"],
+    }),
+    updateThaanById: builder.mutation({
+      query: (data) => ({
+        url: `/product-thaan/${data.id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Products", "Product"],
+    }),
+    deleteThaanById: builder.mutation({
+      query: (id) => ({
+        url: `/product-thaan/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products", "Product"],
+    }),
   }),
 });
 
@@ -58,4 +81,7 @@ export const {
   useDeleteProducByIdMutation,
   useUpdateProductByIdMutation,
   useAddThaanDataToProductMutation,
+  useUpdateMultipleThaanDataToProductMutation,
+  useUpdateThaanByIdMutation,
+  useDeleteThaanByIdMutation,
 } = productApi;

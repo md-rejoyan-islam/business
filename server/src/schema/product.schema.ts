@@ -32,9 +32,11 @@ export const productSchema = z.object({
     })
     .min(1, "Gray rate must be at least 1 character"),
   gray_date: z
-    .date({
-      invalid_type_error: "Gray date must be date type",
-    })
+    .string()
+    .regex(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/,
+      "Invalid ISO 8601 date format"
+    )
     .optional(),
   gray_payment_status: z
     .boolean({

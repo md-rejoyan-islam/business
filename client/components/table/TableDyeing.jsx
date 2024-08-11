@@ -128,7 +128,7 @@ export default function TableDyeing({ dyeingData }) {
       return sum + +payment.amount;
     }, 0);
     // total due
-    const totalDue = totalCost && total ? totalCost - totalPay : null;
+    const totalDue = totalCost && totalPay ? totalCost - totalPay : null;
 
     // payment data
     const paymentData = product?.dyeing_payments?.map((payment) => {
@@ -172,8 +172,22 @@ export default function TableDyeing({ dyeingData }) {
 
     const leftSideData = (
       <>
-        <TableCell data={product?.gray_date} span={rowSpan} />
-        <TableCell data={product?.dyeing_date} span={rowSpan} />
+        <TableCell
+          data={
+            product?.gray_date
+              ? format(parseISO(product?.gray_date), "MMM do, yyyy")
+              : null
+          }
+          span={rowSpan}
+        />
+        <TableCell
+          data={
+            product?.dyeing_date
+              ? format(parseISO(product?.dyeing_date), "MMM do, yyyy")
+              : null
+          }
+          span={rowSpan}
+        />
         <TableCell data={product?.chalanNumber} span={rowSpan} />
         <TableCell span={rowSpan}>
           <Link href={`/products/all/${product?.id}`}> {product?.name}</Link>

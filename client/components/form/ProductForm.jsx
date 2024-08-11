@@ -35,6 +35,10 @@ import {
 import { useGetAllChalanQuery } from "@/features/chalan/chalanApi";
 import { useRef } from "react";
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { format, formatISO } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
 const formSchema = z.object({
   name: z
@@ -61,11 +65,7 @@ const formSchema = z.object({
       invalid_type_error: "Gray rate must be number",
     })
     .min(1, "Gray amount must be at least 1 character"),
-  // gray_date: z
-  //   .date({
-  //     invalid_type_error: "Gray date must be date type",
-  //   })
-  //   .optional(),
+  gray_date: z.coerce.date().optional(),
   dyeing_rate: z.coerce
     .number({
       invalid_type_error: "Dyeing rate must be number",
@@ -76,11 +76,7 @@ const formSchema = z.object({
       invalid_type_error: "Dyeing amount must be number",
     })
     .optional(),
-  dyeing_date: z
-    .date({
-      invalid_type_error: "Dyeing date must be date type",
-    })
-    .optional(),
+  dyeing_date: z.date().optional(),
   dyeing_name: z
     .string({
       invalid_type_error: "Dyeing name must be string",
@@ -125,21 +121,29 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
   const { data: grays, isLoading } = useGetAllGraysQuery();
   const { data: dyeings } = useGetAllDyeingsQuery();
 
+  const defaultValues = {
+    name: type === "update" ? formData?.name : "",
+    grayName: type === "update" ? formData?.gray?.name : "",
+    delivery_status: type === "update" ? formData?.delivery_status : "RUNNING",
+    gray_amount: type === "update" ? formData?.gray_amount : 0,
+    gray_rate: type === "update" ? formData?.gray_rate : 0,
+    chalanNumber: type === "update" ? formData?.chalanNumber : 0,
+    dyeing_amount: type === "update" ? formData?.dyeing_amount || 0 : 0,
+    dyeing_name: type === "update" ? formData?.dyeing?.name || "" : "",
+    dyeing_rate: type === "update" ? formData?.dyeing_rate || 0 : 0,
+    // gray_date: type === "update" ? formData?.gray_date : new Date(),
+  };
+
+  if (type === "update") {
+    defaultValues.gray_date = new Date(formData?.gray_date);
+    // defaultValues.dyeing_date = new Date(formData?.dyeing_date)
+  }
+
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: type === "update" ? formData?.name : "",
-      grayName: type === "update" ? formData?.gray?.name : "",
-      delivery_status:
-        type === "update" ? formData?.delivery_status : "RUNNING",
-      gray_amount: type === "update" ? formData?.gray_amount : 0,
-      gray_rate: type === "update" ? formData?.gray_rate : 0,
-      chalanNumber: type === "update" ? formData?.chalanNumber : 0,
-      dyeing_amount: type === "update" ? formData?.dyeing_amount || 0 : 0,
-      dyeing_name: type === "update" ? formData?.dyeing?.name || "" : "",
-      dyeing_rate: type === "update" ? formData?.dyeing_rate || 0 : 0,
-      // gray_date: type === "update" ? formData?.gray_date : "",
+      ...defaultValues,
     },
   });
 
@@ -339,6 +343,44 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
                     {...field}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gray_date"
+            type="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Gray Date</FormLabel>
+                <Popover modal={true}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button className="bg-transparent border hover:bg-black/5 text-black">
+                        {field?.value ? (
+                          format(field?.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field?.value}
+                      onSelect={field?.onChange}
+                      defaultValue={new Date()}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <FormMessage />
               </FormItem>
             )}

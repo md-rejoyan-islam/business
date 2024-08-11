@@ -17,13 +17,20 @@ export default function AllDyeing() {
 
   const processData = data?.data?.map((dyeing) => {
     const totalAmount = dyeing?.products?.reduce((sum, product) => {
-      return sum + product?.dyeing_rate * product?.thaan_amount;
+      return sum + (product?.dyeing_amount || 0);
     }, 0);
+
+    const totalCost = dyeing?.products?.reduce((sum, product) => {
+      return sum + product?.dyeing_amount * product?.dyeing_rate;
+    }, 0);
+
+    console.log(totalCost);
+
     const totalPaid = dyeing?.products?.reduce((sum, product) => {
       return (
         sum +
         product?.dyeing_payments.reduce(
-          (sum, payment) => sum + payment?.amount,
+          (sum, payment) => sum + (payment?.amount || 0),
           0
         )
       );
@@ -34,8 +41,8 @@ export default function AllDyeing() {
       address: dyeing?.address,
       phone: dyeing?.phone,
       products: dyeing?.products,
-      total_amount: totalAmount,
-      due: totalAmount - totalPaid,
+      total_amount: totalAmount || 0,
+      due: totalCost - totalPaid || null,
     };
   });
 

@@ -2,11 +2,14 @@ import express from "express";
 import {
   createProduct,
   deleteProductById,
+  deleteThaanById,
   getAllProducts,
   getProductById,
   productAddToDyeing,
   thaanCountAddToProduct,
+  updateMultipleThaanData,
   updateProductById,
+  updateThaanById,
 } from "../controllers/product.controllers";
 import {
   createProductZodSchema,
@@ -28,6 +31,9 @@ productRouter
 
 // thaan add
 productRouter.route("/add-thaan").post(thaanCountAddToProduct);
+productRouter.route("/thaans-update").put(updateMultipleThaanData);
+productRouter.route("/product-thaan/:id").patch(updateThaanById);
+productRouter.route("/product-thaan/:id").delete(deleteThaanById);
 
 productRouter
   .route("/:id")

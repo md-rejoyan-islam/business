@@ -45,6 +45,7 @@ import {
 import GrayForm from "../form/GrayForm";
 
 const GrayTable = ({ data }) => {
+  const [open, setOpen] = React.useState(false);
   const [deleteGray, { error }] = useDeleteGrayByIdMutation();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -199,7 +200,7 @@ const GrayTable = ({ data }) => {
           className="max-w-sm  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
         />
 
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger className="py-2 h-10 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
             <GrAddCircle /> <span className="text-[12px] pl-2">Gray</span>
           </DialogTrigger>
@@ -210,7 +211,7 @@ const GrayTable = ({ data }) => {
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
-            <GrayForm />
+            <GrayForm setOpen={setOpen} />
           </DialogContent>
         </Dialog>
 

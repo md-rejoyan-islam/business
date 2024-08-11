@@ -42,7 +42,7 @@ const formSchema = z.object({
     .min(8, "Gray phone number must be at least 8 character"),
 });
 
-export default function GrayForm({ type = "edit", formData = {} }) {
+export default function GrayForm({ type = "edit", formData = {}, setOpen }) {
   const [
     updateGray,
     {
@@ -78,6 +78,7 @@ export default function GrayForm({ type = "edit", formData = {} }) {
       });
       if (res.data?.success) {
         successMessage = res.data?.message;
+        setOpen && setOpen(false);
       } else if (!res?.error?.data?.success) {
         errorMessage = res?.error?.data?.error?.message;
       }

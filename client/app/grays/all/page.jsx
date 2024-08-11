@@ -16,25 +16,31 @@ export default function AllGrays() {
 
   const processData = data?.data?.map((gray) => {
     const totalAmount = gray?.products?.reduce((sum, product) => {
-      return sum + product?.gray_rate * product?.gray_amount;
+      return sum + (product?.gray_amount || 0);
     }, 0);
+
+    const totalCost = gray?.products?.reduce((sum, product) => {
+      return sum + product?.gray_amount * product?.gray_rate;
+    }, 0);
+
     const totalPaid = gray?.products?.reduce((sum, product) => {
       return (
         sum +
-        product?.gray_payments?.reduce(
-          (sum, payment) => sum + payment.amount,
+        product?.gray_payments.reduce(
+          (sum, payment) => sum + (payment?.amount || 0),
           0
         )
       );
     }, 0);
+
     return {
       id: gray?.id,
       name: gray?.name,
       address: gray?.address,
       phone: gray?.phone,
       products: gray?.products,
-      total_amount: totalAmount,
-      due: totalAmount - totalPaid,
+      total_amount: totalAmount || 0,
+      due: totalCost - totalPaid || null,
     };
   });
 

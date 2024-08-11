@@ -15,13 +15,7 @@ import { useState } from "react";
 import { useAddThaanDataToProductMutation } from "@/features/products/productApi";
 import { toast } from "react-toastify";
 
-export const Field = ({
-  index,
-  removeField,
-  form,
-  showBorder,
-  defaultValue,
-}) => {
+export const Field = ({ index, removeField, form, showBorder }) => {
   return (
     <div className="group" key={index}>
       <p className=" flex items-center gap-2 justify-between h-10  ">
@@ -48,7 +42,7 @@ export const Field = ({
                 <Input
                   className="   focus-visible:ring-0 rounded-none rounded-l-md focus-visible:ring-offset-0 focus:border-slate-400/80"
                   type="number"
-                  defaultValue={defaultValue?.amount || 0}
+                  defaultValue={0}
                   min={0}
                   placeholder="Thaan amount"
                   {...field}
@@ -69,7 +63,7 @@ export const Field = ({
                   className=" rounded-none rounded-r-md  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                   type="number"
                   min={0}
-                  defaultValue={defaultValue?.defect || 0}
+                  defaultValue={0}
                   placeholder="Thaan defect"
                   {...field}
                 />
@@ -86,29 +80,7 @@ export const Field = ({
 export default function ThaanCountForm({ type, formData }) {
   const [addThaan, { isLoading }] = useAddThaanDataToProductMutation();
 
-  const f = formData?.thaan_count?.length
-    ? Array(formData?.thaan_count?.length).map((dt, index) => {
-        return (
-          <Field
-            key={index}
-            index={index + 1}
-            removeField={array.length - 1 === index && removeField}
-            form={form}
-            showBorder={array.length - 1 === index ? false : true}
-            defaultValue={{
-              amount: dt.amount,
-              defect: dt.defect,
-            }}
-          />
-        );
-      })
-    : [];
-
-  console.log(f);
-
-  const [fields, setFields] = useState(f);
-
-  console.log(fields);
+  const [fields, setFields] = useState([]);
 
   // add field
   const addField = () => {
@@ -164,14 +136,7 @@ export default function ThaanCountForm({ type, formData }) {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-1 w-full"
         >
-          <Field
-            form={form}
-            showBorder={fields?.length ? true : false}
-            defaultValue={{
-              amount: formData?.thaan_count[0].amount,
-              defect: formData?.thaan_count[0].defect,
-            }}
-          />
+          <Field form={form} showBorder={fields?.length ? true : false} />
 
           {fields?.map((Field, index, array) => (
             <Field

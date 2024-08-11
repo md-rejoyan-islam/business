@@ -150,7 +150,14 @@ export default function TableGray({ grayData }) {
 
     const leftSideData = (
       <>
-        <TableCell data={product?.gray_date} span={rowSpan} />
+        <TableCell
+          data={
+            product?.gray_date
+              ? format(parseISO(product?.gray_date), "MMM do, yyyy")
+              : null
+          }
+          span={rowSpan}
+        />
         <TableCell data={product?.chalanNumber} span={rowSpan} />
         <TableCell span={rowSpan}>
           <Link href={`/products/all/${product?.id}`}> {product?.name}</Link>

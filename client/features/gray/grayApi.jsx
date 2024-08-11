@@ -37,7 +37,7 @@ const grayApi = graySlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Grays"],
+      invalidatesTags: ["Grays", "Gray"],
     }),
     grayPayment: builder.mutation({
       query: (data) => ({
@@ -45,7 +45,7 @@ const grayApi = graySlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Gray"],
+      invalidatesTags: ["Gray", "Grays"],
     }),
     updateGrayPaymentById: builder.mutation({
       query: (data) => ({
@@ -53,14 +53,14 @@ const grayApi = graySlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Gray"],
+      invalidatesTags: ["Gray", "Grays"],
     }),
     deleteGrayPaymentById: builder.mutation({
       query: (id) => ({
         url: `/gray-payment/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Gray"],
+      invalidatesTags: ["Gray", "Grays"],
     }),
   }),
 });

@@ -23,7 +23,7 @@ const dyeingApi = dyeingSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Dyeings"],
+      invalidatesTags: ["Dyeings", "Dyeing"],
     }),
     deleteDyeingById: builder.mutation({
       query: (id) => ({
@@ -45,7 +45,7 @@ const dyeingApi = dyeingSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Dyeing"],
+      invalidatesTags: ["Dyeing", "Dyeings"],
     }),
     updateDyeingPaymentById: builder.mutation({
       query: (data) => ({
@@ -53,14 +53,14 @@ const dyeingApi = dyeingSlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Dyeing"],
+      invalidatesTags: ["Dyeing", "Dyeings"],
     }),
     deleteDyeingPaymentById: builder.mutation({
       query: (id) => ({
         url: `/dyeing-payment/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Dyeing"],
+      invalidatesTags: ["Dyeing", "Dyeings"],
     }),
   }),
 });

@@ -406,3 +406,86 @@ export const thaanCountAddToProduct = asyncHandler(
     });
   }
 );
+
+// update multiple thaan data
+export const updateMultipleThaanData = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { newData, beforeData, productId } = req.body;
+
+    console.log(newData, beforeData);
+
+    // update
+    for (const item of beforeData) {
+      await prismaClient.thaanCount.update({
+        where: {
+          id: item.id,
+        },
+        data: item,
+      });
+    }
+    // create
+    for (const item of newData) {
+      await prismaClient.thaanCount.create({
+        data: item,
+      });
+    }
+
+    const updatedData = await prismaClient.product.findUnique({
+      where: {
+        id: productId,
+      },
+      include: {
+        thaan_count: true,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Thaan data updated successfully.",
+      payload: {
+        data: updatedData,
+      },
+    });
+  }
+);
+
+// update thaan by id
+export const updateThaanById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const thaan = await prismaClient.thaanCount.update({
+      where: {
+        id: +id,
+      },
+      data: req.body,
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Thaan data updated successfully.",
+      payload: {
+        data: thaan,
+      },
+    });
+  }
+);
+
+// delete thaan by id
+export const deleteThaanById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const thaan = await prismaClient.thaanCount.delete({
+      where: {
+        id: +id,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Thaan data deleted successfully.",
+      payload: {
+        data: thaan,
+      },
+    });
+  }
+);

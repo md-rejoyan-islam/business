@@ -18,8 +18,6 @@ export default function SingleProduct({ params }) {
   const { data: { data: productData = {} } = {}, isLoading } =
     useGetProductByIdQuery(id);
 
-  console.log(productData);
-
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 md:p-8 lg:p-10">

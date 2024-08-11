@@ -46,6 +46,8 @@ import ProductForm from "../form/ProductForm";
 import { GrAddCircle } from "react-icons/gr";
 import { TbSum } from "react-icons/tb";
 import ThaanCountForm from "../form/ThaanCountForm";
+import { MdOutlineAddCircleOutline, MdOutlineUpdate } from "react-icons/md";
+import UpdateThaanCountForm from "../form/UpdateThaanCountForm";
 
 const ProductTable = ({ data }) => {
   const [open, setOpen] = React.useState(false);
@@ -198,25 +200,31 @@ const ProductTable = ({ data }) => {
         return (
           <div className="capitalize flex gap-2">
             <Dialog>
-              <DialogTrigger
-                disabled={
-                  !row?.original?.thaan_count?.length ||
-                  !row?.original?.dyeingId
-                    ? true
-                    : false
-                }
-                className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border"
-              >
-                <TbSum /> <span>Thaan</span>
+              <DialogTrigger className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
+                {row?.original?.thaan_count?.length ? (
+                  <>
+                    <MdOutlineUpdate /> <span>Thaan</span>
+                  </>
+                ) : (
+                  <>
+                    <MdOutlineAddCircleOutline /> <span>Thaan</span>
+                  </>
+                )}
               </DialogTrigger>
               <DialogContent className="overflow-scroll ">
                 <DialogHeader>
                   <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                    Thaan Count
+                    {row?.original?.thaan_count.length
+                      ? " Update Thaan Data"
+                      : "Thaan Count"}
                   </DialogTitle>
                   <DialogDescription></DialogDescription>
                 </DialogHeader>
-                <ThaanCountForm type="edit" formData={row?.original} />
+                {row?.original?.thaan_count.length ? (
+                  <UpdateThaanCountForm type="edit" formData={row?.original} />
+                ) : (
+                  <ThaanCountForm type="edit" formData={row?.original} />
+                )}
               </DialogContent>
             </Dialog>
           </div>

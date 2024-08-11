@@ -10,6 +10,7 @@ import {
 import GrayPaymentForm from "../form/GrayPaymentForm";
 
 import { format, parseISO } from "date-fns";
+
 import Link from "next/link";
 import { FaRegEdit } from "react-icons/fa";
 import { Button } from "../ui/button";
@@ -17,6 +18,8 @@ import { IoTrashOutline } from "react-icons/io5";
 import { useDeleteGrayPaymentByIdMutation } from "@/features/gray/grayApi";
 import Swal from "sweetalert2";
 import { useState } from "react";
+import ThaanEditForm from "../form/ThaanEditForm";
+import { useDeleteThaanByIdMutation } from "@/features/products/productApi";
 
 export const TableCell = ({ data, span = 1, style, children }) => {
   return (
@@ -112,6 +115,62 @@ export const EditPayment = ({ payment }) => {
   );
 };
 
+export const ThaanEdit = ({ thaan }) => {
+  const [open, setOpen] = useState(false);
+  const [deleteThaan] = useDeleteThaanByIdMutation();
+
+  // handle delete
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Thaan data will be delete.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result?.isConfirmed) {
+      const res = await deleteThaan(id);
+      if (res?.data?.success) {
+        Swal.fire("Deleted!", "Your data has been deleted.", "success");
+      } else {
+        Swal.fire({
+          title: "Failed",
+          text: res?.error?.data?.error?.message,
+          icon: "error",
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1 ">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger className="bg-transparent hover:text-blue-400 rounded-md flex gap-2 items-center  py-1.5 px-1.5 text-sm text-black border hover:bg-black/5">
+          <FaRegEdit className="text-[12px]" />
+        </DialogTrigger>
+        <DialogContent className="overflow-scroll ">
+          <DialogHeader>
+            <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+              Update Thaan Data
+            </DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <ThaanEditForm thaan={thaan} setOpen={setOpen} />
+        </DialogContent>
+      </Dialog>
+      <Button
+        className=" text-lg   py-1.5 px-1.5 h-fit bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
+        onClick={() => handleDelete(thaan?.id)}
+      >
+        <IoTrashOutline className="text-[12px]" />
+      </Button>
+    </div>
+  );
+};
+
 export default function TableProduct({ productData: product }) {
   // product table data
   const productTableData = () => {
@@ -120,7 +179,14 @@ export default function TableProduct({ productData: product }) {
       return (
         <>
           {/* Thaan Count */}
-          <TableCell data={thaan?.amount} />
+          <TableCell style={"h-[51px]"}>
+            <div className="flex justify-between gap-5 items-center relative group">
+              <span>{thaan?.amount}</span>
+              <div className="hidden group-hover:block">
+                <ThaanEdit thaan={thaan} />
+              </div>
+            </div>
+          </TableCell>
           {/* Defect Count */}
           <TableCell data={thaan?.defect} />
         </>
@@ -145,9 +211,23 @@ export default function TableProduct({ productData: product }) {
     const leftSideData = (
       <>
         {/* gray memo date  */}
-        <TableCell data={product?.gray_date} span={rowSpan} />
+        <TableCell
+          data={
+            product?.gray_date
+              ? format(parseISO(product?.gray_date), "MMM do, yyyy")
+              : null
+          }
+          span={rowSpan}
+        />
         {/* dyeing memo date  */}
-        <TableCell data={product?.dyeing_date} span={rowSpan} />
+        <TableCell
+          data={
+            product?.dyeing_date
+              ? format(parseISO(product?.dyeing_date), "MMM do, yyyy")
+              : null
+          }
+          span={rowSpan}
+        />
         {/* gray company  */}
         <TableCell data={product?.gray?.name} span={rowSpan} />
         {/* dyeing company  */}
@@ -202,8 +282,6 @@ export default function TableProduct({ productData: product }) {
     }
     return [...productsTd];
   };
-
-  console.log(productTableData());
 
   return (
     <>

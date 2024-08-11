@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 const thaanSchema = z.object({
+  id: z
+    .number({
+      required_error: "Thaan id  is required",
+      invalid_type_error: "Thaan id must be number",
+    })
+    .min(1, "Thaan id must be at least 1 character"),
   productId: z
     .number({
       required_error: "Product id  is required",
