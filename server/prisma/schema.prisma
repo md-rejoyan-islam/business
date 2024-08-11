@@ -70,6 +70,7 @@ model Gray {
   products     Product[]
   // grayPayments GrayPayment[]?
   grayPayments GrayPayment[]
+  Chalan       Chalan[]
 }
 
 // dyeing model
@@ -80,6 +81,7 @@ model Dyeing {
   phone         String
   products      Product[]
   dyeingPayment DyeingPayment[]
+  Chalan        Chalan[]
 }
 
 // chalan model
@@ -87,9 +89,11 @@ model Chalan {
   id           Int      @id @default(autoincrement())
   chalanNumber Int      @unique
   product      Product? @relation(fields: [productId], references: [id])
-  productId    Int      @unique
+  productId    Int?     @unique
   dyeingId     Int?
+  dyeing       Dyeing?  @relation(fields: [dyeingId], references: [id])
   grayId       Int
+  gray         Gray     @relation(fields: [grayId], references: [id])
 }
 
 // thand count model
@@ -122,8 +126,9 @@ model Product {
   dyeing_date           DateTime?
   dyeing_rate           Float?
   dyeing_payment_status Boolean           @default(false)
+  dyeing_amount         Float?
   dyeing_payments       DyeingPayment[]
-  thaan_amount          Float?
+  // thaan_amount          Float?
   thaan_count           ThaanCount[]
   // dellvery status
   delivery_status       DELIVERY_STATUS?

@@ -6,14 +6,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { CiMenuFries } from "react-icons/ci";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { RiMenu2Line, RiMenu3Fill } from "react-icons/ri";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,

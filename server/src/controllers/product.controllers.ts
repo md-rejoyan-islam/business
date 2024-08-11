@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
+import { Thaan } from "../app/definition";
 
 /**
  *
@@ -32,18 +33,20 @@ export const getAllProducts = asyncHandler(
         dyeing: true,
         dyeing_payments: true,
         gray_payments: true,
+        thaan_count: true,
       },
     });
 
     // if data is empty
-    if (!products.length)
-      throw createError.NotFound("Couldn't find any product data.");
+    // if (!products.length)
+    //   throw createError.NotFound("Couldn't find any product data.");
 
     successResponse(res, {
       statusCode: 200,
       message: "All Products data fetched successfully.",
       payload: {
-        data: products,
+        totalProduct: products?.length,
+        data: products || [],
       },
     });
   }
@@ -70,6 +73,13 @@ export const getProductById = asyncHandler(
     const product = await prismaClient.product.findUnique({
       where: {
         id: +req.params.id,
+      },
+      include: {
+        gray: true,
+        dyeing: true,
+        gray_payments: true,
+        dyeing_payments: true,
+        thaan_count: true,
       },
     });
 
@@ -138,9 +148,11 @@ export const createProduct = asyncHandler(
           chalanNumber: +chalans[0]?.chalanNumber + 1 || 1,
         },
       });
+      console.log(chalan);
 
       chalanNumber = chalan.chalanNumber;
     }
+    console.log(3);
 
     // console.log(chalanId);
 
@@ -238,6 +250,51 @@ export const deleteProductById = asyncHandler(
 
     if (!exist) throw createError.NotFound("Couldn't find any product data.");
 
+    // delete related gray products payment
+    if (
+      exist &&
+      "gray_payments" in exist &&
+      Array.isArray(exist.gray_payments) &&
+      exist?.gray_payments?.length
+    ) {
+      await prismaClient.grayPayment.deleteMany({
+        where: { id: exist?.grayId },
+      });
+    }
+
+    // delete related dyeing products payment
+    if (
+      "dyeing_payments" in exist &&
+      Array.isArray(exist?.dyeing_payments) &&
+      exist.dyeing_payments.length &&
+      "dyeingId" in exist &&
+      exist.dyeingId
+    ) {
+      await prismaClient.dyeingPayment.deleteMany({
+        where: { id: exist?.dyeingId },
+      });
+    }
+
+    // delete related customer data
+    // if (
+    //   "customers" in exist &&
+    //   Array.isArray(exist.customers) &&
+    //   exist?.customers.length
+    // ) {
+    //   await prismaClient.customer.deleteMany({
+    //     where: {
+    //       customerProduct: exist.id,
+    //     },
+    //   });
+    // }
+
+    // delete chalan data
+    if ("chalanNumber" in exist && exist?.chalanNumber) {
+      await prismaClient.chalan.delete({
+        where: { chalanNumber: exist?.chalanNumber },
+      });
+    }
+
     // delete product
     await prismaClient.product.delete({
       where: { id: +req.params.id },
@@ -294,7 +351,7 @@ export const productAddToDyeing = asyncHandler(
         dyeingId,
         dyeing_date: req.body.dyeing_date,
         dyeing_rate: req.body.dyeing_rate,
-        thaan_amount: req.body.thaan_amount,
+        // thaan_amount: req.body.thaan_amount,
       },
     });
 
@@ -312,6 +369,39 @@ export const productAddToDyeing = asyncHandler(
       message: "Product Add to Dyeing",
       payload: {
         data: updatedProduct,
+      },
+    });
+  }
+);
+
+// thaan count
+export const thaanCountAddToProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId, thaanData } = req.body;
+    console.log(req.body);
+
+    // product check
+    const product = await prismaClient.product.findUnique({
+      where: { id: +productId },
+    });
+
+    if (!product) throw createError.NotFound("Couldn't find any product.");
+
+    // thaan data
+    const thaans = await prismaClient.thaanCount.createMany({
+      data: thaanData?.map((thaan: Thaan) => {
+        return {
+          ...thaan,
+          productId,
+        };
+      }),
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Thaan Count Add to Product",
+      payload: {
+        data: thaans,
       },
     });
   }

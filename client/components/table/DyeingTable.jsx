@@ -1,6 +1,14 @@
 "use client";
 
 import * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   flexRender,
@@ -10,7 +18,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,262 +37,137 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { IoTrashOutline } from "react-icons/io5";
+import { FaRegEdit } from "react-icons/fa";
+import DyeingForm from "../form/DyeingForm";
+import { useDeleteDyeingByIdMutation } from "@/features/dyeing/dyeingApi";
+import Swal from "sweetalert2";
+import { GrAddCircle } from "react-icons/gr";
 
-const dyeingData = [
-  {
-    id: 1,
-    name: "Dyeing-1",
-    address: "Dhaka",
-    phone: "01700000000",
-    products: [
-      {
-        id: 1,
-        name: "product-1",
-        chalanId: 1000,
-        gray_amount: 100,
-        gray_rate: 60,
-        gray_date: "1 june",
-        gray_payment_status: "paid",
-        delivery_status: "in mile",
-        dyeingId: 101,
-        dyeing_date: "2june",
-        dyeing_payment_status: false,
-
-        dyeing_rate: 60,
-        thaan_amount: 30,
-        dyeing_payments: [
-          {
-            id: 1,
-            amount: 1000,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 2000,
-            date: "2 june",
-          },
-        ],
-        gray_payments: [
-          {
-            id: 1,
-            amount: 1000,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 2000,
-            date: "2 june",
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: "product-2",
-        chalanId: 1000,
-        gray_amount: 85,
-        gray_rate: 20,
-        gray_date: "1 june",
-        gray_payment_status: "paid",
-        deliver_status: "in mile",
-        dyeing_rate: 60,
-        thaan_amount: 85,
-        dyeing_payments: [
-          {
-            id: 1,
-            amount: 400,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 200,
-            date: "2 june",
-          },
-        ],
-        gray_payments: [
-          {
-            id: 1,
-            amount: 100,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 200,
-            date: "2 june",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Dyeing-2",
-    address: "Dhaka 2",
-    phone: "01700000001",
-    products: [
-      {
-        id: 1,
-        name: "product-2",
-        chalanId: 1000,
-        gray_amount: 100,
-        gray_rate: 60,
-        gray_date: "1 june",
-        gray_payment_status: "paid",
-        delivery_status: "in mile",
-        dyeingId: 101,
-        dyeing_date: "2june",
-        dyeing_payment_status: false,
-        dyeing_rate: 80,
-        thaan_amount: 120,
-        dyeing_payments: [
-          {
-            id: 1,
-            amount: 200,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 400,
-            date: "2 june",
-          },
-        ],
-        gray_payments: [
-          {
-            id: 1,
-            amount: 600,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 8000,
-            date: "2 june",
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: "product-3",
-        chalanId: 1000,
-        gray_amount: 85,
-        gray_rate: 20,
-        gray_date: "1 june",
-        gray_payment_status: "paid",
-        deliver_status: "in mile",
-        dyeing_rate: 60,
-        thaan_amount: 62,
-        dyeing_payments: [
-          {
-            id: 1,
-            amount: 200,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 3000,
-            date: "2 june",
-          },
-        ],
-        gray_payments: [
-          {
-            id: 1,
-            amount: 5000,
-            date: "1 june",
-          },
-          {
-            id: 2,
-            amount: 7000,
-            date: "2 june",
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const data = dyeingData.map((dyeing) => {
-  const totalAmount = dyeing?.products?.reduce((sum, product) => {
-    return sum + product.dyeing_rate * product.thaan_amount;
-  }, 0);
-  const totalPaid = dyeing?.products?.reduce((sum, product) => {
-    return (
-      sum +
-      product.dyeing_payments.reduce((sum, payment) => sum + payment.amount, 0)
-    );
-  }, 0);
-  return {
-    name: dyeing.name,
-    address: dyeing.address,
-    phone: dyeing.phone,
-    // products: dyeing.products,
-    totalAmount,
-    due: totalAmount - totalPaid,
-  };
-});
-
-export const columns = [
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize">
-        <Link href={"/dyeing/all/2"}>{row.getValue("name")}</Link>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "address",
-    header: "Address",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("address")}</div>
-    ),
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("phone")}</div>
-    ),
-  },
-  {
-    accessorKey: "totalAmount",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Total Amount
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize pl-4">{row.getValue("totalAmount")}</div>
-    ),
-  },
-  {
-    accessorKey: "due",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Due
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize pl-4">{row.getValue("due")}</div>
-    ),
-  },
-];
-
-const DyeingTable = () => {
+const DyeingTable = ({ data }) => {
+  const [open, setOpen] = React.useState(false);
+  const [deleteDyeing, { error }] = useDeleteDyeingByIdMutation();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "All releted products will be delete.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result?.isConfirmed) {
+      const res = await deleteDyeing(id);
+      if (res?.data?.success) {
+        Swal.fire("Deleted!", "Your data has been deleted.", "success");
+      } else {
+        Swal.fire({
+          title: "Failed",
+          text: error?.data?.message,
+          icon: "error",
+        });
+      }
+    }
+  };
+
+  const columns = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <div className="capitalize">
+          <Link href={`/dyeings/all/${row?.original?.id}`}>
+            {row.getValue("name")}
+          </Link>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "address",
+      header: "Address",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("address")}</div>
+      ),
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("phone")}</div>
+      ),
+    },
+    {
+      accessorKey: "total_amount",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Total Amount
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("total_amount")}</div>
+      ),
+    },
+    {
+      accessorKey: "due",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Due
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("due")}</div>
+      ),
+    },
+    {
+      accessorKey: "Action",
+      header: "Action",
+      cell: ({ row }) => (
+        <div className="capitalize flex gap-2">
+          <Dialog>
+            <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400  border">
+              <FaRegEdit />
+            </DialogTrigger>
+            <DialogContent className="overflow-scroll ">
+              <DialogHeader>
+                <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                  Update Dyeing Data
+                </DialogTitle>
+                <DialogDescription></DialogDescription>
+              </DialogHeader>
+              <DyeingForm type="update" formData={row?.original} />
+            </DialogContent>
+          </Dialog>
+          <Button
+            className=" text-lg py-2 h-8 px-2 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
+            onClick={() => {
+              handleDelete(row?.original?.id);
+            }}
+          >
+            <IoTrashOutline />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data,
@@ -306,16 +189,30 @@ const DyeingTable = () => {
   });
 
   return (
-    <div className="w-full p-6">
-      <div className="flex items-center py-4">
+    <div className="w-full">
+      <div className="flex items-center py-4 gap-2">
         <Input
-          placeholder="Filter name..."
+          placeholder="Filter by name..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className=" max-w-sm  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
         />
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger className="py-2 h-10 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
+            <GrAddCircle /> <span className="text-[12px] pl-2">Dyeing</span>
+          </DialogTrigger>
+          <DialogContent className="overflow-scroll ">
+            <DialogHeader>
+              <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                Add Dyeing Data
+              </DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+            <DyeingForm setOpen={setOpen} />
+          </DialogContent>
+        </Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -336,7 +233,7 @@ const DyeingTable = () => {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.id?.split("_").join(" ")}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -395,7 +292,8 @@ const DyeingTable = () => {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          showing 10 of {data.length} enteries
+          showing {data.length > 10 ? 10 : data.length} of {data.length}{" "}
+          enteries
         </div>
         <div className="space-x-2">
           <Button

@@ -11,6 +11,15 @@ const handleZodError = (error: ZodError) => {
 
   const statusCode = 400;
 
+  // if in production
+  if (process.env.NODE_ENV === "development") {
+    return {
+      statusCode,
+      message: errors[0]?.message,
+      errors,
+    };
+  }
+
   return {
     statusCode,
     message: "Validation Error",

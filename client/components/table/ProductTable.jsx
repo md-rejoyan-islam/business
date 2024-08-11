@@ -10,17 +10,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -33,247 +37,222 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const data = [
-  {
-    id: "1",
-    name: "Product-T",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "2",
-    name: "Product-T1",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "1",
-    name: "Product-T",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "2",
-    name: "Product-T1",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "1",
-    name: "Product-T",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "2",
-    name: "Product-T1",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "1",
-    name: "Product-T",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "2",
-    name: "Product-T1",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "1",
-    name: "Product-T",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "2",
-    name: "Product-T1",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "3",
-    name: "Product-T2",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "4",
-    name: "Product-T3",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: " 5",
-    name: "Product-T4",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-  {
-    id: "6",
-    name: "Product-T5",
-    gray_cost: 5500,
-    dyeing_cost: 3100,
-    total_unit: 191,
-    unit_cost: 42,
-    all_unit_cost: 34,
-    gray: 29,
-    dyeing: 18,
-  },
-  {
-    id: "7",
-    name: "Product-T6",
-    gray_cost: 5500,
-    dyeing_cost: 3315,
-    total_unit: 195,
-    unit_cost: 45.21,
-    all_unit_cost: 47,
-    gray: 20,
-    dyeing: 17,
-  },
-];
+import Link from "next/link";
+import { IoTrashOutline } from "react-icons/io5";
+import { FaRegEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { useDeleteProducByIdMutation } from "@/features/products/productApi";
+import ProductForm from "../form/ProductForm";
+import { GrAddCircle } from "react-icons/gr";
+import { TbSum } from "react-icons/tb";
+import ThaanCountForm from "../form/ThaanCountForm";
 
-export const columns = [
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "gray_cost",
-    header: "Gray Cost",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("gray_cost")}</div>
-    ),
-  },
-  {
-    accessorKey: "dyeing_cost",
-    header: "Dyeing Cost",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("dyeing_cost")}</div>
-    ),
-  },
-  {
-    accessorKey: "total_unit",
-    header: "Total Unit",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("total_unit")}</div>
-    ),
-  },
-  {
-    accessorKey: "unit_cost",
-
-    header: ({ column }) => {
-      console.log(column);
-
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Unit Cost
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize pl-4">{row.getValue("unit_cost")}</div>
-    ),
-  },
-  {
-    accessorKey: "all_unit_cost",
-    header: "All Unit Cost",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("all_unit_cost")}</div>
-    ),
-  },
-  {
-    accessorKey: "gray",
-    header: "Gray",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("gray")}</div>,
-  },
-  {
-    accessorKey: "dyeing",
-    header: "Gray",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("dyeing")}</div>
-    ),
-  },
-];
-
-const ProductTable = () => {
+const ProductTable = ({ data }) => {
+  const [open, setOpen] = React.useState(false);
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [deleteProduct] = useDeleteProducByIdMutation();
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "All releted products will be delete.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result?.isConfirmed) {
+      const res = await deleteProduct(id);
+      if (res?.data?.success) {
+        Swal.fire("Deleted!", "Your data has been deleted.", "success");
+      } else {
+        Swal.fire({
+          title: "Failed",
+          text: res?.error?.data?.error?.message,
+          icon: "error",
+        });
+      }
+    }
+  };
+
+  const columns = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <div className="capitalize">
+          <Link href={`/products/all/${row?.original?.id}`}>
+            {row.getValue("name")}
+          </Link>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "gray_cost",
+      header: "Gray Cost",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("gray_cost")}</div>
+      ),
+    },
+    {
+      accessorKey: "dyeing_cost",
+      header: "Dyeing Cost",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("dyeing_cost")}</div>
+      ),
+    },
+    {
+      accessorKey: "total_unit",
+      header: "Total Unit",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("total_unit")}</div>
+      ),
+    },
+    {
+      accessorKey: "unit_cost",
+
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Unit Cost
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("unit_cost")}</div>
+      ),
+    },
+    {
+      accessorKey: "rate_with_benefit",
+      header: "+2",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("rate_with_benefit")}</div>
+      ),
+    },
+    {
+      accessorKey: "all_unit_cost",
+
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            All Unit Cost
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("all_unit_cost")}</div>
+      ),
+    },
+
+    {
+      accessorKey: "gray_rate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Gray
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("gray_rate")}</div>
+      ),
+    },
+    {
+      accessorKey: "dyeing_rate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Dyeing
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("dyeing_rate")}</div>
+      ),
+    },
+    {
+      accessorKey: "Thaan Count",
+      header: "Thaan Count",
+      cell: ({ row }) => {
+        return (
+          <div className="capitalize flex gap-2">
+            <Dialog>
+              <DialogTrigger
+                disabled={
+                  !row?.original?.thaan_count?.length ||
+                  !row?.original?.dyeingId
+                    ? true
+                    : false
+                }
+                className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border"
+              >
+                <TbSum /> <span>Thaan</span>
+              </DialogTrigger>
+              <DialogContent className="overflow-scroll ">
+                <DialogHeader>
+                  <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                    Thaan Count
+                  </DialogTitle>
+                  <DialogDescription></DialogDescription>
+                </DialogHeader>
+                <ThaanCountForm type="edit" formData={row?.original} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "Action",
+      header: "Action",
+      cell: ({ row }) => (
+        <div className="capitalize flex gap-2">
+          <Dialog>
+            <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400  border">
+              <FaRegEdit />
+            </DialogTrigger>
+            <DialogContent className="overflow-scroll ">
+              <DialogHeader>
+                <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                  Update Gray Data
+                </DialogTitle>
+                <DialogDescription></DialogDescription>
+              </DialogHeader>
+              <ProductForm type="update" formData={row?.original} />
+              {/* <GrayForm type="update" formData={row?.original} /> */}
+            </DialogContent>
+          </Dialog>
+          <Button
+            className=" text-lg py-2 h-8 px-2 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
+            onClick={() => handleDelete(row?.original?.id)}
+          >
+            <IoTrashOutline />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data,
@@ -295,16 +274,30 @@ const ProductTable = () => {
   });
 
   return (
-    <div className="w-full p-6">
-      <div className="flex items-center py-4">
+    <div className="w-full">
+      <div className="flex items-center py-4 gap-2">
         <Input
-          placeholder="Filter name..."
+          placeholder="Filter by name..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
         />
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger className="py-2 h-10 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
+            <GrAddCircle /> <span className="text-[12px] pl-2">Product</span>
+          </DialogTrigger>
+          <DialogContent className="overflow-scroll ">
+            <DialogHeader>
+              <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                Add Product Data
+              </DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+            <ProductForm setOpen={setOpen} />
+          </DialogContent>
+        </Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -325,7 +318,7 @@ const ProductTable = () => {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.id.split("_").join(" ")}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -375,7 +368,7 @@ const ProductTable = () => {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
@@ -384,7 +377,7 @@ const ProductTable = () => {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          showing 10 of {data.length} enteries
+          showing {table.getRowModel().rows?.length} of {data.length} enteries
         </div>
         <div className="space-x-2">
           <Button

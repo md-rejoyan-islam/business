@@ -5,6 +5,7 @@ import {
   getAllProducts,
   getProductById,
   productAddToDyeing,
+  thaanCountAddToProduct,
   updateProductById,
 } from "../controllers/product.controllers";
 import {
@@ -25,10 +26,13 @@ productRouter
   .route("/add-to-dyeing")
   .patch(validateRequest(productAddToDyeingZodSchema), productAddToDyeing);
 
+// thaan add
+productRouter.route("/add-thaan").post(thaanCountAddToProduct);
+
 productRouter
   .route("/:id")
   .get(getProductById)
-  .put(updateProductById)
+  .patch(updateProductById)
   .delete(deleteProductById);
 
 // export product router

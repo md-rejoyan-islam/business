@@ -28,6 +28,8 @@ export const getAllChalans = asyncHandler(
     const chalan = await prismaClient.chalan.findMany({
       include: {
         product: true,
+        gray: true,
+        dyeing: true,
       },
     });
 
@@ -39,6 +41,7 @@ export const getAllChalans = asyncHandler(
       statusCode: 200,
       message: "All chalan data fetched successfully.",
       payload: {
+        total: chalan.length,
         data: chalan,
       },
     });

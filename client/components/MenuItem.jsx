@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { icons } from "lucide-react";
 
 export default function MenuItem({ children, title, icon, active }) {
   return (
@@ -12,8 +11,10 @@ export default function MenuItem({ children, title, icon, active }) {
       <AccordionItem value="item-1" className="border-none ">
         <AccordionTrigger
           className={`${
-            active ? "bg-black/5" : ""
-          } py-2 px-2 rounded-md hover:no-underline data-[state=open]:bg-black/5  hover:bg-black/5`}
+            active
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
         >
           <span className="flex gap-3 items-center">
             {icon}

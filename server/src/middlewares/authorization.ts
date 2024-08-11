@@ -1,9 +1,14 @@
 import { NextFunction, Response } from "express";
 import { RequestWithUser } from "../app/definition";
 
-export const authorization = (...role: Role[]) => {
+enum ROLE {
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+}
+
+export const authorization = (...role: ROLE[]) => {
   return async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    if (!role.includes(req?.me?.role as Role)) {
+    if (!role.includes(req?.me?.role as ROLE)) {
       return res.status(403).json({
         Status: "Failed",
         message: "You don't have permission to perform this action",
@@ -22,8 +27,8 @@ export const authorization = (...role: Role[]) => {
     if (id) {
       // others
       if (
-        req?.me?.role === "admin" ||
-        req?.me?.role === "superAdmin" ||
+        req?.me?.role === "ADMIN" ||
+        req?.me?.role === "MODERATOR" ||
         req.me?.id?.toString().split('"')[0] === id
       ) {
         return next();

@@ -25,7 +25,7 @@ import createError from "http-errors";
 export const getAllDyeings = asyncHandler(
   async (_req: Request, res: Response) => {
     // get all dyeing from database
-    const dyeing = await prismaClient.dyeing.findMany({
+    const dyeings = await prismaClient.dyeing.findMany({
       include: {
         products: {
           include: {
@@ -37,14 +37,15 @@ export const getAllDyeings = asyncHandler(
     });
 
     // if data is empty
-    if (!dyeing.length)
-      throw createError.NotFound("Couldn't find any dyeing data.");
+    // if (!dyeings.length)
+    //   throw createError.NotFound("Couldn't find any dyeing data.");
 
     successResponse(res, {
       statusCode: 200,
       message: "All dyeing data fetched successfully.",
       payload: {
-        data: dyeing,
+        total: dyeings.length || 0,
+        data: dyeings || 0,
       },
     });
   }
@@ -71,6 +72,15 @@ export const getDyeingById = asyncHandler(
     const dyeing = await prismaClient.dyeing.findUnique({
       where: {
         id: +req.params.id,
+      },
+      include: {
+        products: {
+          include: {
+            dyeing_payments: true,
+            gray: true,
+            dyeing: true,
+          },
+        },
       },
     });
 
@@ -194,6 +204,98 @@ export const deleteDyeingById = asyncHandler(
       message: "Dyeing data deleted successfully.",
       payload: {
         data: dyeing,
+      },
+    });
+  }
+);
+
+// dyeing payment
+export const dyeingPayment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId, dyeingId } = req.body;
+
+    // dyeing check
+    const dyeing = await prismaClient.dyeing.findUnique({
+      where: { id: dyeingId },
+      include: {
+        products: true,
+      },
+    });
+    if (!dyeing) throw createError.NotFound("Dyeing data not found!");
+
+    // product check in gray
+    const product = dyeing?.products.find(
+      (product) => product.id === productId
+    );
+    if (!product) throw createError.NotFound("Product not found in gray data.");
+
+    // create dyeing payment
+    const payment = await prismaClient.dyeingPayment.create({
+      data: {
+        ...req.body,
+      },
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Payment successfully",
+      payload: {
+        data: payment,
+      },
+    });
+  }
+);
+
+// update dyeing payment by id
+export const updateDyeingPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const payment = await prismaClient.dyeingPayment.findUnique({
+      where: { id: +id },
+    });
+
+    if (!payment) throw createError.NotFound("Payment not found!");
+
+    const updatedPayment = await prismaClient.dyeingPayment.update({
+      where: { id: +id },
+      data: req.body,
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Payment updated successfully",
+      payload: {
+        data: updatedPayment,
+      },
+    });
+  }
+);
+
+// delete payment by id
+export const deleteDyeingPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const payment = await prismaClient.dyeingPayment.findUnique({
+      where: { id: +id },
+    });
+
+    if (!payment) throw createError.NotFound("Payment not found!");
+
+    // delete
+    await prismaClient.dyeingPayment.delete({
+      where: { id: +id },
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Payment deleted successfully",
+      payload: {
+        data: payment,
       },
     });
   }

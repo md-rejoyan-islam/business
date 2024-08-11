@@ -1,8 +1,7 @@
-import Link from "next/link";
 import MenuItem from "./MenuItem";
 import { GiClothes, GiRolledCloth } from "react-icons/gi";
 import { MdProductionQuantityLimits } from "react-icons/md";
-import { BiRectangle } from "react-icons/bi";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
 import InnerLink from "./InnerLink";
 import { usePathname } from "next/navigation";
@@ -16,29 +15,37 @@ export default function SideContent() {
         <li>
           <MenuItem
             title="Gray"
-            active={pathname.includes("/gray")}
+            active={pathname.includes("/grays")}
             icon={<GiRolledCloth />}
           >
             <ul className="space-y-1">
-              <InnerLink href={"/gray/all"} label={"All"} pathname={pathname} />
-              <InnerLink href={"/gray/add"} label={"Add"} pathname={pathname} />
+              <InnerLink
+                href={"/grays/all"}
+                label={"All"}
+                pathname={pathname}
+              />
+              <InnerLink
+                href={"/grays/add"}
+                label={"Add"}
+                pathname={pathname}
+              />
             </ul>
           </MenuItem>
         </li>
         <li>
           <MenuItem
             title="Dyeing"
-            active={pathname.includes("/dyeing")}
+            active={pathname.includes("/dyeings")}
             icon={<GiClothes />}
           >
             <ul className="space-y-1">
               <InnerLink
-                href={"/dyeing/all"}
+                href={"/dyeings/all"}
                 label={"All"}
                 pathname={pathname}
               />
               <InnerLink
-                href={"/dyeing/add"}
+                href={"/dyeings/add"}
                 label={"Add"}
                 pathname={pathname}
               />
@@ -47,18 +54,18 @@ export default function SideContent() {
         </li>
         <li>
           <MenuItem
-            active={pathname.includes("/product")}
+            active={pathname.includes("/products")}
             title="Product"
             icon={<MdProductionQuantityLimits />}
           >
             <ul className="space-y-1">
               <InnerLink
-                href={"/product/all"}
+                href={"/products/all"}
                 label={"All"}
                 pathname={pathname}
               />
               <InnerLink
-                href={"/product/add"}
+                href={"/products/add"}
                 label={"Add"}
                 pathname={pathname}
               />
@@ -66,7 +73,24 @@ export default function SideContent() {
           </MenuItem>
         </li>
         <li>
-          <a href="">Dashboard2</a>
+          <MenuItem
+            active={pathname.includes("/chalans")}
+            title="Chalan"
+            icon={<FaArrowUpRightFromSquare className="text-sm" />}
+          >
+            <ul className="space-y-1">
+              <InnerLink
+                href={"/chalans/all"}
+                label={"All"}
+                pathname={pathname}
+              />
+              <InnerLink
+                href={"/chalans/add"}
+                label={"Add"}
+                pathname={pathname}
+              />
+            </ul>
+          </MenuItem>
         </li>
       </ul>
     </div>

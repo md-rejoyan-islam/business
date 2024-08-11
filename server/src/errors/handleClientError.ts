@@ -3,8 +3,10 @@ import { ERRORS } from "../app/definition";
 
 const handleClientError = (error: Prisma.PrismaClientKnownRequestError) => {
   let errors: ERRORS[] = [];
-  let message = "";
+  let message = error.message;
   const statusCode = 400;
+
+  console.log(error);
 
   if (error.code === "P2025") {
     message = (error.meta?.cause as string) || "Record not found!";
@@ -33,6 +35,14 @@ const handleClientError = (error: Prisma.PrismaClientKnownRequestError) => {
         message: `${
           (error.meta?.target as string).split("_")[1]
         } already exists.`,
+      },
+    ];
+  } else if ((error.code = "P2032")) {
+    message = "Invalid relation";
+    errors = [
+      {
+        path: error.meta?.field as string,
+        message: `Expected type ${error.meta?.expected_type}, but got ${error.meta?.found}`,
       },
     ];
   }

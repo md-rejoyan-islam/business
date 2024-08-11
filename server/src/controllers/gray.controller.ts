@@ -36,14 +36,15 @@ export const getAllGrays = asyncHandler(
     });
 
     // if data is empty
-    if (!grays.length)
-      throw createError.NotFound("Couldn't find any grays data.");
+    // if (!grays.length)
+    //   throw createError.NotFound("Couldn't find any grays data.");
 
     successResponse(res, {
       statusCode: 200,
       message: "All grays data fetched successfully.",
       payload: {
-        data: grays,
+        total: grays?.length || 0,
+        data: grays || [],
       },
     });
   }
@@ -69,6 +70,13 @@ export const getGrayById = asyncHandler(async (req: Request, res: Response) => {
   const gray = await prismaClient.gray.findUnique({
     where: {
       id: +req.params.id,
+    },
+    include: {
+      products: {
+        include: {
+          gray_payments: true,
+        },
+      },
     },
   });
 
@@ -182,8 +190,18 @@ export const deleteGrayById = asyncHandler(
   async (req: Request, res: Response) => {
     const gray = await prismaClient.gray.findUnique({
       where: { id: +req.params.id },
+      include: {
+        products: true,
+      },
     });
     if (!gray) throw createError.NotFound("Couldn't find any gray data.");
+
+    // delete releted product
+    await prismaClient.product.deleteMany({
+      where: {
+        grayId: gray.id,
+      },
+    });
 
     // delete
     await prismaClient.gray.delete({
@@ -197,6 +215,94 @@ export const deleteGrayById = asyncHandler(
       message: "Gray data deleted successfully.",
       payload: {
         data: gray,
+      },
+    });
+  }
+);
+
+// gray payment
+export const grayPayment = asyncHandler(async (req: Request, res: Response) => {
+  const { productId, grayId } = req.body;
+
+  // gray check
+  const gray = await prismaClient.gray.findUnique({
+    where: { id: grayId },
+    include: {
+      products: true,
+    },
+  });
+  if (!gray) throw createError.NotFound("Gray data not found!");
+
+  // product check in gray
+  const product = gray?.products.find((product) => product.id === productId);
+  if (!product) throw createError.NotFound("Product not found in gray data.");
+
+  // create gray payment
+  const payment = await prismaClient.grayPayment.create({
+    data: {
+      ...req.body,
+    },
+  });
+
+  // response send
+  successResponse(res, {
+    statusCode: 200,
+    message: "Payment successfully",
+    payload: {
+      data: payment,
+    },
+  });
+});
+
+// update gray payment by id
+export const updateGrayPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const payment = await prismaClient.grayPayment.findUnique({
+      where: { id: +id },
+    });
+
+    if (!payment) throw createError.NotFound("Payment not found!");
+
+    const updatedPayment = await prismaClient.grayPayment.update({
+      where: { id: +id },
+      data: req.body,
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Payment updated successfully",
+      payload: {
+        data: updatedPayment,
+      },
+    });
+  }
+);
+
+// delete payment by id
+export const deleteGrayPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const payment = await prismaClient.grayPayment.findUnique({
+      where: { id: +id },
+    });
+
+    if (!payment) throw createError.NotFound("Payment not found!");
+
+    // delete
+    await prismaClient.grayPayment.delete({
+      where: { id: +id },
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Payment deleted successfully",
+      payload: {
+        data: payment,
       },
     });
   }

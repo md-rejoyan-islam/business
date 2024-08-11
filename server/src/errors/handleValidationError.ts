@@ -5,6 +5,7 @@ const handleValidationError = (error: Prisma.PrismaClientValidationError) => {
   //     .split("Argument")[1]
   //     .trim()
   //     .split("`")[1];
+  console.log(error);
 
   const errors = [
     {
