@@ -1,10 +1,10 @@
-import MenuItem from "./MenuItem";
 import { GiClothes, GiRolledCloth } from "react-icons/gi";
 import { MdProductionQuantityLimits } from "react-icons/md";
-import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import { FaUserTie } from "react-icons/fa6";
+import { CiMemoPad } from "react-icons/ci";
 
-import InnerLink from "./InnerLink";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function SideContent() {
   const pathname = usePathname();
@@ -12,85 +12,65 @@ export default function SideContent() {
   return (
     <div>
       <ul className="space-y-1">
-        <li>
-          <MenuItem
-            title="Gray"
-            active={pathname.includes("/grays")}
-            icon={<GiRolledCloth />}
-          >
-            <ul className="space-y-1">
-              <InnerLink
-                href={"/grays/all"}
-                label={"All"}
-                pathname={pathname}
-              />
-              <InnerLink
-                href={"/grays/add"}
-                label={"Add"}
-                pathname={pathname}
-              />
-            </ul>
-          </MenuItem>
+        <li
+          className={`${
+            pathname.includes("/grays/")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/grays/all" className="flex gap-3 items-center">
+            <GiRolledCloth />
+            <span>Grays</span>
+          </Link>
         </li>
-        <li>
-          <MenuItem
-            title="Dyeing"
-            active={pathname.includes("/dyeings")}
-            icon={<GiClothes />}
-          >
-            <ul className="space-y-1">
-              <InnerLink
-                href={"/dyeings/all"}
-                label={"All"}
-                pathname={pathname}
-              />
-              <InnerLink
-                href={"/dyeings/add"}
-                label={"Add"}
-                pathname={pathname}
-              />
-            </ul>
-          </MenuItem>
+        <li
+          className={`${
+            pathname.includes("/dyeings/all")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/dyeings/all" className="flex gap-3 items-center">
+            <GiClothes />
+            <span>Dyeings</span>
+          </Link>
         </li>
-        <li>
-          <MenuItem
-            active={pathname.includes("/products")}
-            title="Product"
-            icon={<MdProductionQuantityLimits />}
-          >
-            <ul className="space-y-1">
-              <InnerLink
-                href={"/products/all"}
-                label={"All"}
-                pathname={pathname}
-              />
-              <InnerLink
-                href={"/products/add"}
-                label={"Add"}
-                pathname={pathname}
-              />
-            </ul>
-          </MenuItem>
+        <li
+          className={`${
+            pathname.includes("/products/all")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/products/all" className="flex gap-3 items-center">
+            <MdProductionQuantityLimits />
+            <span>Products</span>
+          </Link>
         </li>
-        <li>
-          <MenuItem
-            active={pathname.includes("/chalans")}
-            title="Chalan"
-            icon={<FaArrowUpRightFromSquare className="text-sm" />}
-          >
-            <ul className="space-y-1">
-              <InnerLink
-                href={"/chalans/all"}
-                label={"All"}
-                pathname={pathname}
-              />
-              <InnerLink
-                href={"/chalans/add"}
-                label={"Add"}
-                pathname={pathname}
-              />
-            </ul>
-          </MenuItem>
+        <li
+          className={`${
+            pathname.includes("/customers/all")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/customers/all" className="flex gap-3 items-center">
+            <FaUserTie />
+            <span>Cutomers</span>
+          </Link>
+        </li>
+        <li
+          className={`${
+            pathname.includes("/memo")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/memo" className="flex gap-3 items-center">
+            <CiMemoPad />
+            <span>Memo</span>
+          </Link>
         </li>
       </ul>
     </div>

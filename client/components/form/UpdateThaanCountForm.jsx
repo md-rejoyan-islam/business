@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { LuMinusCircle } from "react-icons/lu";
 import { toast } from "react-toastify";
-import { useUpdateMultipleThaanDataToProductMutation } from "@/features/products/productApi";
+import { useUpdateMultipleFinishedDataToProductMutation } from "@/features/products/productApi";
 
 const Field = ({ index, defaultValue, showBorder, removeField, length }) => {
   return (
@@ -50,7 +50,8 @@ const Field = ({ index, defaultValue, showBorder, removeField, length }) => {
 export default function UpdateThaanCountForm({ formData }) {
   const [fields, setFields] = useState([]);
 
-  const [updateMultipleThaan] = useUpdateMultipleThaanDataToProductMutation();
+  const [updateMultipleThaan] =
+    useUpdateMultipleFinishedDataToProductMutation();
 
   // add field
   const addField = () => {

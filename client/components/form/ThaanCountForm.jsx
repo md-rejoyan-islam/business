@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { LuMinusCircle } from "react-icons/lu";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { useState } from "react";
-import { useAddThaanDataToProductMutation } from "@/features/products/productApi";
+import { useAddFinishedDataToProductMutation } from "@/features/products/productApi";
 import { toast } from "react-toastify";
 
 export const Field = ({ index, removeField, form, showBorder }) => {
@@ -78,7 +78,7 @@ export const Field = ({ index, removeField, form, showBorder }) => {
 };
 
 export default function ThaanCountForm({ type, formData }) {
-  const [addThaan, { isLoading }] = useAddThaanDataToProductMutation();
+  const [addThaan, { isLoading }] = useAddFinishedDataToProductMutation();
 
   const [fields, setFields] = useState([]);
 

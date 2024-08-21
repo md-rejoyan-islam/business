@@ -22,17 +22,40 @@ import createError from "http-errors";
  *
  */
 
+interface DateQuery {
+  gte?: string;
+  lte?: string;
+  eq?: string;
+}
+
 export const getAllDyeings = asyncHandler(
-  async (_req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
+    const dateQuery = req.query?.date as DateQuery;
     // get all dyeing from database
     const dyeings = await prismaClient.dyeing.findMany({
       include: {
         products: {
           include: {
-            dyeing_payments: true,
             gray: true,
+            dyeing: true,
           },
         },
+        chalans: {
+          include: {
+            payments: true,
+            products: true,
+          },
+          where: {
+            date: dateQuery
+              ? {
+                  gte: dateQuery?.gte ? dateQuery.gte : undefined,
+                  lte: dateQuery.lte ? dateQuery.lte : undefined,
+                  equals: dateQuery.eq ? dateQuery.eq : undefined,
+                }
+              : undefined,
+          },
+        },
+        dyeingPayments: true,
       },
     });
 
@@ -69,6 +92,7 @@ export const getAllDyeings = asyncHandler(
 
 export const getDyeingById = asyncHandler(
   async (req: Request, res: Response) => {
+    const dateQuery = req.query?.date as DateQuery;
     const dyeing = await prismaClient.dyeing.findUnique({
       where: {
         id: +req.params.id,
@@ -76,9 +100,27 @@ export const getDyeingById = asyncHandler(
       include: {
         products: {
           include: {
-            dyeing_payments: true,
+            // dyeing_payments: true,
             gray: true,
             dyeing: true,
+          },
+        },
+        chalans: {
+          include: {
+            products: true,
+            payments: true,
+          },
+          where: {
+            date: dateQuery
+              ? {
+                  gte: dateQuery?.gte ? dateQuery.gte : undefined,
+                  lte: dateQuery.lte ? dateQuery.lte : undefined,
+                  equals: dateQuery.eq ? dateQuery.eq : undefined,
+                }
+              : undefined,
+          },
+          orderBy: {
+            date: "desc",
           },
         },
       },
@@ -212,27 +254,31 @@ export const deleteDyeingById = asyncHandler(
 // dyeing payment
 export const dyeingPayment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { productId, dyeingId } = req.body;
+    const { dyeingId, chalanId } = req.body;
 
     // dyeing check
     const dyeing = await prismaClient.dyeing.findUnique({
-      where: { id: dyeingId },
+      where: {
+        id: dyeingId,
+        chalans: {
+          some: {
+            id: chalanId,
+          },
+        },
+      },
       include: {
-        products: true,
+        chalans: true,
       },
     });
-    if (!dyeing) throw createError.NotFound("Dyeing data not found!");
-
-    // product check in gray
-    const product = dyeing?.products.find(
-      (product) => product.id === productId
-    );
-    if (!product) throw createError.NotFound("Product not found in gray data.");
+    if (!dyeing) throw createError.NotFound("Dyeing or chalan data not found!");
 
     // create dyeing payment
     const payment = await prismaClient.dyeingPayment.create({
       data: {
-        ...req.body,
+        amount: req.body.amount,
+        chalanId: chalanId,
+        dyeingId: dyeingId,
+        date: req.body?.date?.split("T")[0],
       },
     });
 
@@ -296,6 +342,43 @@ export const deleteDyeingPaymentById = asyncHandler(
       message: "Payment deleted successfully",
       payload: {
         data: payment,
+      },
+    });
+  }
+);
+
+// update dyeing chalan product
+export const updateDyeingChalanProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const products = req.body;
+
+    const updatedProducts =
+      products?.length &&
+      (await Promise.all(
+        products.map(async (product: any) => {
+          // dyeing date provide
+          if (product.dyeing_date) {
+            product.dyeing_date = product.dyeing_date.split("T")[0];
+          }
+
+          const updatedProduct = await prismaClient.product.update({
+            where: { id: +product.id },
+            data: {
+              ...product,
+            },
+          });
+          return updatedProduct;
+        })
+      ));
+
+    // console.log(updatedProducts);
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Chalan updated successfully",
+      payload: {
+        data: updatedProducts,
       },
     });
   }

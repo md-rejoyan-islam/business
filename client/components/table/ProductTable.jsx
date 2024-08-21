@@ -133,13 +133,7 @@ const ProductTable = ({ data }) => {
         <div className="capitalize pl-4">{row.getValue("unit_cost")}</div>
       ),
     },
-    {
-      accessorKey: "rate_with_benefit",
-      header: "+2",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("rate_with_benefit")}</div>
-      ),
-    },
+
     {
       accessorKey: "all_unit_cost",
 
@@ -193,44 +187,44 @@ const ProductTable = ({ data }) => {
         <div className="capitalize pl-4">{row.getValue("dyeing_rate")}</div>
       ),
     },
-    {
-      accessorKey: "Thaan Count",
-      header: "Thaan Count",
-      cell: ({ row }) => {
-        return (
-          <div className="capitalize flex gap-2">
-            <Dialog>
-              <DialogTrigger className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
-                {row?.original?.thaan_count?.length ? (
-                  <>
-                    <MdOutlineUpdate /> <span>Thaan</span>
-                  </>
-                ) : (
-                  <>
-                    <MdOutlineAddCircleOutline /> <span>Thaan</span>
-                  </>
-                )}
-              </DialogTrigger>
-              <DialogContent className="overflow-scroll ">
-                <DialogHeader>
-                  <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                    {row?.original?.thaan_count.length
-                      ? " Update Thaan Data"
-                      : "Thaan Count"}
-                  </DialogTitle>
-                  <DialogDescription></DialogDescription>
-                </DialogHeader>
-                {row?.original?.thaan_count.length ? (
-                  <UpdateThaanCountForm type="edit" formData={row?.original} />
-                ) : (
-                  <ThaanCountForm type="edit" formData={row?.original} />
-                )}
-              </DialogContent>
-            </Dialog>
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "Thaan Count",
+    //   header: "Thaan Count",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="capitalize flex gap-2">
+    //         <Dialog>
+    //           <DialogTrigger className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
+    //             {row?.original?.thaan_count?.length ? (
+    //               <>
+    //                 <MdOutlineUpdate /> <span>Thaan</span>
+    //               </>
+    //             ) : (
+    //               <>
+    //                 <MdOutlineAddCircleOutline /> <span>Thaan</span>
+    //               </>
+    //             )}
+    //           </DialogTrigger>
+    //           <DialogContent className="overflow-scroll ">
+    //             <DialogHeader>
+    //               <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+    //                 {row?.original?.thaan_count.length
+    //                   ? " Update Thaan Data"
+    //                   : "Thaan Count"}
+    //               </DialogTitle>
+    //               <DialogDescription></DialogDescription>
+    //             </DialogHeader>
+    //             {row?.original?.thaan_count.length ? (
+    //               <UpdateThaanCountForm type="edit" formData={row?.original} />
+    //             ) : (
+    //               <ThaanCountForm type="edit" formData={row?.original} />
+    //             )}
+    //           </DialogContent>
+    //         </Dialog>
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "Action",
       header: "Action",

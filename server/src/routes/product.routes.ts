@@ -1,13 +1,14 @@
 import express from "express";
 import {
+  countFinishedProduct,
+  createGrayDyeingProduct,
   createProduct,
   deleteProductById,
   deleteThaanById,
   getAllProducts,
   getProductById,
   productAddToDyeing,
-  thaanCountAddToProduct,
-  updateMultipleThaanData,
+  updateMultipleFinishedData,
   updateProductById,
   updateThaanById,
 } from "../controllers/product.controllers";
@@ -29,9 +30,16 @@ productRouter
   .route("/add-to-dyeing")
   .patch(validateRequest(productAddToDyeingZodSchema), productAddToDyeing);
 
+// create gray-dyeing-product
+productRouter
+  .route("/create-gray-dyeing-products")
+  .post(createGrayDyeingProduct);
+
 // thaan add
-productRouter.route("/add-thaan").post(thaanCountAddToProduct);
-productRouter.route("/thaans-update").put(updateMultipleThaanData);
+productRouter.route("/add-finished-product").post(countFinishedProduct);
+productRouter
+  .route("/update-finished-products")
+  .put(updateMultipleFinishedData);
 productRouter.route("/product-thaan/:id").patch(updateThaanById);
 productRouter.route("/product-thaan/:id").delete(deleteThaanById);
 

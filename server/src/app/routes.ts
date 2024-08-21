@@ -5,7 +5,7 @@ import userRouter from "../routes/user.routes";
 import authRouter from "../routes/auth.routes";
 import grayRouter from "../routes/gray.routes";
 import dyeingRouter from "../routes/dyeing.routes";
-import chalanRouter from "../routes/chalan.routes";
+import customerRouter from "../routes/customer.routes";
 
 const routes = [
   {
@@ -25,12 +25,12 @@ const routes = [
     route: dyeingRouter,
   },
   {
-    path: "/api/v1/chalans",
-    route: chalanRouter,
-  },
-  {
     path: "/api/v1/sellers",
     route: sellerRouter,
+  },
+  {
+    path: "/api/v1/customers",
+    route: customerRouter,
   },
   {
     path: "/api/v1/auth",

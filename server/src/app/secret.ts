@@ -14,6 +14,6 @@ export const passwordResetCookiesMaxAge: number = 1000 * 60 * 5; // 5 min
 export const accessTokenSecret: string = "rere";
 export const accessTokenExpire: string | number = 103600;
 
-export const accessCookiemaxAge: number = 1000 * 60 * 5; // 5 min
+export const accessCookiemaxAge: number = 1000 * 60 * 60 * 24 * 15; // 15 day
 
 export const nodeEnv = "development";

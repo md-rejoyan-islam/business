@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -45,7 +45,7 @@ import {
 import GrayForm from "../form/GrayForm";
 
 const GrayTable = ({ data }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState();
   const [deleteGray, { error }] = useDeleteGrayByIdMutation();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);

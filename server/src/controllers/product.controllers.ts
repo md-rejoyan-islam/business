@@ -3,7 +3,6 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
-import { Thaan } from "../app/definition";
 
 /**
  *
@@ -28,12 +27,9 @@ export const getAllProducts = asyncHandler(
     // get all products from database
     const products = await prismaClient.product.findMany({
       include: {
-        chalan: true,
         gray: true,
         dyeing: true,
-        dyeing_payments: true,
-        gray_payments: true,
-        thaan_count: true,
+        finished_products: true,
       },
     });
 
@@ -77,9 +73,7 @@ export const getProductById = asyncHandler(
       include: {
         gray: true,
         dyeing: true,
-        gray_payments: true,
-        dyeing_payments: true,
-        thaan_count: true,
+        finished_products: true,
       },
     });
 
@@ -114,7 +108,6 @@ export const getProductById = asyncHandler(
 
 export const createProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    let { chalanNumber } = req.body;
     const { grayId } = req.body;
 
     // gray id check
@@ -124,54 +117,37 @@ export const createProduct = asyncHandler(
 
     if (!gray) throw createError("Couldn't find any gray by grayId.");
 
-    // chalan id check
-    if (chalanNumber) {
-      const chalan = await prismaClient.chalan.findUnique({
-        where: {
-          chalanNumber,
-        },
-      });
-      if (!chalan) throw createError("Invalid chalan id.");
-      if (chalan.productId) throw createError("Already use this chalan id");
-    } else {
-      const chalans = await prismaClient.chalan.findMany({
-        orderBy: [
-          {
-            chalanNumber: "desc",
-          },
-        ],
-      });
-
-      const chalan = await prismaClient.chalan.create({
-        data: {
-          grayId: +req.body.grayId,
-          chalanNumber: +chalans[0]?.chalanNumber + 1 || 1,
-        },
-      });
-      console.log(chalan);
-
-      chalanNumber = chalan.chalanNumber;
-    }
-    console.log(3);
-
-    // console.log(chalanId);
-
-    const product = await prismaClient.product.create({
+    // chalan create for this product with gray id
+    const chalan = await prismaClient.grayChalan.create({
       data: {
-        ...req.body,
-        chalanNumber,
+        grayId: +grayId,
+        date: req.body?.gray_date.split("T")[0],
       },
     });
 
-    // update chalan data
+    // if provide dyeing id then create idyeing chalan
+    let dyeingChalanId = null;
+    if (req.body?.dyeingId) {
+      const dyeingChalan = await prismaClient.dyeingChalan.create({
+        data: {
+          dyeingId: req.body?.dyeingId,
+        },
+      });
+      dyeingChalanId = dyeingChalan.id;
+    }
 
-    await prismaClient.chalan.update({
-      where: {
-        // chalanId: product.chalanId,
-        chalanNumber: product.chalanNumber,
-      },
+    // create data
+    const createdData = {
+      ...req.body,
+      grayChalanId: chalan.id,
+      delivery_status: "RUNNING",
+    };
+
+    if (dyeingChalanId) createdData.dyeingChalanId = dyeingChalanId;
+
+    const product = await prismaClient.product.create({
       data: {
-        productId: product.id,
+        ...createdData,
       },
     });
 
@@ -250,51 +226,6 @@ export const deleteProductById = asyncHandler(
 
     if (!exist) throw createError.NotFound("Couldn't find any product data.");
 
-    // delete related gray products payment
-    if (
-      exist &&
-      "gray_payments" in exist &&
-      Array.isArray(exist.gray_payments) &&
-      exist?.gray_payments?.length
-    ) {
-      await prismaClient.grayPayment.deleteMany({
-        where: { id: exist?.grayId },
-      });
-    }
-
-    // delete related dyeing products payment
-    if (
-      "dyeing_payments" in exist &&
-      Array.isArray(exist?.dyeing_payments) &&
-      exist.dyeing_payments.length &&
-      "dyeingId" in exist &&
-      exist.dyeingId
-    ) {
-      await prismaClient.dyeingPayment.deleteMany({
-        where: { id: exist?.dyeingId },
-      });
-    }
-
-    // delete related customer data
-    // if (
-    //   "customers" in exist &&
-    //   Array.isArray(exist.customers) &&
-    //   exist?.customers.length
-    // ) {
-    //   await prismaClient.customer.deleteMany({
-    //     where: {
-    //       customerProduct: exist.id,
-    //     },
-    //   });
-    // }
-
-    // delete chalan data
-    if ("chalanNumber" in exist && exist?.chalanNumber) {
-      await prismaClient.chalan.delete({
-        where: { chalanNumber: exist?.chalanNumber },
-      });
-    }
-
     // delete product
     await prismaClient.product.delete({
       where: { id: +req.params.id },
@@ -341,8 +272,6 @@ export const productAddToDyeing = asyncHandler(
     if (!dyeing)
       throw createError.NotFound("Couldn't find dyeing id in database.");
 
-    console.log(2);
-
     const updatedProduct = await prismaClient.product.update({
       where: {
         id: productId,
@@ -356,13 +285,13 @@ export const productAddToDyeing = asyncHandler(
     });
 
     // update chalan data
-    await prismaClient.chalan.update({
-      where: { chalanNumber: product.chalanNumber },
-      data: {
-        productId: updatedProduct.id,
-        dyeingId: updatedProduct.dyeingId,
-      },
-    });
+    // await prismaClient.chalan.update({
+    //   where: { chalanNumber: product.chalanNumber },
+    //   data: {
+    //     productId: updatedProduct.id,
+    //     dyeingId: updatedProduct.dyeingId,
+    //   },
+    // });
 
     successResponse(res, {
       statusCode: 200,
@@ -375,21 +304,33 @@ export const productAddToDyeing = asyncHandler(
 );
 
 // thaan count
-export const thaanCountAddToProduct = asyncHandler(
+export const countFinishedProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const { productId, thaanData } = req.body;
-    console.log(req.body);
+    const { productId, finishedProducts, total_defected } = req.body;
 
     // product check
     const product = await prismaClient.product.findUnique({
       where: { id: +productId },
     });
 
+    // if product not found
+    if (!product) throw createError.NotFound("Couldn't find any product.");
+
+    // update product data
+    await prismaClient.product.update({
+      where: {
+        id: +productId,
+      },
+      data: {
+        total_defected: +total_defected,
+      },
+    });
+
     if (!product) throw createError.NotFound("Couldn't find any product.");
 
     // thaan data
-    const thaans = await prismaClient.thaanCount.createMany({
-      data: thaanData?.map((thaan: Thaan) => {
+    const finishedProduct = await prismaClient.finishedProduct.createMany({
+      data: finishedProducts?.map((thaan: any) => {
         return {
           ...thaan,
           productId,
@@ -401,49 +342,54 @@ export const thaanCountAddToProduct = asyncHandler(
       statusCode: 200,
       message: "Thaan Count Add to Product",
       payload: {
-        data: thaans,
+        data: finishedProduct,
       },
     });
   }
 );
 
 // update multiple thaan data
-export const updateMultipleThaanData = asyncHandler(
+export const updateMultipleFinishedData = asyncHandler(
   async (req: Request, res: Response) => {
-    const { newData, beforeData, productId } = req.body;
+    const { productId, finishedProducts, total_defected } = req.body;
 
-    console.log(newData, beforeData);
-
-    // update
-    for (const item of beforeData) {
-      await prismaClient.thaanCount.update({
-        where: {
-          id: item.id,
-        },
-        data: item,
-      });
-    }
-    // create
-    for (const item of newData) {
-      await prismaClient.thaanCount.create({
-        data: item,
-      });
-    }
-
-    const updatedData = await prismaClient.product.findUnique({
-      where: {
-        id: productId,
-      },
-      include: {
-        thaan_count: true,
-      },
+    // product check
+    const product = await prismaClient.product.findUnique({
+      where: { id: +productId },
     });
+
+    if (!product) throw createError.NotFound("Couldn't find any product.");
+
+    // update product data
+    if (product?.total_defected !== +total_defected) {
+      await prismaClient.product.update({
+        where: {
+          id: +productId,
+        },
+        data: {
+          total_defected: +total_defected,
+        },
+      });
+    }
+
+    // update finished product data and return data
+    const updatedFinishedProduct = await Promise.all(
+      finishedProducts?.map(async (item: any) => {
+        const finishedProduct = await prismaClient.finishedProduct.update({
+          where: {
+            id: item.id,
+          },
+          data: item,
+        });
+        return finishedProduct;
+      })
+    );
 
     successResponse(res, {
       statusCode: 200,
       message: "Thaan data updated successfully.",
       payload: {
-        data: updatedData,
+        data: updatedFinishedProduct,
       },
     });
   }
@@ -451,20 +397,20 @@ export const updateMultipleThaanData = asyncHandler(
 
 // update thaan by id
 export const updateThaanById = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const thaan = await prismaClient.thaanCount.update({
-      where: {
-        id: +id,
-      },
-      data: req.body,
-    });
+  async (_req: Request, res: Response) => {
+    // const { id } = req.params;
+    // const thaan = await prismaClient.thaanCount.update({
+    //   where: {
+    //     id: +id,
+    //   },
+    //   data: req.body,
+    // });
 
     successResponse(res, {
       statusCode: 200,
       message: "Thaan data updated successfully.",
       payload: {
-        data: thaan,
+        data: {},
       },
     });
   }
@@ -472,19 +418,120 @@ export const updateThaanById = asyncHandler(
 
 // delete thaan by id
 export const deleteThaanById = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const thaan = await prismaClient.thaanCount.delete({
-      where: {
-        id: +id,
-      },
-    });
+  async (_req: Request, res: Response) => {
+    // const { id } = req.params;
+    // const thaan = await prismaClient.thaanCount.delete({
+    //   where: {
+    //     id: +id,
+    //   },
+    // });
 
     successResponse(res, {
       statusCode: 200,
       message: "Thaan data deleted successfully.",
       payload: {
-        data: thaan,
+        data: {},
+      },
+    });
+  }
+);
+
+// gray, dyeing and product create together
+export const createGrayDyeingProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { gray_name, products, gray_date } = req.body;
+
+    let grayId = null;
+    //  check gray Name
+    const gray = await prismaClient.gray.findUnique({
+      where: {
+        name: gray_name,
+      },
+    });
+
+    // create gray if not foun grayid
+    if (!gray) {
+      const grayData = await prismaClient.gray.create({
+        data: {
+          name: gray_name,
+          address: req.body?.gray_address,
+          phone: req.body?.gray_phone,
+        },
+      });
+      // set gray id
+      grayId = grayData.id;
+    } else {
+      grayId = gray.id;
+    }
+
+    // create gray chalan
+    const grayChalan = await prismaClient.grayChalan.create({
+      data: {
+        grayId,
+        date: gray_date.split("T")[0],
+      },
+    });
+
+    // create dyeing chalan
+    const dyeingsIds = products?.reduce((acc: any, product: any) => {
+      if (product?.dyeingId) {
+        // acc.push(product.dyeingId);
+        if (!acc.includes(product.dyeingId)) {
+          acc.push(product.dyeingId);
+        }
+      }
+      return acc;
+    }, []);
+
+    const dyeingChalanIds = await Promise.all(
+      dyeingsIds?.map(async (id: any) => {
+        const dyeingChalan = await prismaClient.dyeingChalan.create({
+          data: {
+            dyeingId: id,
+            date: new Date().toISOString().split("T")[0],
+          },
+        });
+        return { dyeingId: id, id: dyeingChalan.id };
+      })
+    );
+
+    let updatedProducts = products?.map((product: any) => {
+      if (product?.dyeingId) {
+        const dyeingChalanId = dyeingChalanIds.find(
+          (item: any) => item.dyeingId === product.dyeingId
+        )?.id;
+
+        return {
+          ...product,
+          dyeingChalanId,
+        };
+      }
+      return product;
+    });
+
+    // create multiple products
+    const createdProducts = await prismaClient.product.createMany({
+      data: updatedProducts.map((product: any) => {
+        // delete dyeing_name
+        delete product.dyeing_name;
+        return {
+          ...product,
+          grayId,
+          gray_date: gray_date.split("T")[0],
+          grayChalanId: grayChalan.id,
+          delivery_status: product?.dyeingId ? "IN_MILL" : "RUNNING",
+        };
+      }),
+    });
+
+    successResponse(res, {
+      statusCode: 201,
+      message: "Gray, Dyeing and Product created successfully.",
+      payload: {
+        data: {
+          gray,
+          products: createdProducts,
+        },
       },
     });
   }

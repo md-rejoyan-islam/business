@@ -65,7 +65,10 @@ const formSchema = z.object({
       invalid_type_error: "Gray rate must be number",
     })
     .min(1, "Gray amount must be at least 1 character"),
-  gray_date: z.coerce.date().optional(),
+  gray_date: z.coerce.date({
+    required_error: "Gray date is required.",
+    invalid_type_error: "Gray date must be date",
+  }),
   dyeing_rate: z.coerce
     .number({
       invalid_type_error: "Dyeing rate must be number",
@@ -88,12 +91,6 @@ const formSchema = z.object({
     })
     .optional(),
 
-  // chalan
-  chalanNumber: z.coerce
-    .number({
-      invalid_type_error: "Chalan id must be number",
-    })
-    .optional(),
   // delivery
   delivery_status: z
     .enum(["IN_MILL", "IN_HOUSE", "RUNNING"])
@@ -116,8 +113,7 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
 
   const [addProduct, { isSuccess, error, isError, data }] =
     useAddProductMutation();
-  // chalan data
-  const { data: chalans } = useGetAllChalanQuery();
+
   const { data: grays, isLoading } = useGetAllGraysQuery();
   const { data: dyeings } = useGetAllDyeingsQuery();
 
@@ -127,11 +123,11 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
     delivery_status: type === "update" ? formData?.delivery_status : "RUNNING",
     gray_amount: type === "update" ? formData?.gray_amount : 0,
     gray_rate: type === "update" ? formData?.gray_rate : 0,
-    chalanNumber: type === "update" ? formData?.chalanNumber : 0,
+
     dyeing_amount: type === "update" ? formData?.dyeing_amount || 0 : 0,
     dyeing_name: type === "update" ? formData?.dyeing?.name || "" : "",
     dyeing_rate: type === "update" ? formData?.dyeing_rate || 0 : 0,
-    // gray_date: type === "update" ? formData?.gray_date : new Date(),
+    gray_date: type === "update" ? formData?.gray_date : "",
   };
 
   if (type === "update") {
@@ -253,25 +249,6 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
                   <Input
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                     placeholder="Enter product name"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="chalanNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Chalan Number </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min={0}
-                    className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                    placeholder="Enter chalan number"
                     {...field}
                   />
                 </FormControl>

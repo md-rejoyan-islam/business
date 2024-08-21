@@ -70,6 +70,7 @@ export const userLogin = asyncHandler(async (req: Request, res: Response) => {
     statusCode: 200,
     message: "User data fetched successfully.",
     payload: {
+      accessToken,
       data: user,
     },
   });

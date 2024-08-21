@@ -53,6 +53,12 @@ export const productSchema = z.object({
     })
     .min(1, "Dyeing id must be at least 1 character")
     .optional(),
+  dyeingChalanId: z
+    .number({
+      invalid_type_error: "Dyeing chalan id must be number",
+    })
+    .min(1, "Dyeing chalan id must be at least 1 character")
+    .optional(),
   dyeing_rate: z
     .number({
       invalid_type_error: "Dyeing rate must be number",

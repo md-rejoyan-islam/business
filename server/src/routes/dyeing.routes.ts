@@ -8,6 +8,7 @@ import {
   getAllDyeings,
   getDyeingById,
   updateDyeingById,
+  updateDyeingChalanProducts,
   updateDyeingPaymentById,
 } from "../controllers/dyeing.controller";
 import { createDyeingZodSchema } from "../middlewares/validation/validation";
@@ -18,6 +19,11 @@ dyeingRouter
   .route("/")
   .get(getAllDyeings)
   .post(validateRequest(createDyeingZodSchema), createDyeing);
+
+// update dyeing chalans products
+dyeingRouter
+  .route("/updateDyeingChalanProducts")
+  .patch(updateDyeingChalanProducts);
 
 // dyeing payment
 dyeingRouter.route("/dyeing-payment").post(dyeingPayment);

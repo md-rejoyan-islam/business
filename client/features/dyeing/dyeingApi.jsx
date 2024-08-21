@@ -47,6 +47,14 @@ const dyeingApi = dyeingSlice.injectEndpoints({
       }),
       invalidatesTags: ["Dyeing", "Dyeings"],
     }),
+    updateDyeingChalanProducts: builder.mutation({
+      query: (data) => ({
+        url: "/updateDyeingChalanProducts",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Dyeing", "Dyeings"],
+    }),
     updateDyeingPaymentById: builder.mutation({
       query: (data) => ({
         url: `/dyeing-payment/${data.id}`,
@@ -74,4 +82,5 @@ export const {
   useDyeingPaymentMutation,
   useDeleteDyeingPaymentByIdMutation,
   useUpdateDyeingPaymentByIdMutation,
+  useUpdateDyeingChalanProductsMutation,
 } = dyeingApi;

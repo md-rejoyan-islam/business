@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { date, z } from "zod";
+import { z } from "zod";
 import { format, formatISO } from "date-fns";
 
 import { useForm } from "react-hook-form";
@@ -28,6 +28,10 @@ import {
   useGrayPaymentMutation,
   useUpdateGrayPaymentByIdMutation,
 } from "@/features/gray/grayApi";
+import {
+  useDyeingPaymentMutation,
+  useUpdateDyeingPaymentByIdMutation,
+} from "@/features/dyeing/dyeingApi";
 
 const formSchema = z.object({
   amount: z.coerce
@@ -56,9 +60,13 @@ export default function GrayPaymentForm({
   type = "edit",
   payment,
   setOpen,
+  from = "gray",
+  due,
 }) {
   const [addPayment, { isLoading }] = useGrayPaymentMutation();
+  const [addDyeingPayment] = useDyeingPaymentMutation();
   const [updatePayemnt] = useUpdateGrayPaymentByIdMutation();
+  const [updateDyeingPayment] = useUpdateDyeingPaymentByIdMutation();
 
   const form = useForm({
     resolver: zodResolver(type === "update" ? updateFormSchema : formSchema),
@@ -69,6 +77,10 @@ export default function GrayPaymentForm({
   });
 
   const onSubmit = async (values) => {
+    if (values?.amount > due) {
+      return toast.error("Payment amount can't be greater than due amount");
+    }
+
     if (type === "update") {
       const paymentData = {
         id: payment?.id,
@@ -76,7 +88,10 @@ export default function GrayPaymentForm({
         date: formatISO(values?.date),
       };
 
-      const response = await updatePayemnt(paymentData);
+      const response =
+        from === "dyeing"
+          ? await updateDyeingPayment(paymentData)
+          : await updatePayemnt(paymentData);
 
       if (response?.data?.success) {
         setOpen(false);
@@ -88,20 +103,29 @@ export default function GrayPaymentForm({
         toast.error(response?.error?.data?.error?.message);
     } else if (type === "edit") {
       const paymentData = {
-        productId: data?.id,
-        grayId: data?.grayId,
+        chalanId: data?.id,
+        // grayId: data?.grayId,
         date: formatISO(values?.date),
         amount: values?.amount,
       };
-      const response = await addPayment(paymentData);
 
+      //
+      if (from === "dyeing") {
+        paymentData.dyeingId = data?.dyeingId;
+      } else {
+        paymentData.grayId = data?.grayId;
+      }
+
+      const response =
+        from === "dyeing"
+          ? await addDyeingPayment(paymentData)
+          : addPayment(paymentData);
       if (response?.data?.success) {
         setOpen(false);
         toast.success(response?.data?.message);
-      }
-
-      !response?.error?.data?.succes &&
+      } else {
         toast.error(response?.error?.data?.error?.message);
+      }
     }
   };
   return (

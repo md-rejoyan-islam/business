@@ -22,33 +22,58 @@ import createError from "http-errors";
  *
  */
 
-export const getAllGrays = asyncHandler(
-  async (_req: Request, res: Response) => {
-    // get all grays from database
-    const grays = await prismaClient.gray.findMany({
-      include: {
-        products: {
-          include: {
-            gray_payments: true,
+interface DateQuery {
+  gte?: string;
+  lte?: string;
+  eq?: string;
+}
+
+export const getAllGrays = asyncHandler(async (req: Request, res: Response) => {
+  const dateQuery = req.query?.date as DateQuery;
+
+  // get all grays from database
+  const grays = await prismaClient.gray.findMany({
+    include: {
+      products: true,
+      grayPayments: true,
+      chalans: {
+        include: {
+          products: {
+            orderBy: {
+              gray_date: "desc",
+            },
           },
+          payments: true,
+        },
+        where: {
+          date: dateQuery
+            ? {
+                gte: dateQuery?.gte ? dateQuery.gte : undefined,
+                lte: dateQuery.lte ? dateQuery.lte : undefined,
+                equals: dateQuery.eq ? dateQuery.eq : undefined,
+              }
+            : undefined,
+        },
+        orderBy: {
+          date: "desc",
         },
       },
-    });
+    },
+  });
 
-    // if data is empty
-    // if (!grays.length)
-    //   throw createError.NotFound("Couldn't find any grays data.");
+  // if data is empty
+  // if (!grays.length)
+  //   throw createError.NotFound("Couldn't find any grays data.");
 
-    successResponse(res, {
-      statusCode: 200,
-      message: "All grays data fetched successfully.",
-      payload: {
-        total: grays?.length || 0,
-        data: grays || [],
-      },
-    });
-  }
-);
+  successResponse(res, {
+    statusCode: 200,
+    message: "All grays data fetched successfully.",
+    payload: {
+      total: grays?.length || 0,
+      data: grays || [],
+    },
+  });
+});
 
 /**
  *
@@ -67,14 +92,36 @@ export const getAllGrays = asyncHandler(
  */
 
 export const getGrayById = asyncHandler(async (req: Request, res: Response) => {
+  const dateQuery = req.query?.date as DateQuery;
+
   const gray = await prismaClient.gray.findUnique({
     where: {
       id: +req.params.id,
     },
     include: {
-      products: {
+      // products: true,
+      grayPayments: true,
+      chalans: {
         include: {
-          gray_payments: true,
+          products: {
+            include: {
+              gray: true,
+              dyeing: true,
+            },
+          },
+          payments: true,
+        },
+        where: {
+          date: dateQuery
+            ? {
+                gte: dateQuery?.gte ? dateQuery.gte : undefined,
+                lte: dateQuery.lte ? dateQuery.lte : undefined,
+                equals: dateQuery.eq ? dateQuery.eq : undefined,
+              }
+            : undefined,
+        },
+        orderBy: {
+          date: "desc",
         },
       },
     },
@@ -192,18 +239,34 @@ export const deleteGrayById = asyncHandler(
       where: { id: +req.params.id },
       include: {
         products: true,
+        chalans: true,
+        grayPayments: true,
       },
     });
     if (!gray) throw createError.NotFound("Couldn't find any gray data.");
 
-    // delete releted product
-    await prismaClient.product.deleteMany({
+    // delete releted product payments
+    await prismaClient.grayPayment.deleteMany({
       where: {
-        grayId: gray.id,
+        grayId: +req.params.id,
       },
     });
 
-    // delete
+    // delete releted product
+    await prismaClient.product.deleteMany({
+      where: {
+        grayId: +req.params.id,
+      },
+    });
+
+    // delete releted chalans
+    await prismaClient.grayChalan.deleteMany({
+      where: {
+        grayId: +req.params.id,
+      },
+    });
+
+    // delete gray data
     await prismaClient.gray.delete({
       where: {
         id: +req.params.id,
@@ -222,25 +285,31 @@ export const deleteGrayById = asyncHandler(
 
 // gray payment
 export const grayPayment = asyncHandler(async (req: Request, res: Response) => {
-  const { productId, grayId } = req.body;
+  const { chalanId, grayId } = req.body;
 
   // gray check
   const gray = await prismaClient.gray.findUnique({
-    where: { id: grayId },
+    where: {
+      id: grayId,
+      chalans: {
+        some: {
+          id: chalanId,
+        },
+      },
+    },
     include: {
-      products: true,
+      chalans: true,
     },
   });
-  if (!gray) throw createError.NotFound("Gray data not found!");
-
-  // product check in gray
-  const product = gray?.products.find((product) => product.id === productId);
-  if (!product) throw createError.NotFound("Product not found in gray data.");
+  if (!gray) throw createError.NotFound("Gray or chalan data not found!");
 
   // create gray payment
   const payment = await prismaClient.grayPayment.create({
     data: {
-      ...req.body,
+      amount: req.body.amount,
+      chalanId: chalanId,
+      grayId: grayId,
+      date: req.body?.date?.split("T")[0],
     },
   });
 
@@ -303,6 +372,45 @@ export const deleteGrayPaymentById = asyncHandler(
       message: "Payment deleted successfully",
       payload: {
         data: payment,
+      },
+    });
+  }
+);
+
+// get all gray chalan
+export const getAllGrayChalans = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const chalans = await prismaClient.grayChalan.findMany();
+
+    if (chalans.length)
+      throw createError.NotFound("Couldn't find any gray chalans");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "All Chalans data fetched successfully.",
+    });
+  }
+);
+
+// delete gray chalan by id
+export const deleteGrayChalanById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const chalan = await prismaClient.grayChalan.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+    if (!chalan) throw createError.NotFound("Couldn't find any chalan data.");
+    await prismaClient.grayChalan.delete({
+      where: {
+        id: +req.params.id,
+      },
+    });
+    successResponse(res, {
+      statusCode: 200,
+      message: "Successfully deleted gray chalan",
+      payload: {
+        data: chalan,
       },
     });
   }

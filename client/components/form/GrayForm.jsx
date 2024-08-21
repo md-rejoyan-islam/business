@@ -88,6 +88,7 @@ export default function GrayForm({ type = "edit", formData = {}, setOpen }) {
       const res = await addGray(values);
       if (res.data?.success) {
         form.reset();
+        setOpen && setOpen(false);
         successMessage = res.data?.message;
       } else if (!res?.error?.data?.success) {
         errorMessage = res?.error?.data?.error?.message;

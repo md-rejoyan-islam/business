@@ -17,9 +17,22 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import SideContent from "./SideContent";
+import { useRouter } from "next/navigation";
+import { useAuthLogoutMutation } from "@/features/auth/authApi";
+import Link from "next/link";
 
 export default function Header({ showFull, setShowFull }) {
   const drawRef = useRef(null);
+  const router = useRouter();
+
+  const [logout] = useAuthLogoutMutation();
+
+  // handle Logout
+  const handleLogout = () => {
+    logout({})
+      .then((res) => router.push("/login"))
+      .catch((error) => console.log(error));
+  };
 
   return (
     <>
@@ -29,7 +42,9 @@ export default function Header({ showFull, setShowFull }) {
             showFull ? "-translate-x-[400px] w-0" : "translate-x-0 w-[260px]"
           } transition-all duration-500 hidden md:block`}
         >
-          <span className="logo"> LOGO </span>
+          <Link href={"/"} className="logo">
+            LOGO
+          </Link>
         </div>
 
         <div className="flex items-center justify-between w-full flex-1">
@@ -61,8 +76,13 @@ export default function Header({ showFull, setShowFull }) {
                   <li className="px-2 py-1.5 rounded-md hover:bg-black/5 cursor-pointer">
                     <a href="">Profile</a>
                   </li>
-                  <li className="px-2 py-1.5 rounded-md hover:bg-black/5 cursor-pointer">
-                    <a href="">Logout</a>
+                  <li className=" rounded-md hover:bg-black/5 cursor-pointer">
+                    <button
+                      className="px-2 py-1.5 w-full text-left"
+                      onClick={() => handleLogout()}
+                    >
+                      Logout
+                    </button>
                   </li>
                 </ul>
               </PopoverContent>

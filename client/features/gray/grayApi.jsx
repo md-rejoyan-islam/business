@@ -11,8 +11,8 @@ const grayApi = graySlice.injectEndpoints({
       invalidatesTags: ["Grays"],
     }),
     getAllGrays: builder.query({
-      query: () => ({
-        url: "/",
+      query: (query) => ({
+        url: `/${query ? query : ""}`,
         method: "GET",
       }),
       providesTags: ["Grays"],

@@ -40,17 +40,17 @@ const productApi = productSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products", "Product"],
     }),
-    addThaanDataToProduct: builder.mutation({
+    addFinishedDataToProduct: builder.mutation({
       query: (data) => ({
-        url: "/add-thaan",
+        url: "/add-finished-product",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Products", "Product"],
     }),
-    updateMultipleThaanDataToProduct: builder.mutation({
+    updateMultipleFinishedDataToProduct: builder.mutation({
       query: (data) => ({
-        url: "/thaans-update",
+        url: "/update-finished-products",
         method: "PUT",
         body: data,
       }),
@@ -71,6 +71,14 @@ const productApi = productSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products", "Product"],
     }),
+    createGrayDyeingProduct: builder.mutation({
+      query: (data) => ({
+        url: `/create-gray-dyeing-products`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
@@ -80,8 +88,9 @@ export const {
   useGetProductByIdQuery,
   useDeleteProducByIdMutation,
   useUpdateProductByIdMutation,
-  useAddThaanDataToProductMutation,
-  useUpdateMultipleThaanDataToProductMutation,
   useUpdateThaanByIdMutation,
   useDeleteThaanByIdMutation,
+  useCreateGrayDyeingProductMutation,
+  useAddFinishedDataToProductMutation,
+  useUpdateMultipleFinishedDataToProductMutation,
 } = productApi;

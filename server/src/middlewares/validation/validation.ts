@@ -3,7 +3,6 @@ import userSchema from "../../schema/user.schema";
 import graySchema from "../../schema/gray.schema";
 import dyeingSchema from "../../schema/dyeing.schema";
 import productSchema from "../../schema/product.schema";
-import chalanSchema from "../../schema/chalan.schema";
 
 export const createUserZodSchema = z.object({
   body: userSchema.omit({
@@ -67,13 +66,6 @@ export const createDyeingZodSchema = z.object({
 // product
 export const createProductZodSchema = z.object({
   body: productSchema.omit({
-    id: true,
-  }),
-});
-
-// chalan
-export const createChalanZodSchema = z.object({
-  body: chalanSchema.omit({
     id: true,
   }),
 });

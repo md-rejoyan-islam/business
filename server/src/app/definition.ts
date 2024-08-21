@@ -2,7 +2,8 @@ import { HttpError } from "http-errors";
 import { Request } from "express";
 import { z } from "zod";
 import userSchema from "../schema/user.schema";
-import thaanSchema from "../schema/thaan.schema";
+import thaanSchema from "../schema/finishedProduct.schema";
+import productSchema from "../schema/product.schema";
 
 export type User = z.infer<typeof userSchema>;
 export type Thaan = z.infer<typeof thaanSchema>;
@@ -21,3 +22,5 @@ export interface CustomError extends HttpError {
     errors?: ERRORS;
   };
 }
+
+export type Product = z.infer<typeof productSchema>;

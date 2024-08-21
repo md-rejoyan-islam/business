@@ -2,6 +2,7 @@ import express from "express";
 import {
   createGray,
   deleteGrayById,
+  deleteGrayChalanById,
   deleteGrayPaymentById,
   getAllGrays,
   getGrayById,
@@ -23,6 +24,9 @@ grayRouter
 grayRouter.route("/gray-payment").post(grayPayment);
 grayRouter.route("/gray-payment/:id").patch(updateGrayPaymentById);
 grayRouter.route("/gray-payment/:id").delete(deleteGrayPaymentById);
+
+// delete gray chalam
+grayRouter.route("/gray-chalan/:id").delete(deleteGrayChalanById);
 
 grayRouter
   .route("/:id")
