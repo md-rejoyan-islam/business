@@ -37,8 +37,8 @@ export default function Header({ showFull, setShowFull }) {
   const handleLogout = () => {
     logout({})
       .then((res) => {
-        router.push("/login");
         Cookies.remove("accessToken");
+        router.push("/login");
       })
       .catch((error) => console.log(error));
   };

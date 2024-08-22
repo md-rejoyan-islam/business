@@ -4,8 +4,10 @@ import { nodeEnv } from "../app/secret";
 // clear cookie
 export const clearCookie = (res: Response, cookieName: string) => {
   res.clearCookie(cookieName, {
-    secure: nodeEnv == "development" ? false : true,
-    sameSite: nodeEnv === "development" ? "strict" : "none",
+    secure: true,
+    sameSite: "none",
+    // secure: nodeEnv == "development" ? false : true,
+    // sameSite: nodeEnv === "development" ? "strict" : "none",
     httpOnly: true,
   });
 };
