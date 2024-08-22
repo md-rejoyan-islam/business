@@ -1,5 +1,6 @@
 import { Response } from "express";
 // import { nodeEnv } from "../app/secret";
+// import { nodeEnv } from "../app/secret";
 
 // clear cookie
 export const clearCookie = (res: Response, cookieName: string) => {
