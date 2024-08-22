@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 
-import Link from "next/link";
+import Cookies from "js-cookie";
 import { useAuthLoginMutation } from "@/features/auth/authApi";
 
 const formSchema = z.object({
@@ -51,6 +51,9 @@ export default function LoginPage() {
     const res = await authLogin(values);
     if (res.data?.success) {
       toast.success(res.data?.message);
+      Cookies.set("accessToken", res?.data?.data.accessToken, {
+        expires: 365,
+      });
       router.push("/");
       form.reset();
     } else {

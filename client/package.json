@@ -45,6 +45,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/moment-hijri": "^2.1.4",
     "@types/node": "22.1.0",
     "eslint": "^8",

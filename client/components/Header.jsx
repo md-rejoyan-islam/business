@@ -23,6 +23,7 @@ import {
   useLoggedInUserQuery,
 } from "@/features/auth/authApi";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 export default function Header({ showFull, setShowFull }) {
   const drawRef = useRef(null);
@@ -35,7 +36,10 @@ export default function Header({ showFull, setShowFull }) {
   // handle Logout
   const handleLogout = () => {
     logout({})
-      .then((res) => router.push("/login"))
+      .then((res) => {
+        router.push("/login");
+        Cookies.remove("accessToken");
+      })
       .catch((error) => console.log(error));
   };
 
