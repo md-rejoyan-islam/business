@@ -5,6 +5,6 @@ export const graySlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.SERVER_URL}/api/v1/grays`,
   }),
-  tagTypes: ["Grays", "Gray"],
+  tagTypes: ["Grays", "Gray", "GrayPayments"],
   endpoints: (builder) => ({}),
 });
