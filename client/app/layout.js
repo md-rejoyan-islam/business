@@ -12,12 +12,27 @@ import { Provider } from "react-redux";
 import { store } from "@/store/store";
 
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Provider store={store}>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          {children}
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </body>
       </Provider>
     </html>
   );

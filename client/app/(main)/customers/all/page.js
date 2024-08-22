@@ -16,31 +16,32 @@ export default function AllCustomers() {
   const { data: { data: customers = [] } = {}, isLoading } =
     useGetAllCustomersQuery();
 
-  const processData = customers?.map((gray) => {
-    const totalAmount = gray?.products?.reduce((sum, product) => {
-      return sum + (product?.gray_amount || 0);
+  const processData = customers?.map((customer) => {
+    const totalAmount = customer?.products?.reduce((sum, product) => {
+      const finishedSum = product?.finishedProducts?.reduce((sum, product) => {
+        return sum + product?.amount;
+      }, 0);
+
+      return sum + finishedSum;
     }, 0);
 
-    const totalCost = gray?.products?.reduce((sum, product) => {
-      return sum + product?.gray_amount * product?.gray_rate;
+    const totalCost = customer?.products?.reduce((sum, product) => {
+      const finishedSum = product?.finishedProducts?.reduce((sum, product) => {
+        return sum + product?.amount;
+      }, 0);
+
+      return sum + (finishedSum || 0 * product?.product_rate);
     }, 0);
 
-    const totalPaid = gray?.products?.reduce((sum, product) => {
-      return (
-        sum +
-        product?.gray_payments.reduce(
-          (sum, payment) => sum + (payment?.amount || 0),
-          0
-        )
-      );
+    const totalPaid = customer?.customerPayments?.reduce((sum, payment) => {
+      return sum + payment?.amount || 0;
     }, 0);
 
     return {
-      id: gray?.id,
-      name: gray?.name,
-      address: gray?.address,
-      phone: gray?.phone,
-      products: gray?.products,
+      id: customer?.id,
+      name: customer?.name,
+      address: customer?.address,
+      phone: customer?.phone,
       total_amount: totalAmount || 0,
       due: totalCost - totalPaid || null,
     };

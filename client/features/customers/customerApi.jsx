@@ -11,8 +11,8 @@ const customerApi = customersSlice.injectEndpoints({
       invalidatesTags: ["Customers"],
     }),
     getAllCustomers: builder.query({
-      query: () => ({
-        url: "/",
+      query: (query) => ({
+        url: `/${query ? query : ""}`,
         method: "GET",
       }),
       providesTags: ["Customers"],
@@ -37,31 +37,39 @@ const customerApi = customersSlice.injectEndpoints({
         url: `/${id}`,
         method: "GET",
       }),
-      providesTags: ["Customer"],
+      providesTags: ["Customer", "CustomersPayments"],
     }),
-    // dyeingPayment: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/dyeing-payment",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Dyeing", "Dyeings"],
-    // }),
-    // updateDyeingPaymentById: builder.mutation({
-    //   query: (data) => ({
-    //     url: `/dyeing-payment/${data.id}`,
-    //     method: "PATCH",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Dyeing", "Dyeings"],
-    // }),
-    // deleteDyeingPaymentById: builder.mutation({
-    //   query: (id) => ({
-    //     url: `/dyeing-payment/${id}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["Dyeing", "Dyeings"],
-    // }),
+    confirmPurchase: builder.mutation({
+      query: (data) => ({
+        url: "/confirm-purchase",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Customers", "Customer"],
+    }),
+    customerChalanPayment: builder.mutation({
+      query: (data) => ({
+        url: "/chalan-payment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["CustomersPayments"],
+    }),
+    updateCustomerChalanPayment: builder.mutation({
+      query: (data) => ({
+        url: "/chalan-payment",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["CustomersPayments"],
+    }),
+    getAllcustomersPayments: builder.query({
+      query: (query) => ({
+        url: `/all-customers-payments${query ? query : ""}`,
+        method: "GET",
+      }),
+      providesTags: ["CustomersPayments"],
+    }),
   }),
 });
 
@@ -71,4 +79,8 @@ export const {
   useGetAllCustomersQuery,
   useGetCustomerByIdQuery,
   useUpdateCustomerByIdMutation,
+  useConfirmPurchaseMutation,
+  useCustomerChalanPaymentMutation,
+  useGetAllcustomersPaymentsQuery,
+  useUpdateCustomerChalanPaymentMutation,
 } = customerApi;

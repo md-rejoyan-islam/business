@@ -18,7 +18,10 @@ import {
 } from "@/components/ui/sheet";
 import SideContent from "./SideContent";
 import { useRouter } from "next/navigation";
-import { useAuthLogoutMutation } from "@/features/auth/authApi";
+import {
+  useAuthLogoutMutation,
+  useLoggedInUserQuery,
+} from "@/features/auth/authApi";
 import Link from "next/link";
 
 export default function Header({ showFull, setShowFull }) {
@@ -26,6 +29,8 @@ export default function Header({ showFull, setShowFull }) {
   const router = useRouter();
 
   const [logout] = useAuthLogoutMutation();
+
+  const { data: { data: user = {} } = {} } = useLoggedInUserQuery();
 
   // handle Logout
   const handleLogout = () => {
@@ -67,7 +72,7 @@ export default function Header({ showFull, setShowFull }) {
             <Popover>
               <PopoverTrigger>
                 <Avatar className="ring-[3px] w-9 h-9">
-                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarImage src="/user.png" />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
@@ -89,8 +94,8 @@ export default function Header({ showFull, setShowFull }) {
             </Popover>
 
             <div className="flex flex-col">
-              <h4 className="text-sm font-semibold"> John Doe </h4>
-              <p className="text-[12px]"> Administator </p>
+              <h4 className="text-sm font-semibold"> {user?.name} </h4>
+              <p className="text-[11px]"> {user?.role} </p>
             </div>
           </div>
         </div>

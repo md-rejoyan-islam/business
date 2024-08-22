@@ -59,7 +59,8 @@ export default function Memo() {
     name: "",
     address: "",
     phone: "",
-    beforeDate: false,
+    beforeData: false,
+    id: "",
   });
 
   const [allSelectedProducts, setAllSelectedProducts] = useState([]);
@@ -140,14 +141,16 @@ export default function Memo() {
                     name: "",
                     address: "",
                     phone: "",
-                    beforeDate: false,
+                    id: "",
+                    beforeData: false,
                   });
                 } else if (customer && value.value) {
                   setCustomer({
                     name: value.value,
                     address: customer.address,
                     phone: customer.phone,
-                    beforeDate: true,
+                    id: customer.id,
+                    beforeData: true,
                   });
                 } else {
                   setCustomer((prev) => ({ ...prev, name: value?.value }));
@@ -164,7 +167,7 @@ export default function Memo() {
                 className="   focus-visible:ring-0 rounded-r-md disabled:border-slate-300 rounded-l-none focus-visible:ring-offset-0 focus:border-slate-400/80"
                 placeholder="Enter customer address"
                 type="text"
-                disabled={customer?.beforeDate}
+                disabled={customer?.beforeData}
                 onChange={(e) =>
                   setCustomer((prev) => ({ ...prev, address: e.target.value }))
                 }
@@ -179,7 +182,7 @@ export default function Memo() {
                 className="   focus-visible:ring-0 rounded-r-md disabled:border-slate-300 rounded-l-none focus-visible:ring-offset-0 focus:border-slate-400/80"
                 placeholder="Enter customer phone"
                 type="text"
-                disabled={customer?.beforeDate}
+                disabled={customer?.beforeData}
                 onChange={(e) =>
                   setCustomer((prev) => ({ ...prev, phone: e.target.value }))
                 }
@@ -242,6 +245,9 @@ export default function Memo() {
                           allSelectedProducts={allSelectedProducts}
                           setPayment={setPayment}
                           payment={payment}
+                          customer={customer}
+                          setCustomer={setCustomer}
+                          setAllSelectedProducts={setAllSelectedProducts}
                         />
                       </div>
                     </div>

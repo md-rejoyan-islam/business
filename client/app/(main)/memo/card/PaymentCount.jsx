@@ -9,14 +9,20 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useConfirmPurchaseMutation } from "@/features/customers/customerApi";
 import React from "react";
+import { CiSquareRemove } from "react-icons/ci";
 import { FiEdit } from "react-icons/fi";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function PaymentCount({
   allSelectedProducts,
   payment,
   setPayment,
+  customer,
+  setAllSelectedProducts,
+  setCustomer,
 }) {
   const totalCost = allSelectedProducts?.reduce((acc, product) => {
     acc += product?.items?.reduce((acc, item) => {
@@ -26,7 +32,12 @@ export default function PaymentCount({
     return acc;
   }, 0);
 
+  const totalDue =
+    totalCost && payment?.amount ? totalCost - payment?.amount : 0;
+
   const [open, setOpen] = React.useState(false);
+  const [confirmPurchase, { isLoading: confirmLoading }] =
+    useConfirmPurchaseMutation();
 
   // payment
   const handlePayment = (e) => {
@@ -35,16 +46,75 @@ export default function PaymentCount({
     const amount = e.target.amount.value;
     if (!amount) return toast.error("Payment amount is required");
 
+    if (amount > totalCost)
+      return toast.error("Payment amount is greater than price.");
+
     setPayment({
       amount: +amount,
     });
 
     setOpen(false);
-    // toast.success("Payment added successfully");
+  };
+
+  // handle payement remove
+  const handlePaymentRemove = () => {
+    setPayment({});
+  };
+
+  // handle confirm parchase
+
+  const handleConfirmPurchase = async () => {
+    const { name, address, phone } = customer;
+
+    // verrify customer data
+    if (!name) return toast.error("Customer name is required!");
+    if (!address) return toast.error("Customer address is required!");
+    if (!phone) return toast.error("Customer phone is required!");
+
+    // verify product data
+    if (!allSelectedProducts.length)
+      return toast.error("Please select product!");
+
+    const data = {
+      customer,
+      products: allSelectedProducts,
+      payment,
+    };
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Confirm the purchase.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result?.isConfirmed) {
+      const res = await confirmPurchase(data);
+      if (res?.data?.success) {
+        setPayment({});
+        setAllSelectedProducts([]);
+        setCustomer({
+          name: "",
+          address: "",
+          phone: "",
+        });
+
+        Swal.fire("Success!", "Data has been saven", "success");
+      } else {
+        Swal.fire({
+          title: "Failed",
+          text: res?.error?.data?.error?.message,
+          icon: "error",
+        });
+      }
+    }
   };
 
   return (
-    <>
+    <div className={`${allSelectedProducts?.length ? "" : "hidden"} `}>
       <div className="py-3">
         <div className="px-3 overflow-hidden py-4 border bg-slate-50/40 rounded-md space-y-2 shadow-sm">
           <p className="flex gap-6 justify-between px-3 bg-slate-100 py-2">
@@ -54,29 +124,43 @@ export default function PaymentCount({
           <div className="flex gap-6 px-3 bg-slate-100 justify-between py-2 group ">
             <span className="font-semibold">Paid</span>
             <p className="flex gap-2 items-center ">
-              <span
-                className="h-[26px] invisible group-hover:visible w-[26px] flex justify-center items-center rounded-sm bg-violet-200 hover:bg-violet-300/70 cursor-pointer  text-violet-700"
-                onClick={() => {
-                  setOpen(true);
-                }}
-              >
-                <FiEdit />
-              </span>
+              {payment?.amount && (
+                <>
+                  <span
+                    className="h-[26px] invisible group-hover:visible w-[26px] flex justify-center items-center rounded-sm bg-red-100 text-red-500 hover:bg-red-300/50 cursor-pointer "
+                    onClick={handlePaymentRemove}
+                  >
+                    <CiSquareRemove className="text-lg" />
+                  </span>
+                  <span
+                    className="h-[26px] invisible group-hover:visible w-[26px] flex justify-center items-center rounded-sm bg-violet-200 hover:bg-violet-300/70 cursor-pointer  text-violet-700"
+                    onClick={() => {
+                      setOpen(true);
+                    }}
+                  >
+                    <FiEdit />
+                  </span>
+                </>
+              )}
               <span>{payment?.amount ? payment?.amount : 0}</span>
             </p>
           </div>
           <p className="flex gap-6 px-3 bg-slate-100 justify-between py-2">
             <span className="font-semibold flex gap-2 items-center">
               <span> Due</span>
-              <Button className="text-[12px] bg-black/5 text-black border hover:bg-black/10 hover:text-black h-fit px-2">
+              <Button
+                className={` ${
+                  payment?.amount ? "" : "hidden"
+                } text-[12px] bg-black/5 text-black border hover:bg-black/10 hover:text-black h-fit px-2`}
+              >
                 Mark Paid
               </Button>
             </span>
-            <span>1000</span>
+            <span>{totalDue}</span>
           </p>
         </div>
       </div>
-      <div className="flex gap-6 justify-between">
+      <div className={`flex gap-6 justify-between `}>
         <Dialog open={open} onOpenChange={setOpen} className="">
           <DialogTrigger
             className={`py-2 h-8 rounded-md  items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5    border ${
@@ -88,7 +172,7 @@ export default function PaymentCount({
           <DialogContent className="overflow-scroll">
             <DialogHeader>
               <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                Add Payment
+                {payment?.amount ? " Update Payment" : "Add Payment"}
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
@@ -99,6 +183,7 @@ export default function PaymentCount({
                   className="   h-10    focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                   type="number"
                   name="amount"
+                  defaultValue={payment?.amount || ""}
                   placeholder="Enter payment amount"
                 />
               </div>
@@ -107,8 +192,18 @@ export default function PaymentCount({
           </DialogContent>
         </Dialog>
 
-        <Button>Submit</Button>
+        <Button
+          disabled={
+            !customer?.name ||
+            !customer?.address ||
+            !customer?.phone ||
+            !allSelectedProducts?.length
+          }
+          onClick={handleConfirmPurchase}
+        >
+          Submit
+        </Button>
       </div>
-    </>
+    </div>
   );
 }

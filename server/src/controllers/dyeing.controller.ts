@@ -293,6 +293,39 @@ export const dyeingPayment = asyncHandler(
   }
 );
 
+// get total gray payemnt
+export const getAllDyeingPayment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const dateQuery = req.query?.date as DateQuery;
+
+    const payments = await prismaClient.dyeingPayment.findMany({
+      include: {
+        dyeing: true,
+      },
+      where: {
+        date: dateQuery
+          ? {
+              gte: dateQuery?.gte ? dateQuery.gte : undefined,
+              lte: dateQuery.lte ? dateQuery.lte : undefined,
+              equals: dateQuery.eq ? dateQuery.eq : undefined,
+            }
+          : undefined,
+      },
+    });
+
+    if (!payments?.length)
+      throw createError.NotFound("Couldn't find any dyeing payments");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "All dyeing payments data",
+      payload: {
+        data: payments,
+      },
+    });
+  }
+);
+
 // update dyeing payment by id
 export const updateDyeingPaymentById = asyncHandler(
   async (req: Request, res: Response) => {

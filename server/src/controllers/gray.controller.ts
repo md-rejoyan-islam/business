@@ -38,6 +38,7 @@ export const getAllGrays = asyncHandler(async (req: Request, res: Response) => {
       grayPayments: true,
       chalans: {
         include: {
+          gray: true,
           products: {
             orderBy: {
               gray_date: "desc",
@@ -322,6 +323,39 @@ export const grayPayment = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 });
+
+// get total gray payemnt
+export const getAllGrayPayment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const dateQuery = req.query?.date as DateQuery;
+
+    const payments = await prismaClient.grayPayment.findMany({
+      include: {
+        gray: true,
+      },
+      where: {
+        date: dateQuery
+          ? {
+              gte: dateQuery?.gte ? dateQuery.gte : undefined,
+              lte: dateQuery.lte ? dateQuery.lte : undefined,
+              equals: dateQuery.eq ? dateQuery.eq : undefined,
+            }
+          : undefined,
+      },
+    });
+
+    if (!payments?.length)
+      throw createError.NotFound("Couldn't find any gray payments");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "All grays payments data",
+      payload: {
+        data: payments,
+      },
+    });
+  }
+);
 
 // update gray payment by id
 export const updateGrayPaymentById = asyncHandler(

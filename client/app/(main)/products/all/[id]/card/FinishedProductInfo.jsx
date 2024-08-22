@@ -21,7 +21,10 @@ export default function FinishedProductInfo({ product }) {
           <span>Finished Product</span>
 
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3 bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400  border">
+            <DialogTrigger
+              className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border"
+              disabled={!product?.dyeing_amount}
+            >
               <FaRegEdit className="text-sm" />
             </DialogTrigger>
             <DialogContent className="overflow-scroll ">

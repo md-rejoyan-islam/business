@@ -45,7 +45,7 @@ const dyeingApi = dyeingSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Dyeing", "Dyeings"],
+      invalidatesTags: ["Dyeing", "Dyeings", "DyeingPayments"],
     }),
     updateDyeingChalanProducts: builder.mutation({
       query: (data) => ({
@@ -53,7 +53,7 @@ const dyeingApi = dyeingSlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Dyeing", "Dyeings"],
+      invalidatesTags: ["Dyeing", "Dyeings", "DyeingPayments"],
     }),
     updateDyeingPaymentById: builder.mutation({
       query: (data) => ({
@@ -70,6 +70,13 @@ const dyeingApi = dyeingSlice.injectEndpoints({
       }),
       invalidatesTags: ["Dyeing", "Dyeings"],
     }),
+    getAllDyeingsPayments: builder.query({
+      query: (query) => ({
+        url: `/all-dyeing-payments${query ? query : ""}`,
+        method: "GET",
+      }),
+      providesTags: ["DyeingPayments"],
+    }),
   }),
 });
 
@@ -83,4 +90,5 @@ export const {
   useDeleteDyeingPaymentByIdMutation,
   useUpdateDyeingPaymentByIdMutation,
   useUpdateDyeingChalanProductsMutation,
+  useGetAllDyeingsPaymentsQuery,
 } = dyeingApi;

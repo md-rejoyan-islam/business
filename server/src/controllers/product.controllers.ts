@@ -188,9 +188,26 @@ export const updateProductById = asyncHandler(
 
     if (!exist) throw createError.NotFound("Couldn't find any product data.");
 
+    const updatedData = {
+      ...req.body,
+    };
+    if (updatedData?.gray_date) {
+      updatedData.gray_date = updatedData.gray_date.split("T")[0];
+    }
+    // if dyeing id provide create dyeing chalan id
+    if (updatedData?.dyeingId && !exist?.dyeingChalanId) {
+      const dyeingChalan = await prismaClient.dyeingChalan.create({
+        data: {
+          dyeingId: updatedData.dyeingId,
+          date: new Date().toISOString().split("T")[0],
+        },
+      });
+      updatedData.dyeingChalanId = dyeingChalan.id;
+    }
+
     const product = await prismaClient.product.update({
       where: { id: +req.params.id },
-      data: req.body,
+      data: updatedData,
     });
 
     successResponse(res, {
@@ -468,7 +485,7 @@ export const createGrayDyeingProduct = asyncHandler(
     const grayChalan = await prismaClient.grayChalan.create({
       data: {
         grayId,
-        date: gray_date.split("T")[0],
+        date: new Date().toISOString().split("T")[0],
       },
     });
 

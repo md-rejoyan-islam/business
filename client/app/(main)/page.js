@@ -14,21 +14,57 @@ import CardTitle from "./components/home/CardTitle";
 import { Button } from "@/components/ui/button";
 import BuyModal from "./components/home/BuyModal";
 import ElahiVorsa from "@/components/ElahiVorsa";
-import { useGetAllGraysQuery } from "@/features/gray/grayApi";
+import {
+  useGetAllGraysPaymentsQuery,
+  useGetAllGraysQuery,
+} from "@/features/gray/grayApi";
 import { format } from "date-fns";
+import CardLoader from "./components/home/CardLoader";
+import {
+  useGetAllcustomersPaymentsQuery,
+  useGetAllCustomersQuery,
+} from "@/features/customers/customerApi";
+import { useGetAllDyeingsPaymentsQuery } from "@/features/dyeing/dyeingApi";
 
 const today = new Date();
 
 export default function Home() {
+  //grays data
   const {
     data: { data: grays = [] } = {},
     isLoading: isGrayLoading,
     refetch: refetchGrays,
   } = useGetAllGraysQuery(`?date[eq]=${format(today, "yyyy-MM-dd")}`);
 
+  //customers data
+  const {
+    data: { data: customers = [] } = {},
+    isLoading: isCustomerLoading,
+    refetch: refetchCustomers,
+  } = useGetAllCustomersQuery(`?date[eq]=${format(today, "yyyy-MM-dd")}`);
+
+  /// customer payments
+  const {
+    data: { data: customersPayments = [] } = {},
+    isLoading: isCustomerPaymentsLoading,
+  } = useGetAllcustomersPaymentsQuery(
+    `?date[eq]=${format(today, "yyyy-MM-dd")}`
+  );
+  // gray payments
+  const {
+    data: { data: graysPayments = [] } = {},
+    isLoading: isGrayPaymentsLoading,
+  } = useGetAllGraysPaymentsQuery(`?date[eq]=${format(today, "yyyy-MM-dd")}`);
+  // dyeing payments
+  const {
+    data: { data: dyeingsPayments = [] } = {},
+    isLoading: isDyeingPaymentsLoading,
+  } = useGetAllDyeingsPaymentsQuery(`?date[eq]=${format(today, "yyyy-MM-dd")}`);
+
   return (
     <main className="p-4 ">
       <ElahiVorsa />
+      {/* start date  */}
       <div className="flex justify-between items-center gap-6  pt-3  px-4">
         <p className={`${siliguri.variable} font-bangla`}>
           {banglaDate(today)}
@@ -38,32 +74,34 @@ export default function Home() {
         </p>
         <p>{englishDate(today)}</p>
       </div>
+      {/* end date  */}
       <div className="mb-10 pt-4 px-4  gap-2 flex">
         <BuyModal refetchGrays={refetchGrays} />
         <Button className="bg-black/5 hover:bg-black/10 text-black border">
           Cash Out
         </Button>
       </div>
-      {/* <div className="py-4 text-center">
-        <p>{dayName(today)}</p>
-      </div> */}
 
       <ResizablePanelGroup
         direction="horizontal"
-        className="max-w-full rounded-lg"
+        className="max-w-full rounded-lg mb-12"
       >
         <ResizablePanel defaultSize={25} className="p-3 ">
           <div className="w-full ">
             <CardTitle title={"Bought Fabric"} />
-            <BoughtCard grays={grays} />
+
+            {isGrayLoading ? <CardLoader /> : <BoughtCard grays={grays} />}
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25} className="p-3">
           <div className="w-full">
             <CardTitle title={"Sold Fabric"} />
-
-            <SoldCard />
+            {isCustomerLoading ? (
+              <CardLoader />
+            ) : (
+              <SoldCard customers={customers} />
+            )}
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -71,7 +109,11 @@ export default function Home() {
           <div className="w-full">
             <CardTitle title={"Cash In"} />
 
-            <CashInCard />
+            {isCustomerPaymentsLoading ? (
+              <CardLoader />
+            ) : (
+              <CashInCard customersPayments={customersPayments} />
+            )}
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -79,7 +121,14 @@ export default function Home() {
           <div className="w-full">
             <CardTitle title={"Cash Out"} />
 
-            <CashOutCard />
+            {isGrayPaymentsLoading ? (
+              <CardLoader />
+            ) : (
+              <CashOutCard
+                graysPayments={graysPayments}
+                dyeingsPayments={dyeingsPayments}
+              />
+            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

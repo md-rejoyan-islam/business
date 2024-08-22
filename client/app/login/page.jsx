@@ -15,8 +15,8 @@ import { z } from "zod";
 
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { useState } from "react";
+
 import Link from "next/link";
 import { useAuthLoginMutation } from "@/features/auth/authApi";
 
@@ -31,12 +31,12 @@ const formSchema = z.object({
 });
 
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 export default function LoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
 
-  const [authLogin, { isLoading, isSuccess, error, isError, data }] =
-    useAuthLoginMutation();
+  const [authLogin, { isLoading }] = useAuthLoginMutation();
 
   // 1. Define your form.
   const form = useForm({
@@ -50,10 +50,10 @@ export default function LoginPage() {
   const onSubmit = async (values) => {
     const res = await authLogin(values);
     if (res.data?.success) {
+      toast.success(res.data?.message);
       router.push("/");
       form.reset();
-      toast.success(res.data?.message);
-    } else if (!res?.error?.data?.success) {
+    } else {
       toast.error(res?.error?.data?.error?.message);
     }
   };
@@ -95,6 +95,7 @@ export default function LoginPage() {
                       <FormControl>
                         <Input
                           className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
+                          type="password"
                           //   type={show ? "text" : "password"}
                           placeholder="Enter your password"
                           {...field}
@@ -112,14 +113,16 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <div className="pb-1 ">
-                <Link className="text-red-500" href={"/forgot-password"}>
-                  Fogot password?
-                </Link>
-              </div>
 
               <Button type="submit" className="w-full">
-                {isLoading ? "Loading" : "Submit"}{" "}
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submit
+                  </span>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           </Form>

@@ -4,6 +4,7 @@ import {
   deleteGrayById,
   deleteGrayChalanById,
   deleteGrayPaymentById,
+  getAllGrayPayment,
   getAllGrays,
   getGrayById,
   grayPayment,
@@ -22,6 +23,7 @@ grayRouter
 
 // gray payment
 grayRouter.route("/gray-payment").post(grayPayment);
+grayRouter.route("/all-gray-payments").get(getAllGrayPayment);
 grayRouter.route("/gray-payment/:id").patch(updateGrayPaymentById);
 grayRouter.route("/gray-payment/:id").delete(deleteGrayPaymentById);
 

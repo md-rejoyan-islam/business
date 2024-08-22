@@ -10,8 +10,6 @@ import { accessTokenSecret } from "../app/secret";
 
 export const isLoggedIn = asyncHandler(
   async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    console.log(req.cookies);
-
     const token: string = req?.cookies?.accessToken; // direct access token from cookie
 
     if (!token) {

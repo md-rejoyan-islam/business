@@ -70,7 +70,7 @@ CREATE TABLE `Dyeing` (
 CREATE TABLE `DyeingChalan` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `dyeingId` INTEGER NOT NULL,
-    `date` VARCHAR(191) NULL,
+    `date` VARCHAR(191) NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
@@ -117,7 +117,7 @@ CREATE TABLE `Product` (
 CREATE TABLE `FinishedProduct` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `amount` DOUBLE NOT NULL,
-    `productId` INTEGER NULL,
+    `productId` INTEGER NOT NULL,
     `is_sold` BOOLEAN NOT NULL DEFAULT false,
     `customerProductId` INTEGER NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -154,7 +154,8 @@ CREATE TABLE `CustomerProduct` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `customerId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
-    `product_amount` DOUBLE NOT NULL,
+    `chalanId` INTEGER NOT NULL,
+    `product_rate` DOUBLE NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
@@ -164,7 +165,7 @@ CREATE TABLE `CustomerProduct` (
 -- CreateTable
 CREATE TABLE `CustomerPayment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `date` VARCHAR(191) NOT NULL,
     `amount` DOUBLE NOT NULL,
     `customerId` INTEGER NOT NULL,
     `customerChalanId` INTEGER NULL,
@@ -208,7 +209,7 @@ ALTER TABLE `Product` ADD CONSTRAINT `Product_grayChalanId_fkey` FOREIGN KEY (`g
 ALTER TABLE `Product` ADD CONSTRAINT `Product_customerChalanId_fkey` FOREIGN KEY (`customerChalanId`) REFERENCES `CustomerChalan`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FinishedProduct` ADD CONSTRAINT `FinishedProduct_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `FinishedProduct` ADD CONSTRAINT `FinishedProduct_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `FinishedProduct` ADD CONSTRAINT `FinishedProduct_customerProductId_fkey` FOREIGN KEY (`customerProductId`) REFERENCES `CustomerProduct`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -221,6 +222,9 @@ ALTER TABLE `CustomerProduct` ADD CONSTRAINT `CustomerProduct_customerId_fkey` F
 
 -- AddForeignKey
 ALTER TABLE `CustomerProduct` ADD CONSTRAINT `CustomerProduct_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CustomerProduct` ADD CONSTRAINT `CustomerProduct_chalanId_fkey` FOREIGN KEY (`chalanId`) REFERENCES `CustomerChalan`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `CustomerPayment` ADD CONSTRAINT `CustomerPayment_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

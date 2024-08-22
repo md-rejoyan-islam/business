@@ -16,7 +16,7 @@ export default function BoughtCard({ grays }) {
         <Card className="mt-4 bg-slate-100/30" key={chalan?.id}>
           <CardContent className="overflow-hidden">
             <h4 className="text-center text-lg pt-3 font-semibold pb-3 text-nowrap">
-              Gray Company
+              {chalan?.gray?.name}
             </h4>
 
             {chalan?.products?.map((product) => (

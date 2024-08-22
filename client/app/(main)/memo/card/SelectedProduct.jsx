@@ -20,7 +20,7 @@ export default function SelectedProduct({
       {allSelectedProducts?.map((product, index) => (
         <ul
           className="flex flex-col w-fit text-[12px]  shadow-sm  relative group"
-          key={product?.div}
+          key={index}
         >
           <li className="font-semibold rounded-l-md px-6 py-2  bg-slate-100/70  inline-flex justify-center items-center border ">
             <span className="text-nowrap">{product?.name}</span>
@@ -35,7 +35,7 @@ export default function SelectedProduct({
           {product?.items?.map((item, index) => (
             <li
               className=" py-1.5  inline-flex justify-center items-center border "
-              key={index?.id}
+              key={index}
             >
               <span>{item?.amount}</span>
             </li>

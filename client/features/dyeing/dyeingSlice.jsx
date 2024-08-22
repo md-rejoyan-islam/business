@@ -5,6 +5,6 @@ export const dyeingSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.SERVER_URL}/api/v1/dyeings`,
   }),
-  tagTypes: ["Dyeings", "Dyeing"],
+  tagTypes: ["Dyeings", "Dyeing", "DyeingPayments"],
   endpoints: (builder) => ({}),
 });

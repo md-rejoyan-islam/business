@@ -1,28 +1,35 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function CashOutCard() {
+export default function CashOutCard({ graysPayments, dyeingsPayments }) {
+  console.log(dyeingsPayments);
+
   return (
     <>
       <Card className="mt-4 bg-slate-100/60">
         <CardContent className="overflow-hidden">
-          <div className="py-2 bg-slate-200/40 rounded-md p-2 mt-2">
-            <p className="flex justify-between items-center gap-4 ">
-              <span>Gray Company-1 </span>
-              <span> 2300</span>
-            </p>
-          </div>
-          <div className="py-2 bg-slate-200/40 rounded-md p-2 mt-2">
-            <p className="flex justify-between items-center gap-4 ">
-              <span>Gray Company-2 </span>
-              <span> 1900</span>
-            </p>
-          </div>
-          <div className="py-2 bg-slate-200/40 rounded-md p-2 mt-2">
-            <p className="flex justify-between items-center gap-4 ">
-              <span>Dyeing Company-1 </span>
-              <span> 4300</span>
-            </p>
-          </div>
+          {graysPayments?.map((payment) => (
+            <div
+              className="py-2 bg-slate-200/40 rounded-md p-2 mt-2"
+              key={payment?.id}
+            >
+              <p className="flex justify-between items-center gap-4 ">
+                <span>{payment?.gray?.name} </span>
+                <span> {payment?.amount}</span>
+              </p>
+            </div>
+          ))}
+          {dyeingsPayments?.map((payment) => (
+            <div
+              className="py-2 bg-slate-200/40 rounded-md p-2 mt-2"
+              key={payment?.id}
+            >
+              <p className="flex justify-between items-center gap-4 ">
+                <span>{payment?.dyeing?.name} </span>
+                <span> {payment?.amount}</span>
+              </p>
+            </div>
+          ))}
+
           <div className="py-2 bg-slate-200/40 rounded-md p-2 mt-2">
             <p className="flex justify-between items-center gap-4 ">
               <span>Others </span>

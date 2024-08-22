@@ -15,18 +15,38 @@ import { IoLocationOutline } from "react-icons/io5";
 import { useGetCustomerByIdQuery } from "@/features/customers/customerApi";
 import CustomerCard from "./CustomerCard";
 import ElahiVorsa from "@/components/ElahiVorsa";
+import { DatePickerWithRange } from "@/app/(main)/grays/all/[id]/DatePickerWithRange";
+import { useState } from "react";
+import { addMonths, format, parseISO } from "date-fns";
 
 export default function SingleCustomer({ params }) {
   const { id } = params;
 
-  const { data: { data: customer = {} } = {}, isLoading } =
-    useGetCustomerByIdQuery(id);
+  const [date, setDate] = useState({
+    from: addMonths(new Date(), -1),
+    to: new Date(),
+  });
 
-  const customerData = {
-    name: "John Doe",
-    address: "Kathmandu",
-    phone: "9841000000",
-  };
+  const from =
+    date?.from &&
+    format(parseISO(new Date(date?.from)?.toISOString()), "yyyy-MM-dd");
+  const to =
+    date?.to &&
+    format(parseISO(new Date(date?.to)?.toISOString()), "yyyy-MM-dd");
+
+  const eql = !to && from;
+
+  const query =
+    from && to && from !== to
+      ? `?date[gte]=${from}&date[lte]=${to}`
+      : eql
+      ? `&date[eq]=${eql}`
+      : from && from === to
+      ? `&date[eq]=${from}`
+      : "";
+
+  const { data: { data: customer = {} } = {}, isLoading } =
+    useGetCustomerByIdQuery(`${id}?${query}`);
 
   if (isLoading) {
     return (
@@ -62,7 +82,7 @@ export default function SingleCustomer({ params }) {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink className="text-black">
-              {customerData?.name}
+              {customer?.name}
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -91,14 +111,15 @@ export default function SingleCustomer({ params }) {
         </div>
       </div>
 
-      {/* <h2 className="pt-8 mb-8  text-3xl font-bold tracking-tight">
-        Single Gray Data
-      </h2> */}
-      {/* <SingleGrayTable data={grayData} /> */}
-      <div className="flex gap-6 flex-wrap">
-        <CustomerCard />
-        <CustomerCard />
-        <CustomerCard />
+      <div className="py-3">
+        <DatePickerWithRange setDate={setDate} date={date} />
+      </div>
+
+      <div className="flex gap-6 flex-wrap pb-16">
+        {/* <CustomerCard /> */}
+        {customer?.chalans?.map((chalan) => (
+          <CustomerCard key={chalan.id} chalan={chalan} />
+        ))}
       </div>
     </div>
   );

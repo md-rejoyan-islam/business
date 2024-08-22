@@ -5,6 +5,6 @@ export const customersSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.SERVER_URL}/api/v1/customers`,
   }),
-  tagTypes: ["Customers", "Customer"],
+  tagTypes: ["Customers", "Customer", "CustomersPayments"],
   endpoints: (builder) => ({}),
 });

@@ -1,10 +1,15 @@
 import { GiClothes, GiRolledCloth } from "react-icons/gi";
-import { MdProductionQuantityLimits } from "react-icons/md";
+import {
+  MdAdminPanelSettings,
+  MdProductionQuantityLimits,
+} from "react-icons/md";
 import { FaUserTie } from "react-icons/fa6";
 import { CiMemoPad } from "react-icons/ci";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { TiHomeOutline } from "react-icons/ti";
+import { ImProfile } from "react-icons/im";
 
 export default function SideContent() {
   const pathname = usePathname();
@@ -12,6 +17,18 @@ export default function SideContent() {
   return (
     <div>
       <ul className="space-y-1">
+        <li
+          className={`${
+            pathname === "/"
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/" className="flex gap-3 items-center">
+            <TiHomeOutline />
+            <span>Home</span>
+          </Link>
+        </li>
         <li
           className={`${
             pathname.includes("/grays/")
@@ -70,6 +87,30 @@ export default function SideContent() {
           <Link href="/memo" className="flex gap-3 items-center">
             <CiMemoPad />
             <span>Memo</span>
+          </Link>
+        </li>
+        <li
+          className={`${
+            pathname === "/profile"
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/profile" className="flex gap-3 items-center">
+            <ImProfile />
+            <span>Profile</span>
+          </Link>
+        </li>
+        <li
+          className={`${
+            pathname === "/moderators"
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/moderators" className="flex gap-3 items-center">
+            <MdAdminPanelSettings />
+            <span>Moderators</span>
           </Link>
         </li>
       </ul>

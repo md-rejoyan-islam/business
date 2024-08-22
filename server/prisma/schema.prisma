@@ -93,7 +93,7 @@ model DyeingChalan {
   dyeingId Int
   dyeing   Dyeing          @relation(fields: [dyeingId], references: [id])
   payments DyeingPayment[]
-  date     String?
+  date     String
   createAt DateTime        @default(now())
   updateAt DateTime        @updatedAt
 }
@@ -174,14 +174,15 @@ model Customer {
 // customer chalan
 
 model CustomerChalan {
-  id         Int               @id @default(autoincrement())
-  products   Product[]
-  customerId Int
-  customer   Customer          @relation(fields: [customerId], references: [id])
-  payments   CustomerPayment[]
-  date       String
-  createAt   DateTime          @default(now())
-  updateAt   DateTime          @updatedAt
+  id               Int               @id @default(autoincrement())
+  products         Product[]
+  customerId       Int
+  customer         Customer          @relation(fields: [customerId], references: [id])
+  payments         CustomerPayment[]
+  date             String
+  createAt         DateTime          @default(now())
+  updateAt         DateTime          @updatedAt
+  customerProducts CustomerProduct[]
 }
 
 // customer sell product model
@@ -191,7 +192,9 @@ model CustomerProduct {
   customerId       Int
   product          Product           @relation(fields: [productId], references: [id])
   productId        Int
-  product_amount   Float
+  chalanId         Int
+  chalan           CustomerChalan    @relation(fields: [chalanId], references: [id])
+  product_rate     Float
   finishedProducts FinishedProduct[]
   createAt         DateTime          @default(now())
   updateAt         DateTime          @updatedAt
@@ -200,7 +203,7 @@ model CustomerProduct {
 // customer payment model 
 model CustomerPayment {
   id               Int             @id @default(autoincrement())
-  date             DateTime        @default(now())
+  date             String
   amount           Float
   customerId       Int
   customer         Customer        @relation(fields: [customerId], references: [id])

@@ -5,6 +5,7 @@ import {
   deleteDyeingById,
   deleteDyeingPaymentById,
   dyeingPayment,
+  getAllDyeingPayment,
   getAllDyeings,
   getDyeingById,
   updateDyeingById,
@@ -27,6 +28,7 @@ dyeingRouter
 
 // dyeing payment
 dyeingRouter.route("/dyeing-payment").post(dyeingPayment);
+dyeingRouter.route("/all-dyeing-payments").get(getAllDyeingPayment);
 dyeingRouter.route("/dyeing-payment/:id").patch(updateDyeingPaymentById);
 dyeingRouter.route("/dyeing-payment/:id").delete(deleteDyeingPaymentById);
 

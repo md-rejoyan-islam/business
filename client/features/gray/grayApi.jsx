@@ -45,7 +45,7 @@ const grayApi = graySlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Gray", "Grays"],
+      invalidatesTags: ["Gray", "Grays", "GrayPayments"],
     }),
     updateGrayPaymentById: builder.mutation({
       query: (data) => ({
@@ -62,6 +62,13 @@ const grayApi = graySlice.injectEndpoints({
       }),
       invalidatesTags: ["Gray", "Grays"],
     }),
+    getAllGraysPayments: builder.query({
+      query: (query) => ({
+        url: `/all-gray-payments${query ? query : ""}`,
+        method: "GET",
+      }),
+      providesTags: ["CustomersPayments", "GrayPayments"],
+    }),
   }),
 });
 
@@ -74,4 +81,5 @@ export const {
   useGrayPaymentMutation,
   useUpdateGrayPaymentByIdMutation,
   useDeleteGrayPaymentByIdMutation,
+  useGetAllGraysPaymentsQuery,
 } = grayApi;
