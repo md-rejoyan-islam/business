@@ -26,9 +26,9 @@ export const setCookie = ({
     httpOnly: true,
     // httpOnly: false,
     maxAge,
-    // secure: true, // only https
-    // sameSite: "none", // when use cross site
-    secure: nodeEnv === "development" ? false : true, // only https
-    sameSite: nodeEnv === "development" ? "strict" : "none", // when use cross site
+    secure: true, // only https
+    sameSite: "none", // when use cross site
+    // secure: nodeEnv === "development" ? false : true, // only https
+    // sameSite: nodeEnv === "development" ? "strict" : "none", // when use cross site
   });
 };
