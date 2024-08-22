@@ -130,7 +130,8 @@ export const createProduct = asyncHandler(
     if (req.body?.dyeingId) {
       const dyeingChalan = await prismaClient.dyeingChalan.create({
         data: {
-          dyeingId: req.body?.dyeingId,
+          dyeingId: +req.body?.dyeingId,
+          date: new Date().toISOString().split("T")[0],
         },
       });
       dyeingChalanId = dyeingChalan.id;
