@@ -3134,6 +3134,11 @@
             "date": 1724450320350,
             "name": "src\\logs\\error\\error-2024-08-24-03-58.log",
             "hash": "2b2342709d44fc5df5bf401765b345a8488c4b15f55b087d4b006dfe0fca4ab7"
+        },
+        {
+            "date": 1724450870417,
+            "name": "src\\logs\\error\\error-2024-08-24-04-07.log",
+            "hash": "79579a106e17de42da508fde41836f93f2f487a450d88065056e8cc6b5fa2c46"
         }
     ],
     "hashType": "sha256"
