@@ -9,27 +9,27 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
-import DyeingTable from "@/components/table/DyeingTable";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import DyeingTable from "@/app/(main)/dyeings/all/dyeingTable";
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
+import { totalSingeGrayAmount } from "../../grays/all/gray.helper";
+import {
+  totalSingleDyeingCost,
+  totalSingleDyeingDiscount,
+  totalSingleDyeingPaid,
+} from "./dyeing.helper";
 export default function AllDyeing() {
   const { data: { data: dyeings = [] } = {}, isLoading } =
     useGetAllDyeingsQuery();
 
   const processData = dyeings?.map((dyeing) => {
-    const totalAmount = dyeing?.products?.reduce((sum, product) => {
-      return sum + (product?.dyeing_amount || 0);
-    }, 0);
-
-    const totalCost = dyeing?.products?.reduce((sum, product) => {
-      return sum + product?.dyeing_amount * product?.dyeing_rate;
-    }, 0);
-
-    const totalPaid = dyeing?.dyeingPayments?.reduce((sum, payment) => {
-      return sum + (payment?.amount || 0);
-    }, 0);
+    const totalAmount = totalSingeGrayAmount(dyeing);
+    const totalCost = totalSingleDyeingCost(dyeing);
+    const totalPaid = totalSingleDyeingPaid(dyeing);
+    const totalDiscount = totalSingleDyeingDiscount(dyeing);
+    const totalDue =
+      (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
     return {
       id: dyeing?.id,
@@ -38,7 +38,7 @@ export default function AllDyeing() {
       phone: dyeing?.phone,
       products: dyeing?.products,
       total_amount: totalAmount || 0,
-      due: totalCost - totalPaid || null,
+      due: totalDue,
     };
   });
 
@@ -53,7 +53,9 @@ export default function AllDyeing() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink className="text-black">All Dyeing</BreadcrumbLink>
+            <BreadcrumbLink className="text-black">
+              Dyeing Companies
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -61,7 +63,7 @@ export default function AllDyeing() {
       <ElahiVorsa />
 
       <PageTitle title={"All Dyeing Data"} />
-      {isLoading ? <TableSkeleton /> : <DyeingTable data={processData || []} />}
+      <DyeingTable isLoading={isLoading} data={processData || []} />
     </div>
   );
 }

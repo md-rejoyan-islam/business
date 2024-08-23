@@ -16,9 +16,9 @@ enum Role {
 // gray model 
 model Gray {
   id           Int           @id @default(autoincrement())
-  name         String        @unique
+  name         String
   address      String
-  phone        String
+  phone        String        @unique
   products     Product[]
   chalans      GrayChalan[]
   grayPayments GrayPayment[]
@@ -38,6 +38,33 @@ model GrayChalan {
   discount   Float?
   createAt   DateTime      @default(now())
   updateAt   DateTime      @updatedAt
+}
+
+// dyeing chalan model
+model DyeingChalan {
+  id         Int             @id @default(autoincrement())
+  products   Product[]
+  dyeingId   Int
+  dyeing     Dyeing          @relation(fields: [dyeingId], references: [id])
+  payments   DyeingPayment[]
+  date       String
+  markedPaid Boolean         @default(false)
+  discount   Float?
+  createAt   DateTime        @default(now())
+  updateAt   DateTime        @updatedAt
+}
+
+// dyeing model
+model Dyeing {
+  id             Int             @id @default(autoincrement())
+  name           String
+  address        String
+  phone          String          @unique
+  products       Product[]
+  dyeingPayments DyeingPayment[]
+  chalans        DyeingChalan[]
+  createAt       DateTime        @default(now())
+  updateAt       DateTime        @updatedAt
 }
 
 // gray payment model
@@ -71,31 +98,6 @@ enum DELIVERY_STATUS {
   IN_MILL
   IN_HOUSE
   RUNNING
-}
-
-// dyeing model
-model Dyeing {
-  id             Int             @id @default(autoincrement())
-  name           String          @unique
-  address        String
-  phone          String
-  products       Product[]
-  dyeingPayments DyeingPayment[]
-  chalans        DyeingChalan[]
-  createAt       DateTime        @default(now())
-  updateAt       DateTime        @updatedAt
-}
-
-// chalan model
-model DyeingChalan {
-  id       Int             @id @default(autoincrement())
-  products Product[]
-  dyeingId Int
-  dyeing   Dyeing          @relation(fields: [dyeingId], references: [id])
-  payments DyeingPayment[]
-  date     String
-  createAt DateTime        @default(now())
-  updateAt DateTime        @updatedAt
 }
 
 // dyeing payment model
@@ -141,8 +143,15 @@ model Product {
   total_defected    Float?
   CustomerChalan    CustomerChalan?   @relation(fields: [customerChalanId], references: [id])
   customerChalanId  Int?
-  createAt          DateTime          @default(now())
-  updateAt          DateTime          @updatedAt
+
+  // rate
+  due_ask_rate   Float?
+  due_sell_rate  Float?
+  cash_ask_rate  Float?
+  cash_sell_rate Float?
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 }
 
 // model finished product
@@ -163,7 +172,7 @@ model Customer {
   id               Int               @id @default(autoincrement())
   name             String
   address          String
-  phone            String
+  phone            String            @unique
   products         CustomerProduct[]
   chalans          CustomerChalan[]
   customerPayments CustomerPayment[]
@@ -180,9 +189,11 @@ model CustomerChalan {
   customer         Customer          @relation(fields: [customerId], references: [id])
   payments         CustomerPayment[]
   date             String
+  markedPaid       Boolean           @default(false)
+  discount         Float?
+  customerProducts CustomerProduct[]
   createAt         DateTime          @default(now())
   updateAt         DateTime          @updatedAt
-  customerProducts CustomerProduct[]
 }
 
 // customer sell product model

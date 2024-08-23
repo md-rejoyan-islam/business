@@ -18,6 +18,19 @@ import ElahiVorsa from "@/components/ElahiVorsa";
 import { DatePickerWithRange } from "@/app/(main)/grays/all/[id]/DatePickerWithRange";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";
+import { MdOutlinePaid } from "react-icons/md";
+import { TbCalendarDue } from "react-icons/tb";
+import {
+  totalSingleCustomerCost,
+  totalSingleCustomerDiscount,
+  totalSingleCustomerPaid,
+} from "../customer.helper";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import CustomerPaymentTable from "./CustomerPaymentTable";
 
 export default function SingleCustomer({ params }) {
   const { id } = params;
@@ -48,6 +61,26 @@ export default function SingleCustomer({ params }) {
   const { data: { data: customer = {} } = {}, isLoading } =
     useGetCustomerByIdQuery(`${id}?${query}`);
 
+  const totalCost = totalSingleCustomerCost(customer);
+  const totalPaid = totalSingleCustomerPaid(customer);
+  const totalDiscount = totalSingleCustomerDiscount(customer);
+
+  const totalDue = (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
+
+  // customer payments
+  const customerPayments = customer?.customerPayments || [];
+  const payments = [...customerPayments]
+    ?.sort((a, b) => new Date(b?.date) - new Date(a?.date))
+    .map((payment, index) => {
+      return {
+        index: index,
+        date: format(parseISO(payment?.date), "d MMMM  yyyy"),
+        amount: payment?.amount,
+        chalanId: payment?.chalanId,
+        id: payment?.id,
+      };
+    });
+
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 md:p-8 lg:p-10">
@@ -56,7 +89,7 @@ export default function SingleCustomer({ params }) {
           <Skeleton className="h-[20px] w-full rounded-md" />
           <Skeleton className="h-[20px] w-full rounded-md" />
         </div>
-        <TableSkeleton />;
+        <TableSkeleton />
       </div>
     );
   }
@@ -108,19 +141,72 @@ export default function SingleCustomer({ params }) {
             </span>
             <span className="text-sm">{customer?.phone}</span>
           </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <MdOutlinePaid /> <span>Paid:</span>
+            </span>
+            <span className="text-sm">{totalPaid}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <TbCalendarDue /> <span>Due:</span>
+            </span>
+            <span className="text-sm">{totalDue}</span>
+          </p>
         </div>
       </div>
 
-      <div className="py-3">
-        <DatePickerWithRange setDate={setDate} date={date} />
-      </div>
+      {/* chalans and payments */}
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="max-w-full rounded-lg"
+      >
+        <ResizablePanel defaultSize={65} className="pr-5">
+          {/* date picker */}
+          <div className="py-3">
+            <DatePickerWithRange setDate={setDate} date={date} />
+          </div>
 
-      <div className="flex gap-6 flex-wrap pb-16">
-        {/* <CustomerCard /> */}
-        {customer?.chalans?.map((chalan) => (
-          <CustomerCard key={chalan.id} chalan={chalan} />
-        ))}
-      </div>
+          {/* chalan data */}
+          <div className="flex gap-6 flex-wrap pb-16">
+            {customer?.chalans?.map((chalan) => (
+              <CustomerCard key={chalan?.id} chalan={chalan} />
+            ))}
+            {customer.chalans?.length === 0 && (
+              <div
+                className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+              >
+                Couldn&apos;t find any chalan data
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+
+        {/* payment  */}
+        <ResizablePanel defaultSize={35} className="pl-5">
+          <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
+            Payments
+          </h3>
+          {customer?.chalans?.length ? (
+            <CustomerPaymentTable
+              data={payments}
+              customer={{
+                customerId: customer?.id,
+              }}
+              dueAmount={totalDue}
+            />
+          ) : (
+            <div
+              className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+            >
+              Couldn&apos;t find any payment data
+            </div>
+          )}
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

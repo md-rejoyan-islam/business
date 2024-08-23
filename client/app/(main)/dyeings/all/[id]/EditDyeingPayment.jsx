@@ -10,25 +10,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  useDeleteGrayPaymentByIdMutation,
-  useUpdateGrayPaymentByIdMutation,
-} from "@/features/gray/grayApi";
+  useDeleteDyeingPaymentByIdMutation,
+  useUpdateDyeingPaymentByIdMutation,
+} from "@/features/dyeing/dyeingApi";
+
 import { useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import Swal from "sweetalert2";
 
-export const EditGrayPayment = ({ due, payment }) => {
+export const EditDyeingPayment = ({ due, payment }) => {
   const [open, setOpen] = useState(false);
 
-  const [deletePayment] = useDeleteGrayPaymentByIdMutation();
-  const [updatePayemnt, { isLoading }] = useUpdateGrayPaymentByIdMutation();
+  const [deletePayment] = useDeleteDyeingPaymentByIdMutation();
+  const [updatePayemnt, { isLoading }] = useUpdateDyeingPaymentByIdMutation();
 
   // handle delete payment
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you want to delete gray payment?",
+      text: "Do you want to delete dyeing payment?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -39,7 +40,7 @@ export const EditGrayPayment = ({ due, payment }) => {
     if (result?.isConfirmed) {
       const res = await deletePayment(id);
       if (res?.data?.success) {
-        Swal.fire("Deleted!", "Gray payment  has been deleted.", "success");
+        Swal.fire("Deleted!", "Dyeing payment  has been deleted.", "success");
       } else {
         Swal.fire({
           title: "Failed",

@@ -6,6 +6,11 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import Link from "next/link";
 import { useGetGrayByIdQuery } from "@/features/gray/grayApi";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
@@ -18,6 +23,14 @@ import ElahiVorsa from "@/components/ElahiVorsa";
 import { DatePickerWithRange } from "./DatePickerWithRange";
 import { addMonths, format, parseISO } from "date-fns";
 import { useState } from "react";
+import PaymentTable from "./PaymentTable";
+import { MdOutlinePaid, MdPaid } from "react-icons/md";
+import { TbCalendarDue } from "react-icons/tb";
+import {
+  totalSingleGrayCost,
+  totalSingleGrayDiscount,
+  totalSingleGrayPaid,
+} from "../gray.helper";
 
 export default function SingleGray({ params }) {
   const { id } = params;
@@ -45,9 +58,33 @@ export default function SingleGray({ params }) {
       ? `&date[eq]=${from}`
       : "";
 
-  const { data: { data: grayData = {} } = {}, isLoading } = useGetGrayByIdQuery(
+  const { data: { data: gray = {} } = {}, isLoading } = useGetGrayByIdQuery(
     `${id}?${query}`
   );
+
+  const grayPayments = gray?.grayPayments || [];
+
+  // gray payments
+  const payments = [...grayPayments]
+    ?.sort((a, b) => new Date(b?.date) - new Date(a?.date))
+    .map((payment, index) => {
+      return {
+        index: index,
+        date: format(parseISO(payment?.date), "d MMMM  yyyy"),
+        amount: payment?.amount,
+        chalanId: payment?.chalanId,
+        id: payment?.id,
+      };
+    });
+
+  //
+  const totalCost = totalSingleGrayCost(gray);
+
+  const totalPaid = totalSingleGrayPaid(gray);
+
+  const totalDiscount = totalSingleGrayDiscount(gray);
+
+  const totalDue = (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
   if (isLoading) {
     return (
@@ -57,7 +94,7 @@ export default function SingleGray({ params }) {
           <Skeleton className="h-[20px] w-full rounded-md" />
           <Skeleton className="h-[20px] w-full rounded-md" />
         </div>
-        <TableSkeleton />;
+        <TableSkeleton />
       </div>
     );
   }
@@ -77,14 +114,12 @@ export default function SingleGray({ params }) {
               className="transition-colors hover:text-slate-950"
               href={"/grays/all"}
             >
-              All Gray
+              Gray Companies
             </Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink className="text-black">
-              {grayData?.name}
-            </BreadcrumbLink>
+            <BreadcrumbLink className="text-black">{gray?.name}</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -95,41 +130,87 @@ export default function SingleGray({ params }) {
       {/* infomation */}
       <div className="w-full  rounded-md pt-8 px-4 pb-5">
         <h2 className="text-3xl font-bold tracking-tight text-center">
-          {grayData?.name}
+          {gray?.name}
         </h2>
-        <div className="flex items-center justify-center gap-6 pt-2">
+        <div className="flex items-center justify-center gap-6 pt-3">
           <p className="flex items-center gap-2">
             <span className="font-semibold flex items-center gap-2">
               <IoLocationOutline />
               <span>Address :</span>
             </span>
-            <span className="text-sm">{grayData?.address}</span>
+            <span className="text-sm">{gray?.address}</span>
           </p>
           <p className="flex items-center gap-2">
             <span className="font-semibold flex gap-2 items-center">
               <FiPhone /> <span>Phone:</span>
             </span>
-            <span className="text-sm">{grayData?.phone}</span>
+            <span className="text-sm">{gray?.phone}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <MdOutlinePaid /> <span>Paid:</span>
+            </span>
+            <span className="text-sm">{totalSingleGrayPaid(gray)}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <TbCalendarDue /> <span>Due:</span>
+            </span>
+            <span className="text-sm">{totalDue}</span>
           </p>
         </div>
       </div>
-      <div className="py-3">
-        <DatePickerWithRange setDate={setDate} date={date} />
-      </div>
 
-      <div className="flex gap-6 flex-wrap pb-16">
-        {grayData?.chalans?.map((chalan) => (
-          <GrayCard key={chalan?.id} data={chalan} />
-        ))}
-        {grayData?.chalans?.length === 0 && (
-          <div
-            className="text-center text-lg
-          font-semibold w-full py-10 text-red-500"
-          >
-            Couldn&apos;t find any chalan data
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="max-w-full rounded-lg"
+      >
+        <ResizablePanel defaultSize={65} className="pr-5">
+          {/* date picker */}
+          <div className="py-3">
+            <DatePickerWithRange setDate={setDate} date={date} />
           </div>
-        )}
-      </div>
+
+          {/* chalan data */}
+          <div className="flex gap-6 flex-wrap pb-16">
+            {gray?.chalans?.map((chalan) => (
+              <GrayCard key={chalan?.id} data={chalan} />
+            ))}
+            {gray?.chalans?.length === 0 && (
+              <div
+                className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+              >
+                Couldn&apos;t find any chalan data
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+
+        {/* payment  */}
+        <ResizablePanel defaultSize={35} className="pl-5">
+          <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
+            Payments
+          </h3>
+          {payments?.length ? (
+            <PaymentTable
+              data={payments}
+              gray={{
+                grayId: gray?.id,
+              }}
+              dueAmount={totalDue}
+            />
+          ) : (
+            <div
+              className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+            >
+              Couldn&apos;t find any payment data
+            </div>
+          )}
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

@@ -15,14 +15,14 @@ export default function SelectedProduct({
   };
 
   return (
-    <div className="flex   gap-5">
+    <div className="flex   gap-x-5 gap-y-6 flex-wrap">
       {/* product -1  */}
       {allSelectedProducts?.map((product, index) => (
         <ul
           className="flex flex-col w-fit text-[12px]  shadow-sm  relative group"
           key={index}
         >
-          <li className="font-semibold rounded-l-md px-6 py-2  bg-slate-100/70  inline-flex justify-center items-center border ">
+          <li className="font-semibold rounded-tl-md rounded-tr-md px-6 py-2  bg-slate-100/70  inline-flex justify-center items-center border ">
             <span className="text-nowrap">{product?.name}</span>
           </li>
           {/* item remove button */}

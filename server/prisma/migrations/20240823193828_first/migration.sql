@@ -7,7 +7,7 @@ CREATE TABLE `Gray` (
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Gray_name_key`(`name`),
+    UNIQUE INDEX `Gray_phone_key`(`phone`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -21,6 +21,32 @@ CREATE TABLE `GrayChalan` (
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `DyeingChalan` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `dyeingId` INTEGER NOT NULL,
+    `date` VARCHAR(191) NOT NULL,
+    `markedPaid` BOOLEAN NOT NULL DEFAULT false,
+    `discount` DOUBLE NULL,
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Dyeing` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `address` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Dyeing_phone_key`(`phone`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -54,30 +80,6 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Dyeing` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `phone` VARCHAR(191) NOT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `Dyeing_name_key`(`name`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `DyeingChalan` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `dyeingId` INTEGER NOT NULL,
-    `date` VARCHAR(191) NOT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `DyeingPayment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `date` VARCHAR(191) NOT NULL,
@@ -107,6 +109,10 @@ CREATE TABLE `Product` (
     `grayChalanId` INTEGER NULL,
     `total_defected` DOUBLE NULL,
     `customerChalanId` INTEGER NULL,
+    `due_ask_rate` DOUBLE NULL,
+    `due_sell_rate` DOUBLE NULL,
+    `cash_ask_rate` DOUBLE NULL,
+    `cash_sell_rate` DOUBLE NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
@@ -135,6 +141,7 @@ CREATE TABLE `Customer` (
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Customer_phone_key`(`phone`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -143,6 +150,8 @@ CREATE TABLE `CustomerChalan` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `customerId` INTEGER NOT NULL,
     `date` VARCHAR(191) NOT NULL,
+    `markedPaid` BOOLEAN NOT NULL DEFAULT false,
+    `discount` DOUBLE NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
@@ -179,13 +188,13 @@ CREATE TABLE `CustomerPayment` (
 ALTER TABLE `GrayChalan` ADD CONSTRAINT `GrayChalan_grayId_fkey` FOREIGN KEY (`grayId`) REFERENCES `Gray`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `DyeingChalan` ADD CONSTRAINT `DyeingChalan_dyeingId_fkey` FOREIGN KEY (`dyeingId`) REFERENCES `Dyeing`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `GrayPayment` ADD CONSTRAINT `GrayPayment_grayId_fkey` FOREIGN KEY (`grayId`) REFERENCES `Gray`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `GrayPayment` ADD CONSTRAINT `GrayPayment_chalanId_fkey` FOREIGN KEY (`chalanId`) REFERENCES `GrayChalan`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `DyeingChalan` ADD CONSTRAINT `DyeingChalan_dyeingId_fkey` FOREIGN KEY (`dyeingId`) REFERENCES `Dyeing`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `DyeingPayment` ADD CONSTRAINT `DyeingPayment_dyeingId_fkey` FOREIGN KEY (`dyeingId`) REFERENCES `Dyeing`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -7,6 +7,11 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 
@@ -20,6 +25,14 @@ import ElahiVorsa from "@/components/ElahiVorsa";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";
 import { DatePickerWithRange } from "@/app/(main)/grays/all/[id]/DatePickerWithRange";
+import { MdOutlinePaid } from "react-icons/md";
+import { TbCalendarDue } from "react-icons/tb";
+import {
+  totalSingleDyeingCost,
+  totalSingleDyeingDiscount,
+  totalSingleDyeingPaid,
+} from "../dyeing.helper";
+import DyeingPaymentTable from "./DyeingPaymentTable";
 
 export default function SingleDyeing({ params }) {
   const { id } = params;
@@ -47,8 +60,32 @@ export default function SingleDyeing({ params }) {
       ? `&date[eq]=${from}`
       : "";
 
-  const { data: { data: dyeingData = {} } = {}, isLoading } =
-    useGetDyeingByIdQuery(`${id}?${query}`);
+  const { data: { data: dyeing = {} } = {}, isLoading } = useGetDyeingByIdQuery(
+    `${id}?${query}`
+  );
+
+  const dyeingPayments = dyeing?.dyeingPayments || [];
+
+  // gray payments
+  const payments = [...dyeingPayments]
+    ?.sort((a, b) => new Date(b?.date) - new Date(a?.date))
+    .map((payment, index) => {
+      return {
+        index: index,
+        date: format(parseISO(payment?.date), "d MMMM  yyyy"),
+        amount: payment?.amount,
+        chalanId: payment?.chalanId,
+        id: payment?.id,
+      };
+    });
+
+  const totalCost = totalSingleDyeingCost(dyeing);
+
+  const totalPaid = totalSingleDyeingPaid(dyeing);
+
+  const totalDiscount = totalSingleDyeingDiscount(dyeing);
+
+  const totalDue = (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
   if (isLoading) {
     return (
@@ -58,7 +95,7 @@ export default function SingleDyeing({ params }) {
           <Skeleton className="h-[20px] w-full rounded-md" />
           <Skeleton className="h-[20px] w-full rounded-md" />
         </div>
-        <TableSkeleton />;
+        <TableSkeleton />
       </div>
     );
   }
@@ -78,13 +115,13 @@ export default function SingleDyeing({ params }) {
               className="transition-colors hover:text-slate-950"
               href={"/dyeings/all"}
             >
-              All Dyeing
+              Dyeing Companies
             </Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink className="text-black">
-              {dyeingData?.name}
+              {dyeing?.name}
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -95,7 +132,7 @@ export default function SingleDyeing({ params }) {
       {/* information */}
       <div className="w-full  rounded-md pt-8 px-4 pb-5">
         <h2 className="text-3xl font-bold tracking-tight text-center">
-          {dyeingData?.name}
+          {dyeing?.name}
         </h2>
         <div className="flex items-center justify-center gap-6 pt-2">
           <p className="flex items-center gap-2">
@@ -103,36 +140,81 @@ export default function SingleDyeing({ params }) {
               <IoLocationOutline />
               <span>Address :</span>
             </span>
-            <span className="text-sm">{dyeingData?.address}</span>
+            <span className="text-sm">{dyeing?.address}</span>
           </p>
           <p className="flex items-center gap-2">
             <span className="font-semibold flex gap-2 items-center">
               <FiPhone /> <span>Phone:</span>
             </span>
-            <span className="text-sm">{dyeingData?.phone}</span>
+            <span className="text-sm">{dyeing?.phone}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <MdOutlinePaid /> <span>Paid:</span>
+            </span>
+            <span className="text-sm">{totalSingleDyeingPaid(dyeing)}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="font-semibold flex gap-2 items-center">
+              <TbCalendarDue /> <span>Due:</span>
+            </span>
+            <span className="text-sm">{totalDue}</span>
           </p>
         </div>
       </div>
 
-      <div className="py-3">
-        <DatePickerWithRange setDate={setDate} date={date} />
-      </div>
+      {/* chalan and payment */}
 
-      <div className="flex gap-6 flex-wrap pb-16">
-        {dyeingData?.chalans?.map((chalan) => (
-          <DyeingCard key={chalan?.id} data={chalan} />
-        ))}
-        {dyeingData?.chalans?.length === 0 && (
-          <div
-            className="text-center text-lg
-          font-semibold w-full py-10 text-red-500"
-          >
-            Couldn&apos;t find any chalan data
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="max-w-full rounded-lg"
+      >
+        <ResizablePanel defaultSize={65} className="pr-5">
+          {/* date picker */}
+          <div className="py-3">
+            <DatePickerWithRange setDate={setDate} date={date} />
           </div>
-        )}
-      </div>
 
-      {/* <SingleDyeingTable data={dyeingData} /> */}
+          {/* chalan data */}
+          <div className="flex gap-6 flex-wrap pb-16">
+            {dyeing?.chalans?.map((chalan) => (
+              <DyeingCard key={chalan?.id} data={chalan} />
+            ))}
+            {dyeing.chalans?.length === 0 && (
+              <div
+                className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+              >
+                Couldn&apos;t find any chalan data
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+
+        {/* payment  */}
+        <ResizablePanel defaultSize={35} className="pl-5">
+          <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
+            Payments
+          </h3>
+          {dyeing?.chalans?.length ? (
+            <DyeingPaymentTable
+              data={payments}
+              dyeing={{
+                dyeingId: dyeing?.id,
+              }}
+              dueAmount={totalDue}
+            />
+          ) : (
+            <div
+              className="text-center text-lg
+          font-semibold w-full py-10 text-red-500"
+            >
+              Couldn&apos;t find any payment data
+            </div>
+          )}
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

@@ -11,31 +11,24 @@ import Link from "next/link";
 import CustomersTable from "./CustomersTable";
 import PageTitle from "@/components/PageTitle";
 import ElahiVorsa from "@/components/ElahiVorsa";
+import {
+  totalSingleCustomerAmount,
+  totalSingleCustomerCost,
+  totalSingleCustomerDiscount,
+  totalSingleCustomerPaid,
+} from "./customer.helper";
 
 export default function AllCustomers() {
   const { data: { data: customers = [] } = {}, isLoading } =
     useGetAllCustomersQuery();
 
   const processData = customers?.map((customer) => {
-    const totalAmount = customer?.products?.reduce((sum, product) => {
-      const finishedSum = product?.finishedProducts?.reduce((sum, product) => {
-        return sum + product?.amount;
-      }, 0);
-
-      return sum + finishedSum;
-    }, 0);
-
-    const totalCost = customer?.products?.reduce((sum, product) => {
-      const finishedSum = product?.finishedProducts?.reduce((sum, product) => {
-        return sum + product?.amount;
-      }, 0);
-
-      return sum + (finishedSum || 0 * product?.product_rate);
-    }, 0);
-
-    const totalPaid = customer?.customerPayments?.reduce((sum, payment) => {
-      return sum + payment?.amount || 0;
-    }, 0);
+    const totalAmount = totalSingleCustomerAmount(customer);
+    const totalCost = totalSingleCustomerCost(customer);
+    const totalPaid = totalSingleCustomerPaid(customer);
+    const totalDiscount = totalSingleCustomerDiscount(customer);
+    const totalDue =
+      (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
     return {
       id: customer?.id,
@@ -43,7 +36,7 @@ export default function AllCustomers() {
       address: customer?.address,
       phone: customer?.phone,
       total_amount: totalAmount || 0,
-      due: totalCost - totalPaid || null,
+      due: totalDue,
     };
   });
 
@@ -69,7 +62,7 @@ export default function AllCustomers() {
 
       <PageTitle title={"All Customers Data"} />
 
-      <CustomersTable data={processData || []} />
+      <CustomersTable data={processData || []} isLoading={isLoading} />
     </div>
   );
 }

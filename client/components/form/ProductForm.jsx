@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,28 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-import {
-  useAddGrayMutation,
-  useGetAllGraysQuery,
-  useUpdateGrayByIdMutation,
-} from "@/features/gray/grayApi";
+import { useGetAllGraysQuery } from "@/features/gray/grayApi";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import {
   useAddProductMutation,
   useUpdateProductByIdMutation,
 } from "@/features/products/productApi";
-import { useGetAllChalanQuery } from "@/features/chalan/chalanApi";
 import { useRef } from "react";
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { format, formatISO } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import SubmitLoader from "@/app/(main)/components/SubmitLoader";
 
 const formSchema = z.object({
   name: z
@@ -53,6 +46,10 @@ const formSchema = z.object({
       invalid_type_error: "Gray name must be string",
     })
     .min(1, "Gray name must be at least 1 character"),
+  grayId: z.coerce.number({
+    required_error: "Gray id is required.",
+    invalid_type_error: "Gray id must be number",
+  }),
   gray_amount: z.coerce
     .number({
       required_error: "Gray amount is required.",
@@ -65,10 +62,11 @@ const formSchema = z.object({
       invalid_type_error: "Gray rate must be number",
     })
     .min(1, "Gray amount must be at least 1 character"),
-  gray_date: z.coerce.date({
-    required_error: "Gray date is required.",
-    invalid_type_error: "Gray date must be date",
-  }),
+  gray_date: z.coerce
+    .date({
+      invalid_type_error: "Gray date must be date",
+    })
+    .optional(),
   dyeing_rate: z.coerce
     .number({
       invalid_type_error: "Dyeing rate must be number",
@@ -98,41 +96,31 @@ const formSchema = z.object({
     .default("RUNNING"),
 });
 
-export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
-  const [
-    updateProduct,
-    {
-      isError: isUpdateError,
-      error: updateError,
-      isLoading: isUpdateLoading,
-      isSuccess: isUpdateSuccess,
-      data: updateData,
-    },
-  ] = useUpdateProductByIdMutation();
-  const selectRef = useRef();
+export default function ProductForm({ type = "add", formData = {}, setOpen }) {
+  const [updateProduct, { isLoading: isUpdateLoading }] =
+    useUpdateProductByIdMutation();
 
-  const [addProduct, { isSuccess, error, isError, data }] =
-    useAddProductMutation();
+  const [addProduct, { isLoading }] = useAddProductMutation();
 
-  const { data: grays, isLoading } = useGetAllGraysQuery();
-  const { data: dyeings } = useGetAllDyeingsQuery();
+  const { data: { data: grays = [] } = {} } = useGetAllGraysQuery();
+  const { data: { data: dyeings = [] } = {} } = useGetAllDyeingsQuery();
 
   const defaultValues = {
     name: type === "update" ? formData?.name : "",
     grayName: type === "update" ? formData?.gray?.name : "",
+    grayId: type === "update" ? formData?.gray?.id : "",
     delivery_status: type === "update" ? formData?.delivery_status : "RUNNING",
     gray_amount: type === "update" ? formData?.gray_amount : 0,
     gray_rate: type === "update" ? formData?.gray_rate : 0,
-
+    dyeing_name: type === "update" ? formData?.dyeing?.name : "",
     dyeing_amount: type === "update" ? formData?.dyeing_amount || 0 : 0,
-    dyeing_name: type === "update" ? formData?.dyeing?.name || "" : "",
+    dyeingId: type === "update" ? formData?.dyeing?.id || "" : "",
     dyeing_rate: type === "update" ? formData?.dyeing_rate || 0 : 0,
-    gray_date: type === "update" ? formData?.gray_date : "",
+    gray_date: type === "update" ? formData?.gray_date : new Date(),
   };
 
   if (type === "update") {
     defaultValues.gray_date = new Date(formData?.gray_date);
-    // defaultValues.dyeing_date = new Date(formData?.dyeing_date)
   }
 
   // 1. Define your form.
@@ -144,91 +132,59 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
   });
 
   const onSubmit = async (values) => {
-    const { grayName, dyeing_name } = values;
-    let errorMessage = "";
-    let successMessage = "";
+    const { dyeing_name } = values;
+
+    // format change gray date
+    if (values.gray_date) {
+      values.gray_date = formatISO(values.gray_date);
+    }
 
     // for update form
     if (type === "update") {
-      const grayId = grays?.data?.find((gray) => gray.name === grayName).id;
-
       delete values.grayName;
-      const data = {
-        ...values,
-        grayId,
-      };
 
       if (dyeing_name) {
-        const dyeingId = dyeings?.data?.find(
-          (dyeing) => dyeing?.name === dyeing_name
-        ).id;
-
-        if (!data.dyeing_amount)
-          return toast.error("Dyeing amount is reduired with dyeing name.");
-        if (!data.dyeing_rate)
-          return toast.error("Dyeing rate is reduired with dyeing name.");
-
-        data.dyeingId = dyeingId;
-        delete data.dyeing_name;
+        delete values.dyeing_name;
       } else {
-        delete data.dyeing_name;
-        delete data.dyeing_amount;
-        delete data.dyeing_rate;
+        delete values.dyeingId;
+        delete values.dyeing_name;
+        delete values.dyeing_amount;
+        delete values.dyeing_rate;
       }
 
       const res = await updateProduct({
         id: formData.id,
-        data,
+        data: values,
       });
       if (res.data?.success) {
         setOpen && setOpen();
-        successMessage = res.data?.message;
+        toast.success(res.data?.message);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
     // for edit form
-    else if (type === "edit") {
-      const grayId = grays?.data?.find((gray) => gray.name === grayName).id;
-
+    else if (type === "add") {
       delete values.grayName;
 
-      const data = {
-        ...values,
-        grayId,
-      };
-
       if (dyeing_name) {
-        const dyeingId = dyeings?.data?.find(
-          (dyeing) => dyeing?.name === dyeing_name
-        ).id;
-
-        if (!data.dyeing_amount)
-          return toast.error("Dyeing amount is reduired with dyeing name.");
-        if (!data.dyeing_rate)
-          return toast.error("Dyeing rate is reduired with dyeing name.");
-
-        data.dyeingId = dyeingId;
-        delete data.dyeing_name;
+        delete values.dyeing_name;
       } else {
-        delete data.dyeing_name;
-        delete data.dyeing_amount;
-        delete data.dyeing_rate;
+        delete values.dyeing_name;
+        delete values.dyeingId;
+        delete values.dyeing_amount;
+        delete values.dyeing_rate;
       }
 
-      const res = await addProduct(data);
+      const res = await addProduct(values);
       if (res.data?.success) {
-        setOpen && setOpen();
+        setOpen(false);
         form.reset();
-        successMessage = res.data?.message;
+        toast.success(res.data?.message);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
-
-    // message show
-    if (successMessage) toast.success(successMessage);
-    else if (errorMessage) toast.error(errorMessage);
   };
 
   return (
@@ -237,7 +193,6 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4 w-full"
-          ref={selectRef}
         >
           <FormField
             control={form.control}
@@ -265,15 +220,33 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
                 <FormLabel>Gray Name</FormLabel>
                 <FormControl>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={type === "update" ? formData?.gray?.name : ""}
+                    onValueChange={(value) => {
+                      if (value) {
+                        const grayId = value.split("___")[1];
+                        form.setValue("grayId", +grayId);
+                        field.onChange(value.split("___")[0]);
+                      }
+                    }}
+                    defaultValue={
+                      type === "update"
+                        ? formData?.gray?.name
+                          ? formData?.gray?.name + "___" + formData?.gray?.id
+                          : ""
+                        : ""
+                    }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Gray Name" />
+                      <SelectValue
+                        placeholder="Select Gray Name"
+                        aria-label="Rejoa"
+                      />
                     </SelectTrigger>
-                    <SelectContent {...field}>
-                      {grays?.data?.map((gray) => (
-                        <SelectItem value={gray.name} key={gray.id}>
+                    <SelectContent>
+                      {grays?.map((gray, index) => (
+                        <SelectItem
+                          value={gray.name + "___" + gray.id}
+                          key={index}
+                        >
                           {gray.name}
                         </SelectItem>
                       ))}
@@ -370,17 +343,32 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
                 <FormLabel>Dyeing Name</FormLabel>
                 <FormControl>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      if (value) {
+                        const dyeingId = value.split("___")[1];
+                        form.setValue("dyeingId", +dyeingId);
+                        field.onChange(value.split("___")[0]);
+                      }
+                    }}
                     defaultValue={
-                      type === "update" ? formData?.dyeing?.name : ""
+                      type === "update"
+                        ? formData?.dyeing?.name
+                          ? formData?.dyeing?.name +
+                            "___" +
+                            formData?.dyeing?.id
+                          : ""
+                        : ""
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Dyeing Name" />
                     </SelectTrigger>
                     <SelectContent {...field}>
-                      {dyeings?.data?.map((dyeing) => (
-                        <SelectItem value={dyeing.name} key={dyeing.id}>
+                      {dyeings?.map((dyeing, index) => (
+                        <SelectItem
+                          value={dyeing?.name + "___" + dyeing.id}
+                          key={index}
+                        >
                           {dyeing.name}
                         </SelectItem>
                       ))}
@@ -432,7 +420,15 @@ export default function ProductForm({ type = "edit", formData = {}, setOpen }) {
             )}
           />
 
-          <Button type="submit"> {isLoading ? "Loading" : "Submit"} </Button>
+          {type === "update" ? (
+            <Button type="submit">
+              <SubmitLoader label={"Update"} loading={isUpdateLoading} />
+            </Button>
+          ) : (
+            <Button type="submit">
+              <SubmitLoader label={"Submit"} loading={isLoading} />
+            </Button>
+          )}
         </form>
       </Form>
     </>

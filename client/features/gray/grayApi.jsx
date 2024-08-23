@@ -62,6 +62,14 @@ const grayApi = graySlice.injectEndpoints({
       }),
       invalidatesTags: ["Gray", "Grays"],
     }),
+    toggleChalanMarkedById: builder.mutation({
+      query: (data) => ({
+        url: `/toggle-marked/${data.id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Gray", "Grays"],
+    }),
     getAllGraysPayments: builder.query({
       query: (query) => ({
         url: `/all-gray-payments${query ? query : ""}`,
@@ -82,4 +90,5 @@ export const {
   useUpdateGrayPaymentByIdMutation,
   useDeleteGrayPaymentByIdMutation,
   useGetAllGraysPaymentsQuery,
+  useToggleChalanMarkedByIdMutation,
 } = grayApi;

@@ -8,37 +8,45 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { FaRegEdit } from "react-icons/fa";
 import ThaanAddForm from "./ThaanAddForm";
 import { useState } from "react";
+import { MdUpdate } from "react-icons/md";
+import AddFinishedProduct from "./AddFinishedProduct";
 export default function FinishedProductInfo({ product }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md" title="Add Finished Product">
       <CardHeader className="bg-slate-100 rounded-t-md py-3">
         <CardTitle className="text-center flex justify-between items-center">
           <span>Finished Product</span>
 
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger
-              className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border"
-              disabled={!product?.dyeing_amount}
+          <div className="flex gap-1 justify-center">
+            <div
+              className={`${!product?.finished_products?.length && "hidden"}`}
             >
-              <FaRegEdit className="text-sm" />
-            </DialogTrigger>
-            <DialogContent className="overflow-scroll ">
-              <DialogHeader>
-                <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                  {product?.finished_products?.length
-                    ? "Update Finished Product"
-                    : "Add Finished Product"}
-                </DialogTitle>
-                <DialogDescription></DialogDescription>
-              </DialogHeader>
-              <ThaanAddForm product={product} setOpen={setOpen} />
-            </DialogContent>
-          </Dialog>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border">
+                  <MdUpdate className="text-base" />
+                </DialogTrigger>
+                <DialogContent className="overflow-scroll ">
+                  <DialogHeader>
+                    <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                      Update Finished Product
+                    </DialogTitle>
+                    <DialogDescription></DialogDescription>
+                  </DialogHeader>
+                  <ThaanAddForm
+                    product={product}
+                    type="update"
+                    showDefect={true}
+                    setOpen={setOpen}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+            <AddFinishedProduct product={product} />
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
@@ -52,7 +60,7 @@ export default function FinishedProductInfo({ product }) {
               <span
                 className={`${
                   item?.is_sold ? "bg-red-100" : ""
-                } border min-w-12 h-12 rounded-md flex items-center justify-center`}
+                } border min-w-12 px-1 h-12 rounded-md flex items-center justify-center`}
                 key={item.id}
               >
                 {item?.amount}

@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import {
   flexRender,
@@ -8,15 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -26,10 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Link from "next/link";
 import { IoTrashOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
-import { GrAddCircle } from "react-icons/gr";
+import {
+  useDeleteGrayPaymentByIdMutation,
+  useUpdateGrayPaymentByIdMutation,
+} from "@/features/gray/grayApi";
 import Swal from "sweetalert2";
 import {
   Dialog,
@@ -39,23 +32,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import CustomerForm from "./CustomerForm";
-import { useDeleteCustomeryIdMutation } from "@/features/customers/customerApi";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import AddPayment from "./AddPayment";
+import PaymentForm from "@/app/(main)/components/form/PaymentForm";
 
-const CustomersTable = ({ data, isLoading }) => {
+export default function PaymentTable({ data = [], isLoading = false, gray }) {
   const [open, setOpen] = React.useState();
-  const [openUpdate, setOpenUpdate] = React.useState();
-  const [deleteCustomer] = useDeleteCustomeryIdMutation();
+  const [updatePayemnt, { isUpdateLoading }] =
+    useUpdateGrayPaymentByIdMutation();
+  const [deletePayment] = useDeleteGrayPaymentByIdMutation();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // handle delete payment
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "All releted data will be deleted.",
+      text: "Do you want to delete gray payment?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -64,13 +59,13 @@ const CustomersTable = ({ data, isLoading }) => {
     });
 
     if (result?.isConfirmed) {
-      const res = await deleteCustomer(id);
+      const res = await deletePayment(id);
       if (res?.data?.success) {
-        Swal.fire("Deleted!", "Your data has been deleted.", "success");
+        Swal.fire("Deleted!", "Gray payment  has been deleted.", "success");
       } else {
         Swal.fire({
           title: "Failed",
-          text: error?.data?.message,
+          text: res?.error?.data?.error?.message,
           icon: "error",
         });
       }
@@ -79,62 +74,24 @@ const CustomersTable = ({ data, isLoading }) => {
 
   const columns = [
     {
-      accessorKey: "name",
-      header: "Name",
+      accessorKey: "index",
+      header: "#",
       cell: ({ row }) => (
-        <div className="capitalize">
-          <Link href={`/customers/all/${row?.original?.id}`}>
-            {row.getValue("name")}
-          </Link>
-        </div>
+        <div className="capitalize">{+row.getValue("index") + 1}</div>
       ),
     },
     {
-      accessorKey: "address",
-      header: "Address",
+      accessorKey: "date",
+      header: "Date",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("address")}</div>
+        <div className="capitalize text-[12px]">{row.getValue("date")}</div>
       ),
     },
     {
-      accessorKey: "phone",
-      header: "Phone",
+      accessorKey: "amount",
+      header: "Amount",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("phone")}</div>
-      ),
-    },
-    {
-      accessorKey: "total_amount",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Total Amount
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize pl-4">{row.getValue("total_amount")}</div>
-      ),
-    },
-    {
-      accessorKey: "due",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Due
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize pl-4">{row.getValue("due")}</div>
+        <div className="capitalize">{row.getValue("amount")}</div>
       ),
     },
     {
@@ -150,14 +107,21 @@ const CustomersTable = ({ data, isLoading }) => {
               <DialogContent className="overflow-scroll ">
                 <DialogHeader>
                   <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                    Update Customers Data
+                    Update Payment Data
                   </DialogTitle>
                   <DialogDescription></DialogDescription>
                 </DialogHeader>
-                <CustomerForm
-                  setOpen={setOpenUpdate}
+
+                <PaymentForm
                   type="update"
-                  formData={row?.original}
+                  beforePaymentData={{
+                    id: +row.original.id,
+                    amount: row?.original?.amount,
+                    date: row?.original?.date,
+                  }}
+                  setOpen={setOpen}
+                  updatePayemnt={updatePayemnt}
+                  isLoading={isUpdateLoading}
                 />
               </DialogContent>
             </Dialog>
@@ -180,6 +144,7 @@ const CustomersTable = ({ data, isLoading }) => {
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -190,67 +155,31 @@ const CustomersTable = ({ data, isLoading }) => {
       columnVisibility,
       rowSelection,
     },
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
-
   return (
     <div className="w-full ">
-      <div className="flex items-center py-4 gap-2">
+      <div className="flex items-center py-4 gap-x-8 gap-y-2  flex-wrap justify-between w-full">
         <Input
-          placeholder="Filter by name..."
-          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          placeholder="Filter by date..."
+          value={table.getColumn("date")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("date")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
+          className="max-w-[200px] min-w-[150px]  focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
         />
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger className="py-2 h-10 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
-            <GrAddCircle /> <span className="text-[12px] pl-2">Customer</span>
-          </DialogTrigger>
-          <DialogContent className="overflow-scroll ">
-            <DialogHeader>
-              <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                Add New Customer
-              </DialogTitle>
-              <DialogDescription></DialogDescription>
-            </DialogHeader>
-            <CustomerForm setOpen={setOpen} type="add" />
-          </DialogContent>
-        </Dialog>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id?.split("_").join(" ")}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AddPayment data={{ ...gray }} />
       </div>
       {isLoading ? (
         <TableSkeleton />
       ) : (
         <>
-          <div className="rounded-md border">
+          <div className="rounded-md border ">
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -278,7 +207,7 @@ const CustomersTable = ({ data, isLoading }) => {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell key={cell.id} className="px-4 py-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -300,8 +229,8 @@ const CustomersTable = ({ data, isLoading }) => {
               </TableBody>
             </Table>
           </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
+          <div className="flex items-center justify-end space-x-2 py-4 flex-wrap">
+            <div className="flex-1 text-sm text-muted-foreground text-nowrap">
               showing {table.getRowModel().rows?.length} of {data?.length}{" "}
               enteries
             </div>
@@ -329,6 +258,4 @@ const CustomersTable = ({ data, isLoading }) => {
       )}
     </div>
   );
-};
-
-export default CustomersTable;
+}

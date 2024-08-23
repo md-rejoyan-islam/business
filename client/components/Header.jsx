@@ -51,8 +51,8 @@ export default function Header({ showFull, setShowFull }) {
             showFull ? "-translate-x-[400px] w-0" : "translate-x-0 w-[260px]"
           } transition-all duration-500 hidden md:block`}
         >
-          <Link href={"/"} className="logo">
-            LOGO
+          <Link href={"/"} className="logo font-semibold text-2xl">
+            RI<span className="text-3xl text-green-500">Z</span>VI
           </Link>
         </div>
 
@@ -83,7 +83,7 @@ export default function Header({ showFull, setShowFull }) {
               <PopoverContent align="end" className="p-2 w-[200px]">
                 <ul className="text-[14px] space-y-1 ">
                   <li className="px-2 py-1.5 rounded-md hover:bg-black/5 cursor-pointer">
-                    <a href="">Profile</a>
+                    <Link href={"/profile"}>Profile</Link>
                   </li>
                   <li className=" rounded-md hover:bg-black/5 cursor-pointer">
                     <button

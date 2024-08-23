@@ -107,7 +107,11 @@ export const getDyeingById = asyncHandler(
         },
         chalans: {
           include: {
-            products: true,
+            products: {
+              include: {
+                finished_products: true,
+              },
+            },
             payments: true,
           },
           where: {
@@ -123,6 +127,7 @@ export const getDyeingById = asyncHandler(
             date: "desc",
           },
         },
+        dyeingPayments: true,
       },
     });
 
@@ -156,6 +161,12 @@ export const getDyeingById = asyncHandler(
 
 export const createDyeing = asyncHandler(
   async (req: Request, res: Response) => {
+    const isExist = await prismaClient.dyeing.findUnique({
+      where: { phone: req.body.phone },
+    });
+
+    if (isExist) throw createError.Conflict("Phone number already exixt.");
+
     const dyeing = await prismaClient.dyeing.create({
       data: req.body,
     });

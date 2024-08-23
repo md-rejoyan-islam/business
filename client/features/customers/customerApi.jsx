@@ -47,28 +47,53 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       invalidatesTags: ["Customers", "Customer"],
     }),
-    customerChalanPayment: builder.mutation({
-      query: (data) => ({
-        url: "/chalan-payment",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["CustomersPayments"],
-    }),
-    updateCustomerChalanPayment: builder.mutation({
-      query: (data) => ({
-        url: "/chalan-payment",
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["CustomersPayments"],
-    }),
+
     getAllcustomersPayments: builder.query({
       query: (query) => ({
         url: `/all-customers-payments${query ? query : ""}`,
         method: "GET",
       }),
       providesTags: ["CustomersPayments"],
+    }),
+    customerChalanPayment: builder.mutation({
+      query: (data) => ({
+        url: "/customer-payment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["CustomersPayments"],
+    }),
+    updateCustomerPayment: builder.mutation({
+      query: (data) => ({
+        url: `/customer-payment/${data.id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["CustomersPayments", "Customer", "Customers"],
+    }),
+    // start
+    deleteCustomerPaymentById: builder.mutation({
+      query: (id) => ({
+        url: `/customer-payment/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Customers", "Customer", "CustomersPayments"],
+    }),
+    customerPayment: builder.mutation({
+      query: (data) => ({
+        url: "/customer-payment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers", "CustomersPayments"],
+    }),
+    toggleCustomerChalanMarkedById: builder.mutation({
+      query: (data) => ({
+        url: `/toggle-marked/${data.id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers", "CustomersPayments"],
     }),
   }),
 });
@@ -82,5 +107,7 @@ export const {
   useConfirmPurchaseMutation,
   useCustomerChalanPaymentMutation,
   useGetAllcustomersPaymentsQuery,
-  useUpdateCustomerChalanPaymentMutation,
+  useUpdateCustomerPaymentMutation,
+  useDeleteCustomerPaymentByIdMutation,
+  useToggleCustomerChalanMarkedByIdMutation,
 } = customerApi;

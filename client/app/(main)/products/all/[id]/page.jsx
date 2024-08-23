@@ -10,13 +10,8 @@ import Link from "next/link";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetProductByIdQuery } from "@/features/products/productApi";
-import SingleProductTable from "@/components/table/SingleProductTable";
 import ElahiVorsa from "@/components/ElahiVorsa";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import PageTitle from "@/components/PageTitle";
-import { LuCalendarDays } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
-import { FaRegEdit } from "react-icons/fa";
+
 import ProductInformation from "./card/ProductInformation";
 import GrayInfo from "./card/GrayInfo";
 import { format, parse } from "date-fns";
@@ -24,14 +19,13 @@ import DyeingInfo from "./card/DyeingInfo";
 import ProductInfo from "./card/ProductInfo";
 import AskInfo from "./card/AskInfo";
 import FinishedProductInfo from "./card/FinishedProductInfo";
+import { productStatus } from "@/app/(main)/components/helper";
 
 export default function SingleProduct({ params }) {
   const { id } = params;
 
   const { data: { data: productData = {} } = {}, isLoading } =
     useGetProductByIdQuery(id);
-
-  console.log(productData);
 
   if (isLoading) {
     return (
@@ -41,7 +35,7 @@ export default function SingleProduct({ params }) {
           <Skeleton className="h-[20px] w-full rounded-md" />
           <Skeleton className="h-[20px] w-full rounded-md" />
         </div>
-        <TableSkeleton />;
+        <TableSkeleton />
       </div>
     );
   }
@@ -79,7 +73,7 @@ export default function SingleProduct({ params }) {
       <ProductInformation
         name={productData?.name}
         id={productData?.id}
-        status={productData?.delivery_status}
+        status={productStatus(productData)}
       />
 
       <div className="py-10 grid lg:grid-cols-2 gap-6 ">
@@ -89,6 +83,7 @@ export default function SingleProduct({ params }) {
           amount={productData?.gray_amount}
           rate={productData?.gray_rate}
           id={productData?.gray?.id}
+          productId={productData?.id}
           date={
             productData?.gray_date &&
             format(
@@ -103,6 +98,7 @@ export default function SingleProduct({ params }) {
           amount={productData?.dyeing_amount}
           id={productData?.dyeing?.id}
           rate={productData?.dyeing_rate}
+          productId={productData?.id}
           date={
             productData?.dyeing_date &&
             format(
@@ -116,7 +112,7 @@ export default function SingleProduct({ params }) {
         <ProductInfo product={productData} />
 
         {/* ask info  */}
-        <AskInfo />
+        <AskInfo product={productData} />
 
         {/* finished product info  */}
         <FinishedProductInfo product={productData} />

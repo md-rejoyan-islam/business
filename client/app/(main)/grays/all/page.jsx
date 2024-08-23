@@ -1,5 +1,5 @@
 "use client";
-import GrayTable from "@/components/table/GrayTable";
+import GrayTable from "@/app/(main)/components/gray/GrayTable";
 import { useGetAllGraysQuery } from "@/features/gray/grayApi";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import {
@@ -12,22 +12,23 @@ import {
 import Link from "next/link";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
+import {
+  totalSingeGrayAmount,
+  totalSingleGrayCost,
+  totalSingleGrayDiscount,
+  totalSingleGrayPaid,
+} from "./gray.helper";
 
 export default function AllGrays() {
-  const { data, isLoading } = useGetAllGraysQuery();
+  const { data: { data: grays = [] } = {}, isLoading } = useGetAllGraysQuery();
 
-  const processData = data?.data?.map((gray) => {
-    const totalAmount = gray?.products?.reduce((sum, product) => {
-      return sum + (product?.gray_amount || 0);
-    }, 0);
-
-    const totalCost = gray?.products?.reduce((sum, product) => {
-      return sum + product?.gray_amount * product?.gray_rate;
-    }, 0);
-
-    const totalPaid = gray?.grayPayments?.reduce((sum, payment) => {
-      return sum + (payment?.amount || 0);
-    }, 0);
+  const graysData = grays?.map((gray) => {
+    const totalAmount = totalSingeGrayAmount(gray);
+    const totalCost = totalSingleGrayCost(gray);
+    const totalPaid = totalSingleGrayPaid(gray);
+    const totalDiscount = totalSingleGrayDiscount(gray);
+    const totalDue =
+      (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
     return {
       id: gray?.id,
@@ -36,7 +37,7 @@ export default function AllGrays() {
       phone: gray?.phone,
       products: gray?.products,
       total_amount: totalAmount || 0,
-      due: totalCost - totalPaid || null,
+      due: totalDue,
     };
   });
 
@@ -51,16 +52,18 @@ export default function AllGrays() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink className="text-black">All Gray</BreadcrumbLink>
+            <BreadcrumbLink className="text-black">
+              Gray Companies
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       <ElahiVorsa />
 
-      <PageTitle title={"All Gray Data"} />
+      <PageTitle title={"All Gray Company Data"} />
 
-      {isLoading ? <TableSkeleton /> : <GrayTable data={processData || []} />}
+      <GrayTable data={graysData || []} isLoading={isLoading} />
     </div>
   );
 }

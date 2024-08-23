@@ -46,8 +46,6 @@ export default function Memo() {
   const { data: { data: customers = [] } = {}, isLoading } =
     useGetAllCustomersQuery();
 
-  const { data: { data: products = [] } = {} } = useGetAllProductsQuery();
-
   // customers names
   const customerNames = customers.map((customer) => ({
     value: customer.name,
@@ -83,7 +81,7 @@ export default function Memo() {
       </Breadcrumb>
 
       <h2 className=" pt-6 pb-4 text-[22px] sm:text-2xl  md:text-3xl font-bold tracking-tight text-center uppercase">
-        Msssers rizvi enterprise
+        Messers rizvi enterprise
       </h2>
       <h3 className="text-xl pb-2 font-semibold text-center">Cash Memo</h3>
 
@@ -212,22 +210,25 @@ export default function Memo() {
                           : " justify-center"
                       } px-3 py-4 flex gap-6 `}
                     >
-                      {/* products  */}
-                      <SelectedProduct
-                        allSelectedProducts={allSelectedProducts}
-                        setAllSelectedProducts={setAllSelectedProducts}
-                      />
-
-                      <div>
-                        {!allSelectedProducts?.length && (
-                          <p className=" text-red-500 py-3 text-center">
-                            No product selected
-                          </p>
-                        )}
-                        <BuyProduct
-                          setAllSelectedProducts={setAllSelectedProducts}
-                          allSelectedProducts={allSelectedProducts}
-                        />
+                      <div className="flex justify-between gap-x-6 gap-y-8 flex-wrap items-center">
+                        {/* products  */}
+                        <div>
+                          <SelectedProduct
+                            allSelectedProducts={allSelectedProducts}
+                            setAllSelectedProducts={setAllSelectedProducts}
+                          />
+                        </div>
+                        <div>
+                          {!allSelectedProducts?.length && (
+                            <p className=" text-red-500 py-3 text-center">
+                              No product selected
+                            </p>
+                          )}
+                          <BuyProduct
+                            setAllSelectedProducts={setAllSelectedProducts}
+                            allSelectedProducts={allSelectedProducts}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

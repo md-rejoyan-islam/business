@@ -102,6 +102,7 @@ export const getGrayById = asyncHandler(async (req: Request, res: Response) => {
     include: {
       // products: true,
       grayPayments: true,
+
       chalans: {
         include: {
           products: {
@@ -125,6 +126,7 @@ export const getGrayById = asyncHandler(async (req: Request, res: Response) => {
           date: "desc",
         },
       },
+      products: true,
     },
   });
 
@@ -159,10 +161,10 @@ export const createGray = asyncHandler(async (req: Request, res: Response) => {
   // check name is exist or not
   const exist = await prismaClient.gray.findUnique({
     where: {
-      name: req.body.name,
+      phone: req.body.phone,
     },
   });
-  if (exist) throw createError.BadRequest("Name already exist.");
+  if (exist) throw createError.BadRequest("Phone number already exist.");
 
   const gray = await prismaClient.gray.create({
     data: req.body,
@@ -236,6 +238,7 @@ export const updateGrayById = asyncHandler(
 
 export const deleteGrayById = asyncHandler(
   async (req: Request, res: Response) => {
+    // find grey by id
     const gray = await prismaClient.gray.findUnique({
       where: { id: +req.params.id },
       include: {
@@ -246,8 +249,25 @@ export const deleteGrayById = asyncHandler(
     });
     if (!gray) throw createError.NotFound("Couldn't find any gray data.");
 
-    // delete releted product payments
-    await prismaClient.grayPayment.deleteMany({
+    // // delete product related all data
+    // gray?.products(async (product: any) => {
+    //   // delete sell customer product data
+    //   await prismaClient.customerProduct.deleteMany({
+    //     where: { productId: product.id },
+    //   });
+
+    //   // delete all finished product data
+    //   await prismaClient.finishedProduct.deleteMany({
+    //     where: {
+    //       productId: product.id,
+    //     },
+    //   });
+
+    //   // delete all releated table data
+    // });
+
+    // delete related gray chalan
+    await prismaClient.grayChalan.deleteMany({
       where: {
         grayId: +req.params.id,
       },
@@ -262,6 +282,12 @@ export const deleteGrayById = asyncHandler(
 
     // delete releted chalans
     await prismaClient.grayChalan.deleteMany({
+      where: {
+        grayId: +req.params.id,
+      },
+    });
+    // delete releted product payments
+    await prismaClient.grayPayment.deleteMany({
       where: {
         grayId: +req.params.id,
       },
@@ -370,7 +396,7 @@ export const updateGrayPaymentById = asyncHandler(
 
     const updatedPayment = await prismaClient.grayPayment.update({
       where: { id: +id },
-      data: req.body,
+      data: { ...req.body, date: req.body?.date?.split("T")[0] },
     });
 
     // response send
@@ -445,6 +471,35 @@ export const deleteGrayChalanById = asyncHandler(
       message: "Successfully deleted gray chalan",
       payload: {
         data: chalan,
+      },
+    });
+  }
+);
+
+// toggle gray marked
+export const toggleGrayChalanMarkedById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const chalan = await prismaClient.grayChalan.findUnique({
+      where: { id: +id },
+    });
+
+    if (!chalan) throw createError.NotFound("Chalan not found!");
+
+    const updatedChalan = await prismaClient.grayChalan.update({
+      where: { id: +id },
+      data: {
+        markedPaid: req.body.markedPaid,
+        discount: req.body.discount,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Change marked.",
+      payload: {
+        data: updatedChalan,
       },
     });
   }

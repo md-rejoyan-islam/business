@@ -8,6 +8,7 @@ import {
   getAllGrays,
   getGrayById,
   grayPayment,
+  toggleGrayChalanMarkedById,
   updateGrayById,
   updateGrayPaymentById,
 } from "../controllers/gray.controller";
@@ -26,6 +27,8 @@ grayRouter.route("/gray-payment").post(grayPayment);
 grayRouter.route("/all-gray-payments").get(getAllGrayPayment);
 grayRouter.route("/gray-payment/:id").patch(updateGrayPaymentById);
 grayRouter.route("/gray-payment/:id").delete(deleteGrayPaymentById);
+
+grayRouter.route("/toggle-marked/:id").patch(toggleGrayChalanMarkedById);
 
 // delete gray chalam
 grayRouter.route("/gray-chalan/:id").delete(deleteGrayChalanById);

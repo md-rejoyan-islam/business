@@ -19,6 +19,7 @@ import {
   useAddCustomerMutation,
   useUpdateCustomerByIdMutation,
 } from "@/features/customers/customerApi";
+import SubmitLoader from "../../components/SubmitLoader";
 
 const formSchema = z.object({
   name: z
@@ -41,16 +42,11 @@ const formSchema = z.object({
     .min(8, "Customer phone number must be at least 8 character"),
 });
 
-export default function CustomerForm({
-  type = "edit",
-  formData = {},
-  setOpen,
-}) {
-  const [updateCustomer] = useUpdateCustomerByIdMutation();
-  const [addCustomer, { isLoading, isSuccess, error, isError, data }] =
-    useAddCustomerMutation();
+export default function CustomerForm({ type = "add", formData = {}, setOpen }) {
+  const [updateCustomer, { isLoading: isUpdateLoading }] =
+    useUpdateCustomerByIdMutation();
+  const [addCustomer, { isLoading }] = useAddCustomerMutation();
 
-  // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,9 +57,6 @@ export default function CustomerForm({
   });
 
   const onSubmit = async (values) => {
-    let errorMessage = "";
-    let successMessage = "";
-
     // for update form
     if (type === "update") {
       const res = await updateCustomer({
@@ -71,29 +64,23 @@ export default function CustomerForm({
         data: values,
       });
       if (res.data?.success) {
-        successMessage = res.data?.message;
+        toast.success(res.data?.message);
         setOpen && setOpen(false);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
     // for edit form
-    else if (type === "edit") {
+    else if (type === "add") {
       const res = await addCustomer(values);
       if (res.data?.success) {
         form.reset();
-
-        successMessage = res.data?.message;
+        setOpen && setOpen(false);
+        toast.success(res.data?.message);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
-
-    // message show
-    if (successMessage) {
-      toast.success(successMessage);
-      setOpen && setOpen(false);
-    } else if (errorMessage) toast.error(errorMessage);
   };
   return (
     <>
@@ -153,7 +140,15 @@ export default function CustomerForm({
               </FormItem>
             )}
           />
-          <Button type="submit"> {isLoading ? "Loading" : "Submit"} </Button>
+          {type === "update" ? (
+            <Button type="submit">
+              <SubmitLoader label={"Update"} loading={isUpdateLoading} />
+            </Button>
+          ) : (
+            <Button type="submit">
+              <SubmitLoader label={"Submit"} loading={isLoading} />
+            </Button>
+          )}
         </form>
       </Form>
     </>

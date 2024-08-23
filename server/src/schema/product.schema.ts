@@ -63,7 +63,6 @@ export const productSchema = z.object({
     .number({
       invalid_type_error: "Dyeing rate must be number",
     })
-    .min(1, "Dyeing rate must be at least 1 character")
     .optional(),
   dyeing_date: z
     .date({

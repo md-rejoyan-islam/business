@@ -13,7 +13,8 @@ export default function MemoProduct({
   setOpen,
   allSelectedProducts,
 }) {
-  const { data: { data: products = [] } = {} } = useGetAllProductsQuery();
+  const { data: { data: products = [] } = {}, refetch } =
+    useGetAllProductsQuery();
 
   // products names for search and remove if product are selected
   const productNames = products
@@ -79,16 +80,17 @@ export default function MemoProduct({
                 <ProductInfo product={product} />
               </div>
 
-              <div className="flex flex-wrap justify-between gap-4">
+              <div className="flex  justify-between gap-4 flex-wrap">
                 {/* select finished amount  */}
                 <SelectFinishedAmount
                   product={product}
                   setOpen={setOpen}
+                  refetch={refetch}
                   setAllSelectedProducts={setAllSelectedProducts}
                   allSelectedProducts={allSelectedProducts}
                 />
                 {/* ask rate  */}
-                <RateAskInfo />
+                <RateAskInfo product={product} />
               </div>
             </div>
           )}

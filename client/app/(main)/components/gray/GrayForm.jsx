@@ -1,5 +1,4 @@
 "use client";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,53 +9,45 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "react-toastify";
-import {
-  useAddDyeingMutation,
-  useUpdateDyeingByIdMutation,
-} from "@/features/dyeing/dyeingApi";
 
-const formSchema = z.object({
+import {
+  useAddGrayMutation,
+  useUpdateGrayByIdMutation,
+} from "@/features/gray/grayApi";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import SubmitLoader from "../SubmitLoader";
+
+const graySchema = z.object({
   name: z
     .string({
-      required_error: "Dyeing name is required",
-      invalid_type_error: "Dyeing name must be string",
+      required_error: "Gray name is required",
+      invalid_type_error: "Gray name must be string",
     })
-    .min(3, "Dyeing name must be at least 3 character"),
+    .min(3, "Gray name must be at least 3 character"),
   address: z
     .string({
-      required_error: "Dyeing address is required.",
-      invalid_type_error: "Dyeing address must be string",
+      required_error: "Gray address is required.",
+      invalid_type_error: "Gray address must be string",
     })
-    .min(3, "Dyeing address must be at least 3 character"),
+    .min(3, "Gray address must be at least 3 character"),
   phone: z
     .string({
-      required_error: "Dyeing phone number is required.",
-      invalid_type_error: "Dyeing name must be string.",
+      required_error: "Gray phone number is required.",
+      invalid_type_error: "Gray name must be string.",
     })
-    .min(8, "Dyeing phone must be at least 8 character"),
+    .min(8, "Gray phone number must be at least 8 character"),
 });
 
-export default function DyeingForm({ type = "edit", formData = {}, setOpen }) {
-  const [AddDyeing, { isLoading, isSuccess, error, isError, data }] =
-    useAddDyeingMutation();
-  const [
-    updateDyeing,
-    {
-      isError: isUpdateError,
-      error: updateError,
-      isLoading: isUpdateLoading,
-      isSuccess: isUpdateSuccess,
-      data: updateData,
-    },
-  ] = useUpdateDyeingByIdMutation();
+export default function GrayForm({ type = "add", formData = {}, setOpen }) {
+  const [updateGray, { isLoading: isUpdateLoading }] =
+    useUpdateGrayByIdMutation();
+  const [addGray, { isLoading }] = useAddGrayMutation();
 
-  // 1. Define your form.
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(graySchema),
     defaultValues: {
       name: type === "update" ? formData?.name : "",
       address: type === "update" ? formData?.address : "",
@@ -65,53 +56,48 @@ export default function DyeingForm({ type = "edit", formData = {}, setOpen }) {
   });
 
   const onSubmit = async (values) => {
-    let errorMessage = "";
-    let successMessage = "";
-
     // for update form
     if (type === "update") {
-      const res = await updateDyeing({
+      const res = await updateGray({
         id: formData.id,
         data: values,
       });
-
       if (res.data?.success) {
-        successMessage = res.data?.message;
+        setOpen && setOpen(false);
+        toast.success(res.data?.message);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
     // for edit form
-    else if (type === "edit") {
-      const res = await AddDyeing(values);
+    else if (type === "add") {
+      const res = await addGray(values);
       if (res.data?.success) {
-        setOpen && setOpen(false);
+        toast.success(res.data?.message);
         form.reset();
-        successMessage = res.data?.message;
+        setOpen && setOpen(false);
       } else if (!res?.error?.data?.success) {
-        errorMessage = res?.error?.data?.error?.message;
+        toast.error(res?.error?.data?.error?.message);
       }
     }
-
-    // message show
-    if (successMessage) toast.success(successMessage);
-    else if (errorMessage) toast.error(errorMessage);
   };
-
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 w-full"
+        >
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dyeing Name</FormLabel>
+                <FormLabel>Gray Name</FormLabel>
                 <FormControl>
                   <Input
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                    placeholder="Enter dyeing name"
+                    placeholder="Enter gray name"
                     {...field}
                   />
                 </FormControl>
@@ -124,11 +110,11 @@ export default function DyeingForm({ type = "edit", formData = {}, setOpen }) {
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dyeing Address</FormLabel>
+                <FormLabel>Gray Address</FormLabel>
                 <FormControl>
                   <Input
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                    placeholder="Enter dyeing address"
+                    placeholder="Enter gray address"
                     {...field}
                   />
                 </FormControl>
@@ -141,11 +127,11 @@ export default function DyeingForm({ type = "edit", formData = {}, setOpen }) {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dyeing Phone </FormLabel>
+                <FormLabel>Gray Phone </FormLabel>
                 <FormControl>
                   <Input
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                    placeholder="Enter dyeing phone"
+                    placeholder="Enter gray phone"
                     {...field}
                   />
                 </FormControl>
@@ -153,7 +139,16 @@ export default function DyeingForm({ type = "edit", formData = {}, setOpen }) {
               </FormItem>
             )}
           />
-          <Button type="submit"> {isLoading ? "Loading" : "Submit"} </Button>
+
+          {type === "update" ? (
+            <Button type="submit">
+              <SubmitLoader loading={isUpdateLoading} label={"Update"} />
+            </Button>
+          ) : (
+            <Button type="submit">
+              <SubmitLoader loading={isLoading} label={"Submit"} />
+            </Button>
+          )}
         </form>
       </Form>
     </>

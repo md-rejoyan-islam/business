@@ -22,6 +22,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
 import { toast } from "react-toastify";
+import SubmitLoader from "../SubmitLoader";
 
 const paymentAddFSchema = z.object({
   amount: z.coerce
@@ -47,7 +48,7 @@ const paymentUpdateSchema = z.object({
 
 export default function PaymentForm({
   data,
-  type = "edit",
+  type = "add",
   beforePaymentData,
   setOpen,
   dueAmount,
@@ -66,13 +67,13 @@ export default function PaymentForm({
   });
 
   const onSubmit = async (values) => {
-    if (values?.amount > dueAmount) {
+    if (String(dueAmount) && values?.amount > dueAmount) {
       return toast.error("Payment amount can't be greater than due amount");
     }
 
     if (type === "update") {
       const paymentData = {
-        id: payment?.id,
+        id: beforePaymentData?.id,
         amount: values?.amount,
         date: formatISO(values?.date),
       };
@@ -80,13 +81,12 @@ export default function PaymentForm({
       const response = await updatePayemnt(paymentData);
 
       if (response?.data?.success) {
-        setOpen(false);
-        form.reset();
         toast.success(response?.data?.message);
+        setOpen(false);
       } else {
         toast.error(response?.error?.data?.error?.message);
       }
-    } else if (type === "edit") {
+    } else if (type === "add") {
       const paymentData = {
         ...data,
         date: formatISO(values?.date),
@@ -96,8 +96,9 @@ export default function PaymentForm({
       const response = await addPayment(paymentData);
 
       if (response?.data?.success) {
-        setOpen(false);
         toast.success(response?.data?.message);
+        setOpen(false);
+        form.reset();
       } else {
         toast.error(response?.error?.data?.error?.message);
       }
@@ -116,6 +117,7 @@ export default function PaymentForm({
                 <Input
                   className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                   type="number"
+                  step="0.01"
                   placeholder="Enter payment amount"
                   {...field}
                 />
@@ -162,7 +164,13 @@ export default function PaymentForm({
           )}
         />
 
-        <Button type="submit"> {isLoading ? "Loading" : "Submit"} </Button>
+        <Button type="submit">
+          {type === "update" ? (
+            <SubmitLoader label={"Update"} loading={isLoading} />
+          ) : (
+            <SubmitLoader label={"Submit"} loading={isLoading} />
+          )}
+        </Button>
       </form>
     </Form>
   );

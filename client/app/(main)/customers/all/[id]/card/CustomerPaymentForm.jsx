@@ -34,7 +34,7 @@ import {
 } from "@/features/dyeing/dyeingApi";
 import {
   useCustomerChalanPaymentMutation,
-  useUpdateCustomerChalanPaymentMutation,
+  useUpdateCustomerPaymentMutation,
 } from "@/features/customers/customerApi";
 
 const formSchema = z.object({
@@ -70,7 +70,7 @@ export default function CustomerPaymentForm({
   const [addPayment, { isLoading }] = useCustomerChalanPaymentMutation();
 
   const [updatePayment, { isLoading: isUpdateLoading }] =
-    useUpdateCustomerChalanPaymentMutation();
+    useUpdateCustomerPaymentMutation();
 
   const form = useForm({
     resolver: zodResolver(type === "update" ? updateFormSchema : formSchema),

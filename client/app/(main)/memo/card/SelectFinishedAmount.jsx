@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { useState } from "react";
+import AddFinishedProductFromMemo from "./AddFinishedProduct";
 
 export default function SelectFinishedAmount({
   product,
   setAllSelectedProducts,
   setOpen,
+  refetch,
 }) {
   const [selectedItem, setSelectedItem] = useState({
     id: "",
@@ -44,39 +46,48 @@ export default function SelectFinishedAmount({
       <h3 className="text-xl font-semibold text-center pt-2 pb-2">
         Finished Amount
       </h3>
-      <div className="flex gap-3 border p-4 rounded-md ">
-        {product?.finished_products?.map((item, index) => (
-          <p
-            className={`${
-              item?.is_sold ? "bg-red-50" : ""
-            } h-16 w-16 rounded-md border flex justify-center items-center`}
-            key={index}
-          >
-            <Toggle
-              className="h-full w-full data-[state=on]:bg-slate-200"
-              disabled={item?.is_sold}
-              onPressedChange={(state) => {
-                setSelectedItem((prev) => {
-                  if (state) {
-                    return {
-                      ...prev,
-                      id: product.id,
-                      name: product.name,
-                      items: [...prev.items, item],
-                    };
-                  } else {
-                    return {
-                      ...prev,
-                      items: prev.items.filter((i) => i.id !== item.id),
-                    };
-                  }
-                });
-              }}
+      <div className="border p-4 rounded-md ">
+        <div className="flex gap-3 flex-wrap">
+          {product?.finished_products?.map((item, index) => (
+            <p
+              className={`${
+                item?.is_sold ? "bg-red-50" : ""
+              } h-16 w-16 rounded-md border flex justify-center items-center`}
+              key={index}
             >
-              {item?.amount}
-            </Toggle>
-          </p>
-        ))}
+              <Toggle
+                className="h-full w-full data-[state=on]:bg-slate-200"
+                disabled={item?.is_sold}
+                onPressedChange={(state) => {
+                  setSelectedItem((prev) => {
+                    if (state) {
+                      return {
+                        ...prev,
+                        id: product.id,
+                        name: product.name,
+                        items: [...prev.items, item],
+                      };
+                    } else {
+                      return {
+                        ...prev,
+                        items: prev.items.filter((i) => i.id !== item.id),
+                      };
+                    }
+                  });
+                }}
+              >
+                {item?.amount}
+              </Toggle>
+            </p>
+          ))}
+        </div>
+        <div>
+          {product?.finished_products?.length === 0 && (
+            <div>
+              <AddFinishedProductFromMemo product={product} refetch={refetch} />
+            </div>
+          )}
+        </div>
       </div>
       <div className="pt-6">
         <h2 className="text-xl font-semibold text-center">Confirm Product </h2>

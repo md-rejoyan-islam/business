@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import GrayPaymentForm from "../form/GrayPaymentForm";
+import GrayPaymentForm from "../../app/(main)/grays/all/[id]/GrayPaymentForm";
 
 import { format, parseISO } from "date-fns";
 import Link from "next/link";

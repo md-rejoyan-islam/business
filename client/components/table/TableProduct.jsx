@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import GrayPaymentForm from "../form/GrayPaymentForm";
+// import GrayPaymentForm from "../../app/(main)/grays/all/[id]/GrayPaymentForm";
 
 import { format, parseISO } from "date-fns";
 
@@ -51,7 +51,7 @@ export const GivePayment = ({ data }) => {
             </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <GrayPaymentForm data={data} setOpen={setOpen} />
+          {/* <GrayPaymentForm data={data} setOpen={setOpen} /> */}
           {/* <GrayForm /> */}
         </DialogContent>
       </Dialog>
@@ -101,7 +101,7 @@ export const EditPayment = ({ payment }) => {
             </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <GrayPaymentForm type="update" payment={payment} setOpen={setOpen} />
+          {/* <GrayPaymentForm type="update" payment={payment} setOpen={setOpen} /> */}
           {/* <GrayForm /> */}
         </DialogContent>
       </Dialog>

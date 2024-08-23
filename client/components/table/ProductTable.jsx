@@ -44,13 +44,10 @@ import Swal from "sweetalert2";
 import { useDeleteProducByIdMutation } from "@/features/products/productApi";
 import ProductForm from "../form/ProductForm";
 import { GrAddCircle } from "react-icons/gr";
-import { TbSum } from "react-icons/tb";
-import ThaanCountForm from "../form/ThaanCountForm";
-import { MdOutlineAddCircleOutline, MdOutlineUpdate } from "react-icons/md";
-import UpdateThaanCountForm from "../form/UpdateThaanCountForm";
+import TableSkeleton from "../skeleton/TableSkeleton";
 
-const ProductTable = ({ data }) => {
-  const [open, setOpen] = React.useState(false);
+const ProductTable = ({ data, isLoading }) => {
+  const [open, setOpen] = React.useState();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -187,44 +184,6 @@ const ProductTable = ({ data }) => {
         <div className="capitalize pl-4">{row.getValue("dyeing_rate")}</div>
       ),
     },
-    // {
-    //   accessorKey: "Thaan Count",
-    //   header: "Thaan Count",
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div className="capitalize flex gap-2">
-    //         <Dialog>
-    //           <DialogTrigger className="py-2 disabled:bg-slate-200 disabled:hover:bg-slate-200 disabled:text-slate-400  h-8 gap-2 rounded-md flex items-center px-3 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-slate-600  border">
-    //             {row?.original?.thaan_count?.length ? (
-    //               <>
-    //                 <MdOutlineUpdate /> <span>Thaan</span>
-    //               </>
-    //             ) : (
-    //               <>
-    //                 <MdOutlineAddCircleOutline /> <span>Thaan</span>
-    //               </>
-    //             )}
-    //           </DialogTrigger>
-    //           <DialogContent className="overflow-scroll ">
-    //             <DialogHeader>
-    //               <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-    //                 {row?.original?.thaan_count.length
-    //                   ? " Update Thaan Data"
-    //                   : "Thaan Count"}
-    //               </DialogTitle>
-    //               <DialogDescription></DialogDescription>
-    //             </DialogHeader>
-    //             {row?.original?.thaan_count.length ? (
-    //               <UpdateThaanCountForm type="edit" formData={row?.original} />
-    //             ) : (
-    //               <ThaanCountForm type="edit" formData={row?.original} />
-    //             )}
-    //           </DialogContent>
-    //         </Dialog>
-    //       </div>
-    //     );
-    //   },
-    // },
     {
       accessorKey: "Action",
       header: "Action",
@@ -242,7 +201,6 @@ const ProductTable = ({ data }) => {
                 <DialogDescription></DialogDescription>
               </DialogHeader>
               <ProductForm type="update" formData={row?.original} />
-              {/* <GrayForm type="update" formData={row?.original} /> */}
             </DialogContent>
           </Dialog>
           <Button
@@ -297,7 +255,7 @@ const ProductTable = ({ data }) => {
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
-            <ProductForm setOpen={setOpen} />
+            <ProductForm type="add" setOpen={setOpen} />
           </DialogContent>
         </Dialog>
         <DropdownMenu>
@@ -327,80 +285,87 @@ const ProductTable = ({ data }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results found.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          showing {table.getRowModel().rows?.length} of {data.length} enteries
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+              showing {table.getRowModel().rows?.length} of {data.length}{" "}
+              enteries
+            </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

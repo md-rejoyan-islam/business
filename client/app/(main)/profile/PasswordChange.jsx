@@ -36,7 +36,6 @@ export default function PasswordChange({ user }) {
     if (response?.data?.success) {
       toast.success("User password updated successfully");
       setOpen(false);
-      setOpen(false);
       setFields({
         password: "",
         confirmPassword: "",

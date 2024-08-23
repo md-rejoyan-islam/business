@@ -7,13 +7,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { useGetAllGraysQuery } from "@/features/gray/grayApi";
 import { format, formatISO } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -24,16 +17,12 @@ import CreatableSelect from "react-select/creatable";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useCreateGrayDyeingProductMutation } from "@/features/products/productApi";
-
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
+import SubmitLoader from "../SubmitLoader";
 
 export default function BuyProduct({ setOpen, refetchGrays }) {
-  const { data: grays, isLoading, refetch } = useGetAllGraysQuery();
-  const [createGrayDyeingProduct] = useCreateGrayDyeingProductMutation();
+  const { data: grays, refetch } = useGetAllGraysQuery();
+  const [createGrayDyeingProduct, { isLoading }] =
+    useCreateGrayDyeingProductMutation();
   const [fields, setFields] = useState([null]);
   const [grayName, setGrayName] = useState("");
 
@@ -78,8 +67,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
   };
 
   const onSubmit = async (values) => {
-    const { gray_name, gray_date, product_1, amount_1, rate_1, dyeing_name_1 } =
-      values;
+    const { gray_name, gray_date, product_1, amount_1, rate_1 } = values;
 
     const gray = grays?.data?.find((data) => data.name === gray_name);
 
@@ -91,7 +79,6 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
         return toast.error("Gray Phone number is required!");
     }
 
-    if (!gray_date) return toast.error("Gray date is required!!");
     if (!product_1) return toast.error("Product-1 name is required!!");
     if (!amount_1) return toast.error("Product-1 amount is required!!");
     if (!rate_1) return toast.error("Product-1 rate is required!!");
@@ -135,7 +122,6 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
 
     const data = {
       gray_name,
-      gray_date: formatISO(gray_date),
       gray_address: gray?.address || values.gray_address,
       gray_phone: gray?.phone || values.gray_phone,
       products,
@@ -153,8 +139,6 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
         }
       })
       .catch((err) => {
-        console.log(err);
-
         toast.error(err?.data?.error?.message);
       });
   };
@@ -231,44 +215,6 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
                   </>
                 )}
             </>
-
-            <FormField
-              control={form.control}
-              name="gray_date"
-              type="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Gray Date</FormLabel>
-                  <Popover modal={true}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button className="bg-transparent border hover:bg-black/5 text-black">
-                          {field?.value ? (
-                            format(field?.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field?.value}
-                        onSelect={field?.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
           {/* product*/}
@@ -296,7 +242,9 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
             >
               {"Add Product"}
             </Button>
-            <Button type="submit"> {isLoading ? "Loading" : "Submit"} </Button>
+            <Button type="submit">
+              <SubmitLoader label={"Submit"} loading={isLoading} />
+            </Button>
           </div>
         </form>
       </Form>

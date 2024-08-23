@@ -18,14 +18,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import GrayPaymentForm from "@/components/form/GrayPaymentForm";
 import EditDyeingCard from "./EditDyeingCard";
 import { EditGrayPayment } from "@/app/(main)/grays/all/[id]/EditGrayPayment";
+import PaymentForm from "@/app/(main)/components/form/PaymentForm";
+import { useDyeingPaymentMutation } from "@/features/dyeing/dyeingApi";
+import { EditDyeingPayment } from "./EditDyeingPayment";
+import Swal from "sweetalert2";
+import Link from "next/link";
+import { FaRunning } from "react-icons/fa";
 
 export default function DyeingCard({ data }) {
+  const [addPayment, { isLoading }] = useDyeingPaymentMutation();
   const totalCost = data?.products.reduce((sum, product) => {
     return sum + (product?.dyeing_amount * product?.dyeing_rate || 0);
   }, 0);
+
+  console.log(data);
 
   const totalPayment =
     data?.payments?.reduce((sum, payment) => {
@@ -35,8 +43,73 @@ export default function DyeingCard({ data }) {
   const totalDue = totalCost - totalPayment;
 
   const [open, setOpen] = useState();
+  // toggle marked paid
+  const toggleMarkedPaid = async () => {
+    const updateData = {
+      id: data.id,
+      markedPaid: !data?.markedPaid,
+      discount: data?.markedPaid ? 0 : totalDue,
+    };
+
+    if (data?.markedPaid) {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "If you mark unpaid, discount will be removed",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, do it!",
+      });
+      if (result?.isConfirmed) {
+        const res = await toggleMakrked(updateData);
+
+        if (res?.data?.success) {
+          Swal.fire(
+            "Success!",
+            "Gray payment  has been marked unpaid.",
+            "success"
+          );
+        } else {
+          Swal.fire({
+            title: "Failed",
+            text: res?.error?.data?.error?.message,
+            icon: "error",
+          });
+        }
+      }
+    } else {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "If you mark paid, rest of the due will be discount",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, do it!",
+      });
+
+      if (result?.isConfirmed) {
+        const res = await toggleMakrked(updateData);
+
+        if (res?.data?.success) {
+          Swal.fire(
+            "Success!",
+            "Gray payment  has been marked unpaid.",
+            "success"
+          );
+        } else {
+          Swal.fire({
+            title: "Failed",
+            text: res?.error?.data?.error?.message,
+            icon: "error",
+          });
+        }
+      }
+    }
+  };
   return (
-    <Card className="h-full  min-w-[600px] hover:scale-[1.01]  transition-all duration-300  drop-shadow-sm rounded-md border">
+    <Card className="h-full  min-w-[600px] shadow-md">
       <CardHeader className="bg-slate-200/60 rounded-t-md py-4">
         <CardTitle className="flex gap-5 justify-between items-center text-xl">
           <span className="text-base flex gap-2 items-center">
@@ -45,10 +118,7 @@ export default function DyeingCard({ data }) {
           </span>
           <div className="flex items-center gap-2">
             <Dialog>
-              <DialogTrigger
-                className="bg-black/10 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-slate-500 disabled:hover:text-slate-500 rounded-md text-black text-[12px] border hover:bg-black/15 hover:text-black h-8 px-2"
-                // disabled={totalCost ? false : true}
-              >
+              <DialogTrigger className="bg-black/10 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-slate-500 disabled:hover:text-slate-500 rounded-md text-black text-[12px] border hover:bg-black/15 hover:text-black h-8 px-2">
                 Edit
               </DialogTrigger>
               <DialogContent className="overflow-scroll ">
@@ -82,12 +152,15 @@ export default function DyeingCard({ data }) {
                   </DialogTitle>
                   <DialogDescription></DialogDescription>
                 </DialogHeader>
-                <GrayPaymentForm
-                  type="edit"
+                <PaymentForm
+                  type="add"
                   setOpen={setOpen}
-                  data={data}
-                  from="dyeing"
-                  due={totalDue}
+                  data={{
+                    chalanId: data?.id,
+                    dyeingId: data?.dyeingId,
+                  }}
+                  addPayment={addPayment}
+                  isLoading={isLoading}
                 />
               </DialogContent>
             </Dialog>
@@ -103,23 +176,29 @@ export default function DyeingCard({ data }) {
             <div className="left space-y-4 w-full  ">
               {data?.products?.map((product) => (
                 <div
-                  className="bg-slate-100/80 p-2 border rounded-md shadow-[4px_4px_2px_1px__#eee]"
+                  className="bg-green-50/80  space-y-1.5 p-2 border rounded-md shadow-[4px_4px_2px_1px__#eee]"
                   key={product?.id}
                 >
-                  <p className="text-lg font-semibold">{product?.name}</p>
-                  <p className="flex justify-between items-center">
+                  <p className="text-xl py-1 font-semibold flex justify-between items-center bg-white px-2 rounded-md">
+                    <Link href={`/products/all/${product?.id}`}>
+                      {product?.name}
+                    </Link>
+                    <span className="flex gap-2 items-center text-sm text-slate-500 uppercase">
+                      <FaRunning />{" "}
+                      <span className="text-[12px]">
+                        {product?.delivery_status}
+                      </span>
+                    </span>
+                  </p>
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1">
                     <span>Gray Order</span>
                     <span>{product?.gray_amount}</span>
                   </p>
-                  <p className="flex justify-between items-center">
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1">
                     <span>Dyeing Amount</span>
                     <span>{product?.dyeing_amount}</span>
                   </p>
-                  <p className="flex justify-between items-center">
-                    <span>Dyeing Rate</span>
-                    <span>{product?.dyeing_amount}</span>
-                  </p>
-                  <p className="flex justify-between items-center ">
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1 ">
                     <span>Difference</span>
                     <span>
                       {product?.gray_amount && product?.dyeing_amount
@@ -127,11 +206,20 @@ export default function DyeingCard({ data }) {
                         : null}
                     </span>
                   </p>
-                  <p className="flex justify-between items-center ">
-                    <span>Finished Product</span>
-                    <span>{product?.finishedProduct}</span>
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1">
+                    <span>Dyeing Rate</span>
+                    <span>{product?.dyeing_amount}</span>
                   </p>
-                  <p className="flex justify-between items-center ">
+
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1 ">
+                    <span>Finished Product</span>
+                    <span>
+                      {product?.finished_products?.reduce((sum, product) => {
+                        return sum + product?.amount;
+                      }, 0)}
+                    </span>
+                  </p>
+                  <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1 ">
                     <span>Finished Product * Rate</span>
                     <span>
                       {product?.finishedProduct * product?.dyeing_rate || ""}
@@ -165,11 +253,11 @@ export default function DyeingCard({ data }) {
               {/* payments */}
               {data?.payments?.map((payment, index) => (
                 <div
-                  className="flex justify-between group show-edit relative "
+                  className="flex justify-between group show-edit relative bg-slate-100 px-2 rounded-md py-1"
                   key={payment.id}
                 >
                   <p className="flex items-center">
-                    <span className="font-bold">{index + 1}.</span>
+                    <span className="font-medium mr-1">{index + 1}.</span>
                     <span className="text-sm">
                       &nbsp;
                       {format(parseISO(payment?.date), "d MMMM  yyyy")}
@@ -177,14 +265,9 @@ export default function DyeingCard({ data }) {
                   </p>
                   <div className="font-medium flex gap-3  items-center">
                     <div className=" invisible   group-hover:visible ">
-                      <EditGrayPayment
-                        data={data}
-                        payment={payment}
-                        due={totalDue}
-                        from="dyeing"
-                      />
+                      <EditDyeingPayment payment={payment} due={totalDue} />
                     </div>
-                    <span>{payment?.amount}</span>
+                    <span className="text-slate-500">{payment?.amount}</span>
                   </div>
                 </div>
               ))}
@@ -194,17 +277,39 @@ export default function DyeingCard({ data }) {
 
               {/* total  payment and due  */}
               {totalPayment ? (
-                <div>
+                <div className="text-slate-700">
                   <p className="flex justify-between items-center py-3 font-semibold">
                     <span>Total Payment</span>
                     <span className=" font-medium">{totalPayment}</span>
                   </p>
+                  {data?.discount ? (
+                    <div className="flex justify-between items-center pb-3">
+                      <p className="flex gap-2 items-center font-medium">
+                        <span>Discount</span>
+                      </p>
+                      <span className="text-red-500">-{data?.discount}</span>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   <div className="flex justify-between items-center pb-3">
-                    <p className="flex gap-2 items-center font-semibold">
+                    <p className="flex gap-2 items-center font-medium">
                       <span>Due</span>
-                      <Button className="text-[12px] bg-black/5 text-black border hover:bg-black/10 hover:text-black h-fit px-2">
-                        Mark Paid
-                      </Button>
+                      {data?.markedPaid ? (
+                        <Button
+                          className="text-[12px] bg-red-100 py-1 text-black border hover:bg-red-200 hover:text-black h-fit px-2"
+                          onClick={toggleMarkedPaid}
+                        >
+                          Mark Unpaid
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={toggleMarkedPaid}
+                          className="text-[12px] bg-black/5 py-1 text-black border hover:bg-black/10 hover:text-black h-fit px-2"
+                        >
+                          Mark Paid
+                        </Button>
+                      )}
                     </p>
                     <span className="text-red-500">{totalDue}</span>
                   </div>

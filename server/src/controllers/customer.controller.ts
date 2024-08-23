@@ -67,7 +67,11 @@ export const getCustomerById = asyncHandler(
         id: +req.params.id,
       },
       include: {
-        products: true,
+        products: {
+          include: {
+            finishedProducts: true,
+          },
+        },
         chalans: {
           include: {
             customerProducts: {
@@ -307,7 +311,7 @@ export const paymentForCustomerChalan = asyncHandler(
         customerId: +customerId,
         amount: +amount,
         date: date.split("T")[0],
-        customerChalanId: +customerChalanId,
+        customerChalanId: customerChalanId ? +customerChalanId : null,
       },
     });
 
@@ -316,6 +320,92 @@ export const paymentForCustomerChalan = asyncHandler(
       message: "Payment done successfully",
       payload: {
         data: payment,
+      },
+    });
+  }
+);
+
+// update customer payment by id
+export const updateCustomerPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    console.log(req.body);
+
+    const payment = await prismaClient.customerPayment.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    if (!payment) createError.NotFound("Customer payment data not found.");
+
+    const updatedData = await prismaClient.customerPayment.update({
+      where: { id: +req.params.id },
+      data: {
+        amount: req.body.amount,
+        date: req.body.date.split("T")[0],
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Customer payment updated successfully.",
+      payload: {
+        data: updatedData,
+      },
+    });
+  }
+);
+
+// delete customer payment by id
+export const deleteCustomerPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const payment = await prismaClient.customerPayment.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    if (payment) createError.NotFound("Customer payment data not found.");
+
+    await prismaClient.customerPayment.delete({
+      where: {
+        id: +req.params.id,
+      },
+    });
+    successResponse(res, {
+      statusCode: 200,
+      message: "Customer payment deleted succefully.",
+      payload: {
+        data: payment,
+      },
+    });
+  }
+);
+
+// toggle gray marked
+export const toggleCustomerChalanMarkedById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const chalan = await prismaClient.customerChalan.findUnique({
+      where: { id: +id },
+    });
+
+    if (!chalan) throw createError.NotFound("Chalan not found!");
+
+    const updatedChalan = await prismaClient.customerChalan.update({
+      where: { id: +id },
+      data: {
+        markedPaid: req.body.markedPaid,
+        discount: req.body.discount,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Change marked.",
+      payload: {
+        data: updatedChalan,
       },
     });
   }

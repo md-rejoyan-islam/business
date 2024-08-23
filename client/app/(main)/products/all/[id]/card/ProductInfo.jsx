@@ -3,7 +3,7 @@ import { LuCalendarDays } from "react-icons/lu";
 
 export default function ProductInfo({ product }) {
   // finished product
-  const finishedProduct = product?.finishedProducts?.reduce((acc, product) => {
+  const finishedProduct = product?.finished_products?.reduce((acc, product) => {
     acc += product?.amount;
     return acc;
   }, 0);
@@ -17,7 +17,7 @@ export default function ProductInfo({ product }) {
     difference > 0 &&
     gRate &&
     finishedProduct &&
-    (difference * gRate) / finishedProduct;
+    ((difference * gRate) / finishedProduct).toFixed(2);
 
   // total
   const total = "";

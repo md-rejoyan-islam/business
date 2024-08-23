@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
+import { formatISO } from "date-fns";
 
 /**
  *
@@ -30,6 +31,9 @@ export const getAllProducts = asyncHandler(
         gray: true,
         dyeing: true,
         finished_products: true,
+      },
+      orderBy: {
+        createAt: "desc",
       },
     });
 
@@ -117,11 +121,15 @@ export const createProduct = asyncHandler(
 
     if (!gray) throw createError("Couldn't find any gray by grayId.");
 
+    console.log(req.body);
+
     // chalan create for this product with gray id
     const chalan = await prismaClient.grayChalan.create({
       data: {
         grayId: +grayId,
-        date: req.body?.gray_date.split("T")[0],
+        date: req.body?.gray_date
+          ? req.body?.gray_date.split("T")[0]
+          : new Date().toISOString().split("T")[0],
       },
     });
 
@@ -142,6 +150,9 @@ export const createProduct = asyncHandler(
       ...req.body,
       grayChalanId: chalan.id,
       delivery_status: "RUNNING",
+      gray_date: req.body?.gray_date
+        ? req.body?.gray_date.split("T")[0]
+        : new Date().toISOString().split("T")[0],
     };
 
     if (dyeingChalanId) createdData.dyeingChalanId = dyeingChalanId;
@@ -457,13 +468,13 @@ export const deleteThaanById = asyncHandler(
 // gray, dyeing and product create together
 export const createGrayDyeingProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const { gray_name, products, gray_date } = req.body;
+    const { gray_phone, products, gray_name } = req.body;
 
     let grayId = null;
     //  check gray Name
     const gray = await prismaClient.gray.findUnique({
       where: {
-        name: gray_name,
+        phone: gray_phone,
       },
     });
 
@@ -486,7 +497,7 @@ export const createGrayDyeingProduct = asyncHandler(
     const grayChalan = await prismaClient.grayChalan.create({
       data: {
         grayId,
-        date: new Date().toISOString().split("T")[0],
+        date: formatISO(new Date()).split("T")[0],
       },
     });
 
@@ -506,7 +517,7 @@ export const createGrayDyeingProduct = asyncHandler(
         const dyeingChalan = await prismaClient.dyeingChalan.create({
           data: {
             dyeingId: id,
-            date: new Date().toISOString().split("T")[0],
+            date: formatISO(new Date()).split("T")[0],
           },
         });
         return { dyeingId: id, id: dyeingChalan.id };
@@ -535,7 +546,6 @@ export const createGrayDyeingProduct = asyncHandler(
         return {
           ...product,
           grayId,
-          gray_date: gray_date.split("T")[0],
           grayChalanId: grayChalan.id,
           delivery_status: product?.dyeingId ? "IN_MILL" : "RUNNING",
         };

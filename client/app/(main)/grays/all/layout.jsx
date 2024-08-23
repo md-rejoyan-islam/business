@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "All Grays",
+  title: "Gray Companies",
 };
 
 export default function layout({ children }) {

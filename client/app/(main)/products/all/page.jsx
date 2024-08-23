@@ -18,7 +18,7 @@ export default function AllProduct() {
   const { data: { data: products = [] } = {}, isLoading } =
     useGetAllProductsQuery();
 
-  const processData = products?.map((product) => {
+  const processData = products.map((product) => {
     const finishedProduct = product?.finished_products?.reduce((sum, thaan) => {
       return sum + thaan?.amount;
     }, 0);
@@ -78,11 +78,7 @@ export default function AllProduct() {
 
       <PageTitle title={"All Product Data"} />
 
-      {isLoading ? (
-        <TableSkeleton />
-      ) : (
-        <ProductTable data={processData || []} />
-      )}
+      <ProductTable isLoading={isLoading} data={processData || []} />
     </div>
   );
 }
