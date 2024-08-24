@@ -41,6 +41,8 @@ import BuyProduct from "./card/BuyProduct";
 import SelectedProduct from "./card/SelectedProduct";
 import CountCost from "./card/CountCost";
 import PaymentCount from "./card/PaymentCount";
+import { Skeleton } from "@/components/ui/skeleton";
+import TableSkeleton from "@/components/skeleton/TableSkeleton";
 
 export default function Memo() {
   const { data: { data: customers = [] } = {}, isLoading } =
@@ -57,12 +59,25 @@ export default function Memo() {
     name: "",
     address: "",
     phone: "",
-    beforeData: false,
+    beforeData: false, // for auto get address and phone from name
     id: "",
   });
 
   const [allSelectedProducts, setAllSelectedProducts] = useState([]);
   const [payment, setPayment] = useState(null);
+
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10">
+        <Skeleton className="h-[30px] w-[300px] rounded-md" />
+        <div className="mx-auto pt-6 space-y-2">
+          <Skeleton className="h-[20px] w-full rounded-md" />
+          <Skeleton className="h-[20px] w-full rounded-md" />
+        </div>
+        <TableSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className=" px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-3  lg:py-4">
@@ -103,7 +118,6 @@ export default function Memo() {
               Date
             </span>
             <span className="border  h-8 inline-flex items-end justify-center  bg-slate-50 px-2 py-1.5 text-sm rounded-r-md">
-              {/* 17 June 2024 */}
               {format(new Date(), "dd MMM yyyy")}
             </span>
           </p>
@@ -130,9 +144,11 @@ export default function Memo() {
                 }),
               }}
               onChange={(value) => {
+                console.log(value);
+
                 const customer =
                   value?.value &&
-                  customers?.find((item) => item.name === value.value);
+                  customers?.find((item) => item.id === value.id);
 
                 if (!value?.value) {
                   setCustomer({
@@ -198,7 +214,7 @@ export default function Memo() {
                 direction="horizontal"
                 className="max-w-full rounded-lg"
               >
-                <ResizablePanel defaultSize={50} className="pb-3 ">
+                <ResizablePanel defaultSize={50} minSize={30} className="pb-3 ">
                   <div className="w-full ">
                     <h2 className="text-xl font-medium bg-slate-100 text-center py-2">
                       Products
@@ -210,24 +226,44 @@ export default function Memo() {
                           : " justify-center"
                       } px-3 py-4 flex gap-6 `}
                     >
-                      <div className="flex justify-between gap-x-6 gap-y-8 flex-wrap items-center">
-                        {/* products  */}
-                        <div>
-                          <SelectedProduct
-                            allSelectedProducts={allSelectedProducts}
-                            setAllSelectedProducts={setAllSelectedProducts}
-                          />
-                        </div>
-                        <div>
-                          {!allSelectedProducts?.length && (
-                            <p className=" text-red-500 py-3 text-center">
-                              No product selected
-                            </p>
-                          )}
+                      <div>
+                        {/* if product found add button show up  */}
+                        <div
+                          className={
+                            allSelectedProducts.length ? "pb-3" : "hidden"
+                          }
+                        >
                           <BuyProduct
                             setAllSelectedProducts={setAllSelectedProducts}
                             allSelectedProducts={allSelectedProducts}
                           />
+                        </div>
+                        <div
+                          className=" flex justify-between items-center  gap-x-6 gap-y-8 w-full
+                      "
+                        >
+                          {/* products  */}
+                          <div className=" flex-1 ">
+                            <SelectedProduct
+                              allSelectedProducts={allSelectedProducts}
+                              setAllSelectedProducts={setAllSelectedProducts}
+                            />
+                            {!allSelectedProducts?.length && (
+                              <p className=" text-red-500 py-3 text-center">
+                                No product selected
+                              </p>
+                            )}
+                          </div>
+                          <div
+                            className={
+                              allSelectedProducts.length ? "hidden" : ""
+                            }
+                          >
+                            <BuyProduct
+                              setAllSelectedProducts={setAllSelectedProducts}
+                              allSelectedProducts={allSelectedProducts}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>

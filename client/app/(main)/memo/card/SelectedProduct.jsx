@@ -1,6 +1,7 @@
 import React from "react";
-import { CiSquareRemove } from "react-icons/ci";
-import { IoIosRemoveCircleOutline } from "react-icons/io";
+import { CiSquareMinus } from "react-icons/ci";
+import { FaRegEdit } from "react-icons/fa";
+import EditBuyProduct from "./EditBuyProduct";
 
 export default function SelectedProduct({
   allSelectedProducts,
@@ -27,11 +28,18 @@ export default function SelectedProduct({
           </li>
           {/* item remove button */}
           <span
-            className="absolute -top-[2.5px] -right-[15px] cursor-pointer z-50 hidden group-hover:block "
+            className="absolute -top-[2.5px] -right-[19px] cursor-pointer z-50  hidden group-hover:block "
             onClick={() => handleRemove(index)}
           >
-            <CiSquareRemove className="text-lg text-red-500" />
+            <CiSquareMinus className="text-[22px] text-red-300 hover:text-red-500  rounded-sm" />
           </span>
+          <div className="absolute top-[18px] -right-[17px] cursor-pointer z-50  hidden group-hover:block ">
+            <EditBuyProduct
+              product={product}
+              index={index}
+              setAllSelectedProducts={setAllSelectedProducts}
+            />
+          </div>
           {product?.items?.map((item, index) => (
             <li
               className=" py-1.5  inline-flex justify-center items-center border "

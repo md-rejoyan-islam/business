@@ -16,13 +16,21 @@ export default function CountCost({ allSelectedProducts }) {
   }, 0);
 
   return (
-    <table className="w-full border border-collapse">
+    <table className="w-full border border-collapse overflow-scroll">
       <thead className="bg-slate-100 ">
         <tr className="text-left">
-          <th className="border border-collapse px-4 py-1.5">Fabric Name</th>
-          <th className="border border-collapse px-4 py-1.5">Amount</th>
-          <th className="border border-collapse px-4 py-1.5">Rate</th>
-          <th className="border border-collapse px-4 py-1.5">Price</th>
+          <th className="border border-collapse px-4 py-1.5 text-nowrap">
+            Fabric Name
+          </th>
+          <th className="text-nowrap border border-collapse px-4 py-1.5">
+            Amount
+          </th>
+          <th className="text-nowrap border border-collapse px-4 py-1.5">
+            Rate
+          </th>
+          <th className="text-nowrap border border-collapse px-4 py-1.5">
+            Price
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -31,7 +39,7 @@ export default function CountCost({ allSelectedProducts }) {
             acc += item.amount;
             return acc;
           }, 0);
-          const price = totalAmount * product?.sellRate;
+          const price = +(totalAmount * product?.sellRate).toFixed(2);
           return (
             <tr key={index}>
               <td className="px-4 py-1.5 border border-collapse">
