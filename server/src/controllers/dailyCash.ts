@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
+import { previousCashCalculate } from "../helper/previousCost";
 
 // get daily cash
 export const getAllDailyCash = asyncHandler(
@@ -54,6 +55,44 @@ export const getDailyCashByDate = asyncHandler(
         othersCost: true,
       },
     });
+
+    // load previous cash
+    const date = new Date();
+
+    const previousDay = date.setDate(date.getDate() - 1);
+
+    // update daily cash data
+    const todayDailyCash = await prismaClient.dailyCash.findUnique({
+      where: {
+        date: new Date().toISOString().split("T")[0],
+      },
+    });
+
+    if (!todayDailyCash) {
+      const previousCash = await prismaClient.dailyCash.findUnique({
+        where: {
+          date: new Date(previousDay).toISOString().split("T")[0],
+        },
+        include: {
+          othersCost: true,
+        },
+      });
+      console.log(previousCash);
+
+      const previousCashCal = await previousCashCalculate(
+        new Date(previousDay).toISOString().split("T")[0],
+        previousCash
+      );
+
+      // console.log(previousCash, previousCashCal);
+
+      await prismaClient.dailyCash.create({
+        data: {
+          previous: previousCash ? previousCashCal : 0,
+          date: new Date().toISOString().split("T")[0],
+        },
+      });
+    }
 
     successResponse(res, {
       statusCode: 200,
@@ -120,6 +159,7 @@ export const addOthersCost = asyncHandler(
         date: new Date().toISOString().split("T")[0],
       },
     });
+    console.log(dailyCash);
 
     if (!dailyCash) throw createError.NotFound("Daily Cash not found.");
 

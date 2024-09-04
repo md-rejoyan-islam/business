@@ -37,7 +37,7 @@ export const previousCashCalculate = async (
     }, 0) || 0;
 
   const othersCost =
-    previousCash.othersCost?.reduce((sum: number, cost: any) => {
+    previousCash?.othersCost?.reduce((sum: number, cost: any) => {
       return sum + (cost?.amount || 0);
     }, 0) || 0;
 
