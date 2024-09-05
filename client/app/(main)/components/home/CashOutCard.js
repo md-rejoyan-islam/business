@@ -1,7 +1,25 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function CashOutCard({ graysPayments, dyeingsPayments }) {
-  console.log(dyeingsPayments);
+export default function CashOutCard({
+  graysPayments,
+  dyeingsPayments,
+  dailyCash,
+}) {
+  const totalGraysPayment =
+    graysPayments?.reduce((sum, payment) => {
+      return sum + (payment?.amount || 0);
+    }, 0) || 0;
+  const totalDyeingsPayment =
+    dyeingsPayments?.reduce((sum, payment) => {
+      return sum + (payment?.amount || 0);
+    }, 0) || 0;
+
+  const othersCost =
+    dailyCash.othersCost?.reduce((sum, cost) => {
+      return sum + (cost?.amount || 0);
+    }, 0) || 0;
+
+  const totalCost = totalDyeingsPayment + totalGraysPayment + othersCost;
 
   return (
     <>
@@ -30,15 +48,22 @@ export default function CashOutCard({ graysPayments, dyeingsPayments }) {
             </div>
           ))}
 
-          <div className="py-2 bg-slate-200/40 rounded-md p-2 mt-2">
-            <p className="flex justify-between items-center gap-4 ">
-              <span>Others </span>
-              <span> 300</span>
-            </p>
-          </div>
+          {dailyCash?.othersCost?.map((cost) => (
+            <div
+              className="py-2 bg-slate-200/40 rounded-md p-2 mt-2"
+              key={cost.id}
+            >
+              <p className="flex justify-between items-center gap-4 ">
+                <span>{cost?.name} </span>
+                <span> {cost?.amount}</span>
+              </p>
+            </div>
+          ))}
           <div className="py-2 mt-4 bg-red-50/80 rounded-md p-2 flex gap-2 justify-between items-center">
             <p className=" font-semibold py-1">Total Cash Out</p>
-            <p className="flex justify-between gap-2 items-center py-1">8900</p>
+            <p className="flex justify-between gap-2 items-center py-1">
+              {totalCost}
+            </p>
           </div>
         </CardContent>
       </Card>

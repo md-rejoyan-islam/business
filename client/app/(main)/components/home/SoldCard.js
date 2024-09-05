@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function SoldCard({ customers }) {
   const chalans = customers
@@ -28,7 +29,9 @@ export default function SoldCard({ customers }) {
           <Card className="mt-4 bg-slate-100/30" key={chalan?.id}>
             <CardContent className="overflow-hidden">
               <h4 className="text-center text-lg pt-3 font-semibold pb-3 text-nowrap">
-                {chalan?.customer?.name}
+                <Link href={`/customers/all/${chalan?.customer?.id}`}>
+                  {chalan?.customer?.name}
+                </Link>
               </h4>
 
               {chalan?.customerProducts?.map((product) => {
@@ -68,6 +71,15 @@ export default function SoldCard({ customers }) {
           </Card>
         );
       })}
+      {!chalans?.length ? (
+        <div className="py-2">
+          <p className="text-red-500 font-medium text-center ">
+            No product sell.
+          </p>
+        </div>
+      ) : (
+        ""
+      )}
     </>
   );
 }

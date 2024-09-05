@@ -16,6 +16,8 @@ import {
 
 const authRouter = Router();
 
+
+
 authRouter
   .route("/forgot-password")
   .post(isLoggedOut, validateRequest(forgotPasswordZodSchema), forgotPassword);

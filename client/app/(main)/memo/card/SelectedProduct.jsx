@@ -6,6 +6,7 @@ import EditBuyProduct from "./EditBuyProduct";
 export default function SelectedProduct({
   allSelectedProducts,
   setAllSelectedProducts,
+  type,
 }) {
   const handleRemove = (index) => {
     setAllSelectedProducts((prev) => {
@@ -37,6 +38,7 @@ export default function SelectedProduct({
             <EditBuyProduct
               product={product}
               index={index}
+              type={type}
               setAllSelectedProducts={setAllSelectedProducts}
             />
           </div>

@@ -370,14 +370,11 @@ export const getAllGrayPayment = asyncHandler(
       },
     });
 
-    if (!payments?.length)
-      throw createError.NotFound("Couldn't find any gray payments");
-
     successResponse(res, {
       statusCode: 200,
       message: "All grays payments data",
       payload: {
-        data: payments,
+        data: payments?.length ? payments : [],
       },
     });
   }

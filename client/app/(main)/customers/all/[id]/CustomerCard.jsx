@@ -130,33 +130,41 @@ export default function CustomerCard({ chalan }) {
                 "d MMMM yyyy"
               )}
           </span>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger
-              className="bg-black/10 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-slate-500 disabled:hover:text-slate-500 rounded-md text-black text-[12px] border hover:bg-black/15 hover:text-black h-8 px-2"
-              // disabled={totalCost ? false : true}
+          <div className="flex gap-2 items-center ">
+            <Link
+              href={`/memo/${chalan.id}`}
+              className=" border rounded-md text-[12px] px-3 bg-black/10 hover:bg-black/15   h-fit w-fit"
             >
-              Add Payment
-            </DialogTrigger>
-            <DialogContent className="overflow-scroll ">
-              <DialogHeader>
-                <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                  Add Payment
-                </DialogTitle>
-                <DialogDescription></DialogDescription>
-              </DialogHeader>
-              <PaymentForm
-                setOpen={setOpen}
-                type="add"
-                addPayment={addPayment}
-                dueAmount={totalDue}
-                isLoading={isLoading}
-                data={{
-                  customerId: chalan?.customerId,
-                  customerChalanId: chalan?.customerProducts[0]?.chalanId,
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+              Edit
+            </Link>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger
+                className="bg-black/10 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-slate-500 disabled:hover:text-slate-500 rounded-md text-black text-[12px] border hover:bg-black/15 hover:text-black h-8 px-2"
+                // disabled={totalCost ? false : true}
+              >
+                Add Payment
+              </DialogTrigger>
+              <DialogContent className="overflow-scroll ">
+                <DialogHeader>
+                  <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
+                    Add Payment
+                  </DialogTitle>
+                  <DialogDescription></DialogDescription>
+                </DialogHeader>
+                <PaymentForm
+                  setOpen={setOpen}
+                  type="add"
+                  addPayment={addPayment}
+                  dueAmount={totalDue}
+                  isLoading={isLoading}
+                  data={{
+                    customerId: chalan?.customerId,
+                    customerChalanId: chalan?.customerProducts[0]?.chalanId,
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="py-4 bg-[#fff] ">

@@ -8,8 +8,10 @@ import {
   getAllProducts,
   getProductById,
   productAddToDyeing,
+  purchaseProduct,
   updateMultipleFinishedData,
   updateProductById,
+  updatePurchaseProductById,
   updateThaanById,
 } from "../controllers/product.controllers";
 import {
@@ -34,6 +36,9 @@ productRouter
 productRouter
   .route("/create-gray-dyeing-products")
   .post(createGrayDyeingProduct);
+
+productRouter.route("/confirm-purchase").post(purchaseProduct);
+productRouter.route("/confirm-purchase/:id").put(updatePurchaseProductById);
 
 // thaan add
 productRouter.route("/add-finished-product").post(countFinishedProduct);

@@ -5,6 +5,7 @@ import { productSlice } from "@/features/products/productSlice";
 import { chalanSlice } from "@/features/chalan/chalanSlice";
 import { authSlice } from "@/features/auth/authSlice";
 import { customersSlice } from "@/features/customers/customerSlice";
+import { dailySlice } from "@/features/daily/dailySlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     [chalanSlice.reducerPath]: chalanSlice.reducer,
     [authSlice.reducerPath]: authSlice.reducer,
     [customersSlice.reducerPath]: customersSlice.reducer,
+    [dailySlice.reducerPath]: dailySlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -23,7 +25,8 @@ export const store = configureStore({
       productSlice.middleware,
       chalanSlice.middleware,
       authSlice.middleware,
-      customersSlice.middleware
+      customersSlice.middleware,
+      dailySlice.middleware
     ),
   devTools: true,
   //   devTools: import.meta.env.VITE_NODE_ENV === "development",

@@ -74,6 +74,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
                     type="number"
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                     min={0}
+                    step="0.01"
                     placeholder="Enter product amount"
                     {...field}
                   />
@@ -94,6 +95,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
                     type="number"
                     min={0}
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
+                    step="0.01"
                     placeholder="Enter product rate"
                     {...field}
                   />

@@ -46,6 +46,15 @@ export default function BoughtCard({ grays }) {
           </CardContent>
         </Card>
       ))}
+      {!chalans?.length ? (
+        <div className="py-2">
+          <p className="text-red-500 font-medium text-center ">
+            No product buy.
+          </p>
+        </div>
+      ) : (
+        ""
+      )}
     </>
   );
 }

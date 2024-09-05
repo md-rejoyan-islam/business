@@ -178,6 +178,7 @@ model Customer {
   customerPayments CustomerPayment[]
   createAt         DateTime          @default(now())
   updateAt         DateTime          @updatedAt
+  CustomerCheck    CustomerCheck[]
 }
 
 // customer chalan
@@ -222,4 +223,38 @@ model CustomerPayment {
   customerChalanId Int?
   createAt         DateTime        @default(now())
   updateAt         DateTime        @updatedAt
+}
+
+// daily cash
+model DailyCash {
+  id         Int               @id @default(autoincrement())
+  previous   Float
+  date       String            @unique
+  othersCost DailyOthersCost[]
+  createAt   DateTime          @default(now())
+  updateAt   DateTime          @updatedAt
+}
+
+// daily other cost
+model DailyOthersCost {
+  id          Int        @id @default(autoincrement())
+  name        String
+  amount      Float
+  date        String
+  createAt    DateTime   @default(now())
+  updateAt    DateTime   @updatedAt
+  DailyCash   DailyCash? @relation(fields: [dailyCashId], references: [id])
+  dailyCashId Int?
+}
+
+// customer check
+model CustomerCheck {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  date       String
+  bank       String
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
 }

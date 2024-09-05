@@ -159,6 +159,9 @@ export default function DyeingInfo({
                     />
                   </div>
                   <div className="py-3">
+                    <Label className="block font-semibold pb-3">
+                      Dyeing Date
+                    </Label>
                     <Popover modal={true}>
                       <PopoverTrigger asChild>
                         <Button

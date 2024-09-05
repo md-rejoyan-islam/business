@@ -17,3 +17,4 @@ export const accessTokenExpire: string | number = 103600;
 export const accessCookiemaxAge: number = 1000 * 60 * 60 * 24 * 15; // 15 day
 
 export const nodeEnv = process.env.NODE_ENV;
+export const serverURL = process.env.SERVER_URL;

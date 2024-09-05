@@ -39,14 +39,6 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       providesTags: ["Customer", "CustomersPayments"],
     }),
-    confirmPurchase: builder.mutation({
-      query: (data) => ({
-        url: "/confirm-purchase",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["Customers", "Customer"],
-    }),
 
     getAllcustomersPayments: builder.query({
       query: (query) => ({
@@ -95,6 +87,50 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       invalidatesTags: ["Customer", "Customers", "CustomersPayments"],
     }),
+    getCustomerChalanById: builder.query({
+      query: (id) => ({
+        url: `/customer-chalan/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Customer", "Customers"],
+    }),
+    getAllCustomerChalan: builder.query({
+      query: () => ({
+        url: `/customer-chalan`,
+        method: "GET",
+      }),
+      providesTags: ["Customer", "Customers"],
+    }),
+    getAllCustomerCheck: builder.query({
+      query: () => ({
+        url: `/checks`,
+        method: "GET",
+      }),
+      providesTags: ["Customer", "Customers"],
+    }),
+    addCustomerCheck: builder.mutation({
+      query: (data) => ({
+        url: `/checks`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers"],
+    }),
+    updateCustomerCheckById: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/checks/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers"],
+    }),
+    deleteCustomerCheckById: builder.mutation({
+      query: (id) => ({
+        url: `/checks/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Customer", "Customers"],
+    }),
   }),
 });
 
@@ -104,10 +140,15 @@ export const {
   useGetAllCustomersQuery,
   useGetCustomerByIdQuery,
   useUpdateCustomerByIdMutation,
-  useConfirmPurchaseMutation,
   useCustomerChalanPaymentMutation,
   useGetAllcustomersPaymentsQuery,
   useUpdateCustomerPaymentMutation,
   useDeleteCustomerPaymentByIdMutation,
   useToggleCustomerChalanMarkedByIdMutation,
+  useGetCustomerChalanByIdQuery,
+  useGetAllCustomerChalanQuery,
+  useGetAllCustomerCheckQuery,
+  useAddCustomerCheckMutation,
+  useUpdateCustomerCheckByIdMutation,
+  useDeleteCustomerCheckByIdMutation,
 } = customerApi;

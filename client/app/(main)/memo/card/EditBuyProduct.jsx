@@ -17,6 +17,7 @@ export default function EditBuyProduct({
   product,
   index,
   setAllSelectedProducts,
+  type,
 }) {
   const [open, setOpen] = useState();
 
@@ -52,6 +53,7 @@ export default function EditBuyProduct({
                 product={product}
                 originalProduct={originalProduct}
                 setOpen={setOpen}
+                type={type}
                 setAllSelectedProducts={setAllSelectedProducts}
               />
 

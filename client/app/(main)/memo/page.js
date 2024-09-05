@@ -23,20 +23,16 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useGetAllCustomersQuery } from "@/features/customers/customerApi";
+import {
+  useGetAllCustomerChalanQuery,
+  useGetAllCustomersQuery,
+} from "@/features/customers/customerApi";
 import { format, parse } from "date-fns";
 import Link from "next/link";
 import { useState } from "react";
 
 import CreatableSelect from "react-select/creatable";
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
-import Select from "react-select";
-import { useGetAllProductsQuery } from "@/features/products/productApi";
 import BuyProduct from "./card/BuyProduct";
 import SelectedProduct from "./card/SelectedProduct";
 import CountCost from "./card/CountCost";
@@ -47,6 +43,11 @@ import TableSkeleton from "@/components/skeleton/TableSkeleton";
 export default function Memo() {
   const { data: { data: customers = [] } = {}, isLoading } =
     useGetAllCustomersQuery();
+
+  const { data: { data: customersChalan = [] } = {}, refetch } =
+    useGetAllCustomerChalanQuery();
+
+  const lastChalanId = [...customersChalan].sort((a, b) => b.id - a.id)[0]?.id;
 
   // customers names
   const customerNames = customers.map((customer) => ({
@@ -110,7 +111,7 @@ export default function Memo() {
               Memo no.
             </span>
             <span className="border  h-8 inline-flex items-end justify-center w-20 bg-slate-50 px-2 py-1.5 text-sm rounded-r-md">
-              12
+              {lastChalanId ? lastChalanId + 1 : 999}
             </span>
           </p>
           <p className="flex items-center">
@@ -284,6 +285,7 @@ export default function Memo() {
                           payment={payment}
                           customer={customer}
                           setCustomer={setCustomer}
+                          refetch={refetch}
                           setAllSelectedProducts={setAllSelectedProducts}
                         />
                       </div>

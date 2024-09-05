@@ -79,6 +79,22 @@ const productApi = productSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products"],
     }),
+    confirmPurchase: builder.mutation({
+      query: (data) => ({
+        url: "/confirm-purchase",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Product", "Products"],
+    }),
+    updateConfirmPurchase: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/confirm-purchase/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Product", "Products"],
+    }),
   }),
 });
 
@@ -93,4 +109,6 @@ export const {
   useCreateGrayDyeingProductMutation,
   useAddFinishedDataToProductMutation,
   useUpdateMultipleFinishedDataToProductMutation,
+  useUpdateConfirmPurchaseMutation,
+  useConfirmPurchaseMutation,
 } = productApi;

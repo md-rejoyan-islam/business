@@ -324,14 +324,11 @@ export const getAllDyeingPayment = asyncHandler(
       },
     });
 
-    if (!payments?.length)
-      throw createError.NotFound("Couldn't find any dyeing payments");
-
     successResponse(res, {
       statusCode: 200,
       message: "All dyeing payments data",
       payload: {
-        data: payments,
+        data: payments.length ? payments : [],
       },
     });
   }

@@ -18,6 +18,7 @@ import { RequestWithUser } from "../app/definition";
 import randomCodeGenerator from "../helper/randomCodeGeneraor";
 import { prismaClient } from "../helper/prisma";
 import hassPassword from "../helper/hashPassword";
+import { previousCashCalculate } from "../helper/previousCost";
 /**
  * @description      User Login
  * @method           POST
@@ -118,6 +119,42 @@ export const userLogout = asyncHandler(async (_req: Request, res: Response) => {
 export const loggedInUser = asyncHandler(
   async (req: RequestWithUser, res: Response) => {
     if (!req?.me) throw createError(404, "Couldn't find any user.");
+
+    const date = new Date();
+
+    const previousDay = date.setDate(date.getDate() - 1);
+
+    // update daily cash data
+    const dailyCash = await prismaClient.dailyCash.findUnique({
+      where: {
+        date: new Date().toISOString().split("T")[0],
+      },
+    });
+
+    if (!dailyCash) {
+      const previousCash = await prismaClient.dailyCash.findUnique({
+        where: {
+          date: new Date(previousDay).toISOString().split("T")[0],
+        },
+        include: {
+          othersCost: true,
+        },
+      });
+
+      const previousCashCal = await previousCashCalculate(
+        new Date(previousDay).toISOString().split("T")[0],
+        previousCash
+      );
+
+      // console.log(previousCash, previousCashCal);
+
+      await prismaClient.dailyCash.create({
+        data: {
+          previous: previousCash ? previousCashCal : 0,
+          date: new Date().toISOString().split("T")[0],
+        },
+      });
+    }
 
     // response send
     successResponse(res, {

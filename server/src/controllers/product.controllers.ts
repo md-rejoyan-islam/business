@@ -564,3 +564,179 @@ export const createGrayDyeingProduct = asyncHandler(
     });
   }
 );
+
+// purchase product
+export const purchaseProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { customer, products, payment } = req.body;
+
+    let customerId = null;
+    // if customer is new
+    if (!customer?.beforeData) {
+      const newCustomer = await prismaClient.customer.create({
+        data: {
+          name: customer.name,
+          phone: customer.phone,
+          address: customer.address,
+        },
+      });
+      customerId = newCustomer.id;
+    } else {
+      customerId = customer.id;
+    }
+
+    // create customer chalan data
+    const customerChalan = await prismaClient.customerChalan.create({
+      data: {
+        customerId: +customerId,
+        date: new Date().toISOString().split("T")[0],
+        discount: customer?.discount,
+        markedPaid: customer?.markedPaid,
+      },
+    });
+
+    // create customer product data and update finished product data
+    products?.map(async (product: any) => {
+      // crease customer product
+      const productData = await prismaClient.customerProduct.create({
+        data: {
+          customerId: +customerId,
+          productId: +product.id,
+          product_rate: +product.sellRate,
+          chalanId: customerChalan.id,
+        },
+      });
+
+      // update finished product data
+      const finished_product = product?.items?.map(async (item: any) => {
+        await prismaClient.finishedProduct.update({
+          where: {
+            id: +item.id,
+          },
+          data: {
+            is_sold: true,
+            customerProductId: productData.id,
+          },
+        });
+      });
+
+      return finished_product;
+    });
+
+    // if payment done
+    if (payment?.amount) {
+      await prismaClient.customerPayment.create({
+        data: {
+          customerId: +customerId,
+          amount: +payment.amount,
+          date: new Date().toISOString().split("T")[0],
+          customerChalanId: customerChalan.id,
+        },
+      });
+    }
+
+    successResponse(res, {
+      statusCode: 201,
+      message: "Product purchased successfully",
+      payload: {
+        data: null,
+      },
+    });
+  }
+);
+
+// update purchase product
+export const updatePurchaseProductById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { customer, products } = req.body;
+
+    const chalan = await prismaClient.customerChalan.findUnique({
+      where: { id: +req.params.id },
+      include: {
+        customerProducts: true,
+      },
+    });
+
+    if (!chalan) throw createError.NotFound("Customer chalan not found.");
+
+    // update customer chalan data
+    await prismaClient.customerChalan.update({
+      where: { id: +req.params.id },
+      data: {
+        discount: customer.discount,
+        markedPaid: customer.markedPaid,
+      },
+    });
+
+    // const filter: Prisma.IntNullableFilter = {
+    //   in: chalan?.customerProducts?.map((product) => product.id),
+    // };
+    // before purchase all product remove from customer products and finished product will be is_sold:false
+
+    // is_sold false for before purchase product
+    await prismaClient.finishedProduct.updateMany({
+      where: {
+        customerProduct: {
+          chalanId: chalan.id,
+        },
+      },
+      data: {
+        is_sold: false,
+      },
+    });
+
+    await prismaClient.customerProduct.deleteMany({
+      where: {
+        chalanId: +req?.params?.id,
+      },
+    });
+
+    // create customer product data and update finished product data
+    products?.map(async (product: any) => {
+      // crease customer product
+      const productData = await prismaClient.customerProduct.create({
+        data: {
+          customerId: +customer?.id,
+          productId: +product.id,
+          product_rate: +product.sellRate,
+          chalanId: chalan.id,
+        },
+      });
+
+      // update finished product data
+      const finished_product = product?.items?.map(async (item: any) => {
+        await prismaClient.finishedProduct.update({
+          where: {
+            id: +item.id,
+          },
+          data: {
+            is_sold: true,
+            customerProductId: productData.id,
+          },
+        });
+      });
+
+      return finished_product;
+    });
+
+    // // if change payment done
+    // if (payment?.amount) {
+    //   await prismaClient.customerPayment.create({
+    //     data: {
+    //       customerId: +customerId,
+    //       amount: +payment.amount,
+    //       date: new Date().toISOString().split("T")[0],
+    //       customerChalanId: customerChalan.id,
+    //     },
+    //   });
+    // }
+
+    successResponse(res, {
+      statusCode: 201,
+      message: "Product purchased successfully",
+      payload: {
+        data: null,
+      },
+    });
+  }
+);

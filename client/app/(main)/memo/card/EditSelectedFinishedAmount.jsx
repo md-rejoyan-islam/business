@@ -10,6 +10,7 @@ export default function EditSelectedFinishedAmount({
   originalProduct,
   setAllSelectedProducts,
   setOpen,
+  type,
 }) {
   const [productSellRate, setProductSellRate] = useState(
     product?.sellRate || 0
@@ -58,7 +59,7 @@ export default function EditSelectedFinishedAmount({
             >
               <Toggle
                 className="h-full w-full data-[state=on]:bg-slate-200"
-                disabled={item?.is_sold}
+                disabled={type !== "update" && item?.is_sold}
                 pressed={
                   selectedItem.items.findIndex((i) => i.id === item.id) !== -1
                 }

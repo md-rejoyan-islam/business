@@ -1,9 +1,32 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function CashInCard({ customersPayments }) {
+export default function CashInCard({
+  customersPayments,
+  dailyCash,
+  graysPayments,
+  dyeingsPayments,
+}) {
   const todaySold = customersPayments?.reduce((acc, payment) => {
     return acc + payment?.amount;
   }, 0);
+
+  const totalGraysPayment =
+    graysPayments?.reduce((sum, payment) => {
+      return sum + (payment?.amount || 0);
+    }, 0) || 0;
+  const totalDyeingsPayment =
+    dyeingsPayments?.reduce((sum, payment) => {
+      return sum + (payment?.amount || 0);
+    }, 0) || 0;
+
+  const othersCost =
+    dailyCash.othersCost?.reduce((sum, cost) => {
+      return sum + (cost?.amount || 0);
+    }, 0) || 0;
+
+  const totalCost = totalDyeingsPayment + totalGraysPayment + othersCost;
+
+  const todayCash = todaySold + (dailyCash?.previous || 0) - totalCost;
 
   return (
     <>
@@ -30,7 +53,7 @@ export default function CashInCard({ customersPayments }) {
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Previous</span>
-              <span>18000</span>
+              <span>{dailyCash?.previous || 0}</span>
             </p>
           </div>
           <div>
@@ -39,13 +62,13 @@ export default function CashInCard({ customersPayments }) {
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Today&apos;s Cash</span>
-              <span>18000</span>
+              <span>{todaySold + (dailyCash?.previous || 0)}</span>
             </p>
           </div>
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Cash Out</span>
-              <span>8000</span>
+              <span>{totalCost}</span>
             </p>
           </div>
           <div>
@@ -54,7 +77,7 @@ export default function CashInCard({ customersPayments }) {
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Total Cash </span>
-              <span>800</span>
+              <span>{todayCash}</span>
             </p>
           </div>
         </CardContent>

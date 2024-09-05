@@ -189,84 +189,6 @@ export const updateCustomerById = asyncHandler(
   }
 );
 
-// purchase product
-export const purchaseProduct = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { customer, products, payment } = req.body;
-
-    let customerId = null;
-    // if customer is new
-    if (!customer?.beforeData) {
-      const newCustomer = await prismaClient.customer.create({
-        data: {
-          name: customer.name,
-          phone: customer.phone,
-          address: customer.address,
-        },
-      });
-      customerId = newCustomer.id;
-    } else {
-      customerId = customer.id;
-    }
-
-    // create customer chalan data
-    const customerChalan = await prismaClient.customerChalan.create({
-      data: {
-        customerId: +customerId,
-        date: new Date().toISOString().split("T")[0],
-      },
-    });
-
-    // create customer product data and update finished product data
-    products?.map(async (product: any) => {
-      // crease customer product
-      const productData = await prismaClient.customerProduct.create({
-        data: {
-          customerId: +customerId,
-          productId: +product.id,
-          product_rate: +product.sellRate,
-          chalanId: customerChalan.id,
-        },
-      });
-
-      // update finished product data
-      const finished_product = product?.items?.map(async (item: any) => {
-        await prismaClient.finishedProduct.update({
-          where: {
-            id: +item.id,
-          },
-          data: {
-            is_sold: true,
-            customerProductId: productData.id,
-          },
-        });
-      });
-
-      return finished_product;
-    });
-
-    // if payment done
-    if (payment?.amount) {
-      await prismaClient.customerPayment.create({
-        data: {
-          customerId: +customerId,
-          amount: +payment.amount,
-          date: new Date().toISOString().split("T")[0],
-          customerChalanId: customerChalan.id,
-        },
-      });
-    }
-
-    successResponse(res, {
-      statusCode: 201,
-      message: "Product purchased successfully",
-      payload: {
-        data: null,
-      },
-    });
-  }
-);
-
 // get all cutomer payment
 export const getAllCustomerPayments = asyncHandler(
   async (req: Request, res: Response) => {
@@ -287,14 +209,14 @@ export const getAllCustomerPayments = asyncHandler(
       },
     });
 
-    if (!payments?.length)
-      throw createError.NotFound("Couldn't find any customer payments");
+    // if (!payments?.length)
+    //   throw createError.NotFound("Couldn't find any customer payments");
 
     successResponse(res, {
       statusCode: 200,
       message: "All customers payments data",
       payload: {
-        data: payments,
+        data: payments?.length ? payments : [],
       },
     });
   }
@@ -406,6 +328,152 @@ export const toggleCustomerChalanMarkedById = asyncHandler(
       message: "Change marked.",
       payload: {
         data: updatedChalan,
+      },
+    });
+  }
+);
+
+// get all customer chalan by id
+export const getAllCustomerChalan = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const chalans = await prismaClient.customerChalan.findMany();
+
+    if (!chalans?.length)
+      throw createError.NotFound("Couldn't find any customer chalan.");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "All customer chalans",
+      payload: {
+        data: chalans,
+      },
+    });
+  }
+);
+
+// get customer chalan by id
+export const getCustomerChalanById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const chalan = await prismaClient.customerChalan.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+      include: {
+        customerProducts: {
+          include: {
+            finishedProducts: true,
+            product: true,
+          },
+        },
+        payments: true,
+        customer: true,
+        products: true,
+      },
+    });
+
+    if (!chalan) throw createError.NotFound("Customer chalan not found!");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Customer chalan data.",
+      payload: {
+        data: chalan,
+      },
+    });
+  }
+);
+
+// add customer check
+export const addCustomerCheck = asyncHandler(
+  async (req: Request, res: Response) => {
+    console.log(req.body);
+
+    const check = await prismaClient.customerCheck.create({
+      data: {
+        amount: +req.body.amount,
+        bank: req.body.bank,
+        date: req.body.date.split("T")[0],
+        customerId: +req.body.customerId,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 201,
+      message: "Successfully check added.",
+      payload: {
+        data: check,
+      },
+    });
+  }
+);
+
+// update customer check
+export const updateCustomerCheckById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const check = await prismaClient.customerCheck.update({
+      where: {
+        id: +req.params.id,
+      },
+      data: {
+        ...req.body,
+        amount: +req.body.amount,
+        date: req.body.date.split("T")[0],
+      },
+    });
+
+    if (!check) throw createError.NotFound("Couldn't find any customer check.");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Successfully update.",
+      payload: {
+        data: check,
+      },
+    });
+  }
+);
+
+// get All customers check
+export const getAllCustomersChecks = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const checks = await prismaClient.customerCheck.findMany({
+      include: {
+        customer: true,
+      },
+    });
+
+    if (!checks.length) throw createError.NotFound("Couldn't find any checks");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "All Checks data",
+      payload: {
+        data: checks,
+      },
+    });
+  }
+);
+
+// delete customer check by id
+export const deleteCustomerCheckById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const check = await prismaClient.customerCheck.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    if (!check) throw createError.NotFound("Couldn't find any customer check");
+
+    await prismaClient.customerCheck.delete({
+      where: { id: +req.params.id },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Successfully deleted.",
+      payload: {
+        data: check,
       },
     });
   }

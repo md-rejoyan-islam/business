@@ -40,6 +40,7 @@ export default function CountCost({ allSelectedProducts }) {
             return acc;
           }, 0);
           const price = +(totalAmount * product?.sellRate).toFixed(2);
+
           return (
             <tr key={index}>
               <td className="px-4 py-1.5 border border-collapse">
@@ -64,7 +65,7 @@ export default function CountCost({ allSelectedProducts }) {
           </td>
           <td className="px-4 py-1.5 border border-collapse"></td>
           <td className="px-4 py-1.5 border border-collapse font-semibold">
-            {totalCost}
+            {(+totalCost).toFixed(2)}
           </td>
         </tr>
       </tfoot>

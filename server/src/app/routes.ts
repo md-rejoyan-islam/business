@@ -6,6 +6,7 @@ import authRouter from "../routes/auth.routes";
 import grayRouter from "../routes/gray.routes";
 import dyeingRouter from "../routes/dyeing.routes";
 import customerRouter from "../routes/customer.routes";
+import dailyCashRouter from "../routes/dailyCash.routes";
 
 const routes = [
   {
@@ -39,6 +40,10 @@ const routes = [
   {
     path: "/api/v1/users",
     route: userRouter,
+  },
+  {
+    path: "/api/v1/daily-cash",
+    route: dailyCashRouter,
   },
 ];
 
