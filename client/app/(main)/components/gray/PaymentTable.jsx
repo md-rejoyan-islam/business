@@ -26,8 +26,8 @@ import Swal from "sweetalert2";
 import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import AddPayment from "./AddPayment";
 import { numberToFixed } from "@/app/(main)/components/helper";
-import UpdatePaymentModal from "./updatePaymentModal";
 import { TbCoinTakaFilled } from "react-icons/tb";
+import UpdatePaymentModal from "./UpdatePaymentModal";
 
 export default function PaymentTable({ data = [], isLoading = false, gray }) {
   const [open, setOpen] = React.useState();
