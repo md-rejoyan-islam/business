@@ -18,23 +18,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IoTrashOutline } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
 import {
   useDeleteGrayPaymentByIdMutation,
   useUpdateGrayPaymentByIdMutation,
 } from "@/features/gray/grayApi";
 import Swal from "sweetalert2";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import AddPayment from "./AddPayment";
-import PaymentForm from "@/app/(main)/components/form/PaymentForm";
 import { numberToFixed } from "@/app/(main)/components/helper";
 import UpdatePaymentModal from "./updatePaymentModal";
 import { TbCoinTakaFilled } from "react-icons/tb";
