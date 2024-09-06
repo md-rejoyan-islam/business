@@ -8,29 +8,30 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FiPhone } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
 import { useGetCustomerByIdQuery } from "@/features/customers/customerApi";
-import CustomerCard from "./CustomerCard";
+import CustomerCard from "../../../components/customer/CustomerCard";
 import ElahiVorsa from "@/components/ElahiVorsa";
-import { DatePickerWithRange } from "@/app/(main)/grays/all/[id]/DatePickerWithRange";
+import { DatePickerWithRange } from "@/app/(main)/components/gray/DatePickerWithRange";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";
 import { MdOutlinePaid } from "react-icons/md";
-import { TbCalendarDue } from "react-icons/tb";
+import { TbCalendarDue, TbCurrencyTaka } from "react-icons/tb";
 import {
   totalSingleCustomerCost,
   totalSingleCustomerDiscount,
   totalSingleCustomerPaid,
-} from "../customer.helper";
+} from "../../../components/customer/customer.helper";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import CustomerPaymentTable from "./CustomerPaymentTable";
+import CustomerPaymentTable from "../../../components/customer/CustomerPaymentTable";
+import { numberToFixed } from "@/app/(main)/components/helper";
 
 export default function SingleCustomer({ params }) {
   const { id } = params;
@@ -74,8 +75,8 @@ export default function SingleCustomer({ params }) {
     .map((payment, index) => {
       return {
         index: index,
-        date: format(parseISO(payment?.date), "d MMMM  yyyy"),
-        amount: payment?.amount,
+        date: format(parseISO(payment?.date), "d MMM  yyyy"),
+        payment: payment?.amount,
         chalanId: payment?.chalanId,
         id: payment?.id,
       };
@@ -145,13 +146,19 @@ export default function SingleCustomer({ params }) {
             <span className="font-semibold flex gap-2 items-center">
               <MdOutlinePaid /> <span>Paid:</span>
             </span>
-            <span className="text-sm">{totalPaid}</span>
+            <span className="text-sm flex items-center">
+              {numberToFixed(totalPaid)}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
           <p className="flex items-center gap-2">
             <span className="font-semibold flex gap-2 items-center">
               <TbCalendarDue /> <span>Due:</span>
             </span>
-            <span className="text-sm">{totalDue}</span>
+            <span className="text-sm flex items-center">
+              {numberToFixed(totalDue)}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
         </div>
       </div>
@@ -189,22 +196,14 @@ export default function SingleCustomer({ params }) {
           <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
             Payments
           </h3>
-          {customer?.chalans?.length ? (
-            <CustomerPaymentTable
-              data={payments}
-              customer={{
-                customerId: customer?.id,
-              }}
-              dueAmount={totalDue}
-            />
-          ) : (
-            <div
-              className="text-center text-lg
-          font-semibold w-full py-10 text-red-500"
-            >
-              Couldn&apos;t find any payment data
-            </div>
-          )}
+
+          <CustomerPaymentTable
+            data={payments}
+            customer={{
+              customerId: customer?.id,
+            }}
+            dueAmount={totalDue}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

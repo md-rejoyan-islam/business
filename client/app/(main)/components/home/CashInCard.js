@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { numberToFixed } from "../helper";
 
 export default function CashInCard({
   customersPayments,
@@ -47,13 +48,13 @@ export default function CashInCard({
           <div className="py-2 mt-4 bg-green-100/70 rounded-md p-2 flex gap-2 justify-between items-center">
             <p className=" font-semibold py-1">Sold</p>
             <p className="flex justify-between gap-2 items-center py-1">
-              {todaySold}
+              {numberToFixed(todaySold)}
             </p>
           </div>
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Previous</span>
-              <span>{dailyCash?.previous || 0}</span>
+              <span>{numberToFixed(dailyCash?.previous) || 0}</span>
             </p>
           </div>
           <div>
@@ -62,13 +63,15 @@ export default function CashInCard({
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Today&apos;s Cash</span>
-              <span>{todaySold + (dailyCash?.previous || 0)}</span>
+              <span>
+                {todaySold + (numberToFixed(dailyCash?.previous) || 0)}
+              </span>
             </p>
           </div>
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Cash Out</span>
-              <span>{totalCost}</span>
+              <span>{numberToFixed(totalCost)}</span>
             </p>
           </div>
           <div>
@@ -77,7 +80,7 @@ export default function CashInCard({
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Total Cash </span>
-              <span>{todayCash}</span>
+              <span>{numberToFixed(todayCash)}</span>
             </p>
           </div>
         </CardContent>

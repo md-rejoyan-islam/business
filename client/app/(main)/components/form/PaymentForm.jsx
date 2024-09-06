@@ -81,7 +81,7 @@ export default function PaymentForm({
       const response = await updatePayemnt(paymentData);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message);
+        toast.success("Successfully updated.");
         setOpen(false);
       } else {
         toast.error(response?.error?.data?.error?.message);
@@ -96,7 +96,7 @@ export default function PaymentForm({
       const response = await addPayment(paymentData);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message);
+        toast.success("Successfully added.");
         setOpen(false);
         form.reset();
       } else {
@@ -118,6 +118,7 @@ export default function PaymentForm({
                   className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                   type="number"
                   step="0.01"
+                  min="1"
                   placeholder="Enter payment amount"
                   {...field}
                 />
@@ -151,9 +152,9 @@ export default function PaymentForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
+                    // disabled={(date) =>
+                    //   date > new Date() || date < new Date("1900-01-01")
+                    // }
                     initialFocus
                   />
                 </PopoverContent>

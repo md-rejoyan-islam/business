@@ -40,7 +40,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import GrayForm from "@/app/(main)/components/gray/GrayForm";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
+import { numberToFixed } from "../helper";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
+import { TbCoinTaka, TbCoinTakaFilled, TbCurrencyTaka } from "react-icons/tb";
 
 const GrayTable = ({ data, isLoading }) => {
   const [open, setOpen] = React.useState();
@@ -117,7 +120,9 @@ const GrayTable = ({ data, isLoading }) => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize pl-4">{row.getValue("total_amount")}</div>
+        <div className="capitalize pl-4 flex gap-1 items-center">
+          {numberToFixed(+row.getValue("total_amount"))}
+        </div>
       ),
     },
     {
@@ -134,7 +139,10 @@ const GrayTable = ({ data, isLoading }) => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize pl-4">{row.getValue("due")}</div>
+        <div className="capitalize pl-4 flex gap-1 items-center">
+          <TbCoinTakaFilled className="text-lg mt-[2px]" />
+          {numberToFixed(+row.getValue("due"))}{" "}
+        </div>
       ),
     },
     {
@@ -160,6 +168,7 @@ const GrayTable = ({ data, isLoading }) => {
             <Button
               className=" text-lg py-2 h-8 px-2 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
               onClick={() => handleDelete(row?.original?.id)}
+              disabled={true}
             >
               <IoTrashOutline />
             </Button>

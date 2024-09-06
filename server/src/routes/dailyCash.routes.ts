@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  addBalance,
   addOthersCost,
   createDailyCash,
   deleteDailyCashById,
@@ -10,6 +11,8 @@ import {
 const dailyCashRouter = Router();
 
 dailyCashRouter.route("/").get(getAllDailyCash).post(createDailyCash);
+
+dailyCashRouter.route("/add-balance").patch(addBalance);
 
 dailyCashRouter.route("/others-cost").post(addOthersCost);
 dailyCashRouter.route("/:date").get(getDailyCashByDate);

@@ -4,6 +4,7 @@ import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
 import { previousCashCalculate } from "../helper/previousCost";
+import { formatISO } from "date-fns";
 
 // get daily cash
 export const getAllDailyCash = asyncHandler(
@@ -77,7 +78,6 @@ export const getDailyCashByDate = asyncHandler(
           othersCost: true,
         },
       });
-      console.log(previousCash);
 
       const previousCashCal = await previousCashCalculate(
         new Date(previousDay).toISOString().split("T")[0],
@@ -123,6 +123,30 @@ export const createDailyCash = asyncHandler(
     });
   }
 );
+
+// add balance
+export const addBalance = asyncHandler(async (req: Request, res: Response) => {
+  const { amount } = req.body;
+
+  if (!amount) throw createError.NotFound("Amount is required!.");
+
+  const cash = await prismaClient.dailyCash.update({
+    where: {
+      date: formatISO(new Date()).split("T")[0],
+    },
+    data: {
+      cashIn: +amount,
+    },
+  });
+
+  successResponse(res, {
+    statusCode: 201,
+    message: "Successfully balance added.",
+    payload: {
+      data: cash,
+    },
+  });
+});
 
 // delete daily cash by id
 export const deleteDailyCashById = asyncHandler(

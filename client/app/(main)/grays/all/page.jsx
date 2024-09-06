@@ -1,7 +1,6 @@
 "use client";
 import GrayTable from "@/app/(main)/components/gray/GrayTable";
 import { useGetAllGraysQuery } from "@/features/gray/grayApi";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,7 +16,7 @@ import {
   totalSingleGrayCost,
   totalSingleGrayDiscount,
   totalSingleGrayPaid,
-} from "./gray.helper";
+} from "../../components/gray/gray.helper";
 
 export default function AllGrays() {
   const { data: { data: grays = [] } = {}, isLoading } = useGetAllGraysQuery();

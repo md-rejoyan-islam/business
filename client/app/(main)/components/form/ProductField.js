@@ -7,20 +7,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
 import CreatableSelect from "react-select/creatable";
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
 
 export default function ProductField({ index, removeField, form, showBorder }) {
   const { data: dyeings } = useGetAllDyeingsQuery();

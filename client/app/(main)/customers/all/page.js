@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useGetAllCustomersQuery } from "@/features/customers/customerApi";
 import Link from "next/link";
-import CustomersTable from "./CustomersTable";
+import CustomersTable from "../../components/customer/CustomersTable";
 import PageTitle from "@/components/PageTitle";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import {
@@ -16,7 +16,7 @@ import {
   totalSingleCustomerCost,
   totalSingleCustomerDiscount,
   totalSingleCustomerPaid,
-} from "./customer.helper";
+} from "../../components/customer/customer.helper";
 
 export default function AllCustomers() {
   const { data: { data: customers = [] } = {}, isLoading } =

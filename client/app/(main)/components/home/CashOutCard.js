@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { numberToFixed } from "../helper";
 
 export default function CashOutCard({
   graysPayments,
@@ -32,7 +33,7 @@ export default function CashOutCard({
             >
               <p className="flex justify-between items-center gap-4 ">
                 <span>{payment?.gray?.name} </span>
-                <span> {payment?.amount}</span>
+                <span> {numberToFixed(payment?.amount)}</span>
               </p>
             </div>
           ))}
@@ -43,7 +44,7 @@ export default function CashOutCard({
             >
               <p className="flex justify-between items-center gap-4 ">
                 <span>{payment?.dyeing?.name} </span>
-                <span> {payment?.amount}</span>
+                <span> {numberToFixed(payment?.amount)}</span>
               </p>
             </div>
           ))}
@@ -55,14 +56,14 @@ export default function CashOutCard({
             >
               <p className="flex justify-between items-center gap-4 ">
                 <span>{cost?.name} </span>
-                <span> {cost?.amount}</span>
+                <span> {numberToFixed(cost?.amount)}</span>
               </p>
             </div>
           ))}
           <div className="py-2 mt-4 bg-red-50/80 rounded-md p-2 flex gap-2 justify-between items-center">
             <p className=" font-semibold py-1">Total Cash Out</p>
             <p className="flex justify-between gap-2 items-center py-1">
-              {totalCost}
+              {numberToFixed(totalCost)}
             </p>
           </div>
         </CardContent>

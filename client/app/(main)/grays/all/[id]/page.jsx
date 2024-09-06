@@ -13,24 +13,25 @@ import {
 } from "@/components/ui/resizable";
 import Link from "next/link";
 import { useGetGrayByIdQuery } from "@/features/gray/grayApi";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FiPhone } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
 
-import GrayCard from "./GrayCard";
+import GrayCard from "../../../components/gray/GrayCard";
 import ElahiVorsa from "@/components/ElahiVorsa";
-import { DatePickerWithRange } from "./DatePickerWithRange";
+import { DatePickerWithRange } from "../../../components/gray/DatePickerWithRange";
 import { addMonths, format, parseISO } from "date-fns";
 import { useState } from "react";
-import PaymentTable from "./PaymentTable";
+import PaymentTable from "../../../components/gray/PaymentTable";
 import { MdOutlinePaid, MdPaid } from "react-icons/md";
-import { TbCalendarDue } from "react-icons/tb";
+import { TbCalendarDue, TbCurrencyTaka } from "react-icons/tb";
 import {
   totalSingleGrayCost,
   totalSingleGrayDiscount,
   totalSingleGrayPaid,
-} from "../gray.helper";
+} from "../../../components/gray/gray.helper";
+import { numberToFixed } from "@/app/(main)/components/helper";
 
 export default function SingleGray({ params }) {
   const { id } = params;
@@ -71,7 +72,7 @@ export default function SingleGray({ params }) {
       return {
         index: index,
         date: format(parseISO(payment?.date), "d MMMM  yyyy"),
-        amount: payment?.amount,
+        payment: payment?.amount,
         chalanId: payment?.chalanId,
         id: payment?.id,
       };
@@ -150,13 +151,19 @@ export default function SingleGray({ params }) {
             <span className="font-semibold flex gap-2 items-center">
               <MdOutlinePaid /> <span>Paid:</span>
             </span>
-            <span className="text-sm">{totalSingleGrayPaid(gray)}</span>
+            <span className="text-sm flex items-center ">
+              {numberToFixed(+totalSingleGrayPaid(gray))}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
           <p className="flex items-center gap-2">
             <span className="font-semibold flex gap-2 items-center">
               <TbCalendarDue /> <span>Due:</span>
             </span>
-            <span className="text-sm">{totalDue}</span>
+            <span className="text-sm flex items-center">
+              {numberToFixed(+totalDue)}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
         </div>
       </div>
@@ -193,22 +200,13 @@ export default function SingleGray({ params }) {
           <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
             Payments
           </h3>
-          {payments?.length ? (
-            <PaymentTable
-              data={payments}
-              gray={{
-                grayId: gray?.id,
-              }}
-              dueAmount={totalDue}
-            />
-          ) : (
-            <div
-              className="text-center text-lg
-          font-semibold w-full py-10 text-red-500"
-            >
-              Couldn&apos;t find any payment data
-            </div>
-          )}
+          <PaymentTable
+            data={payments}
+            gray={{
+              grayId: gray?.id,
+            }}
+            dueAmount={totalDue}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

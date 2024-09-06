@@ -7,19 +7,19 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetProductByIdQuery } from "@/features/products/productApi";
 import ElahiVorsa from "@/components/ElahiVorsa";
 
-import ProductInformation from "./card/ProductInformation";
-import GrayInfo from "./card/GrayInfo";
+import ProductInformation from "../../../components/products/card/ProductInformation";
+import GrayInfo from "../../../components/products/card/GrayInfo";
 import { format, parse } from "date-fns";
-import DyeingInfo from "./card/DyeingInfo";
-import ProductInfo from "./card/ProductInfo";
-import AskInfo from "./card/AskInfo";
-import FinishedProductInfo from "./card/FinishedProductInfo";
-import { productStatus } from "@/app/(main)/components/helper";
+import DyeingInfo from "../../../components/products/card/DyeingInfo";
+import ProductInfo from "../../../components/products/card/ProductInfo";
+import AskInfo from "../../../components/products/card/AskInfo";
+import FinishedProductInfo from "../../../components/products/card/FinishedProductInfo";
+import { numberToFixed, productStatus } from "@/app/(main)/components/helper";
 
 export default function SingleProduct({ params }) {
   const { id } = params;
@@ -80,8 +80,8 @@ export default function SingleProduct({ params }) {
         {/* gray info  */}
         <GrayInfo
           name={productData?.gray?.name}
-          amount={productData?.gray_amount}
-          rate={productData?.gray_rate}
+          amount={numberToFixed(+productData?.gray_amount)}
+          rate={numberToFixed(+productData?.gray_rate)}
           id={productData?.gray?.id}
           productId={productData?.id}
           date={
@@ -95,9 +95,9 @@ export default function SingleProduct({ params }) {
         {/* dyeing info  */}
         <DyeingInfo
           name={productData?.dyeing?.name}
-          amount={productData?.dyeing_amount}
+          amount={numberToFixed(+productData?.dyeing_amount)}
           id={productData?.dyeing?.id}
-          rate={productData?.dyeing_rate}
+          rate={numberToFixed(+productData?.dyeing_rate)}
           productId={productData?.id}
           date={
             productData?.dyeing_date &&

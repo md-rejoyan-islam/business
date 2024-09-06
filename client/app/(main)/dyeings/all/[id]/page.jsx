@@ -13,26 +13,27 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetDyeingByIdQuery } from "@/features/dyeing/dyeingApi";
 import Link from "next/link";
 import { IoLocationOutline } from "react-icons/io5";
 import { FiPhone } from "react-icons/fi";
-import DyeingCard from "./DyeingCard";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";
-import { DatePickerWithRange } from "@/app/(main)/grays/all/[id]/DatePickerWithRange";
+import { DatePickerWithRange } from "@/app/(main)/components/gray/DatePickerWithRange";
 import { MdOutlinePaid } from "react-icons/md";
-import { TbCalendarDue } from "react-icons/tb";
+import { TbCalendarDue, TbCurrencyTaka } from "react-icons/tb";
 import {
   totalSingleDyeingCost,
   totalSingleDyeingDiscount,
   totalSingleDyeingPaid,
-} from "../dyeing.helper";
-import DyeingPaymentTable from "./DyeingPaymentTable";
+} from "../../../components/dyeings/dyeing.helper";
+import DyeingCard from "@/app/(main)/components/dyeings/DyeingCard";
+import DyeingPaymentTable from "@/app/(main)/components/dyeings/DyeingPaymentTable";
+import { numberToFixed } from "@/app/(main)/components/helper";
 
 export default function SingleDyeing({ params }) {
   const { id } = params;
@@ -72,8 +73,8 @@ export default function SingleDyeing({ params }) {
     .map((payment, index) => {
       return {
         index: index,
-        date: format(parseISO(payment?.date), "d MMMM  yyyy"),
-        amount: payment?.amount,
+        date: format(parseISO(payment?.date), "d MMM  yyyy"),
+        payment: payment?.amount,
         chalanId: payment?.chalanId,
         id: payment?.id,
       };
@@ -152,13 +153,19 @@ export default function SingleDyeing({ params }) {
             <span className="font-semibold flex gap-2 items-center">
               <MdOutlinePaid /> <span>Paid:</span>
             </span>
-            <span className="text-sm">{totalSingleDyeingPaid(dyeing)}</span>
+            <span className="text-sm flex items-center">
+              {numberToFixed(+totalSingleDyeingPaid(dyeing))}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
           <p className="flex items-center gap-2">
             <span className="font-semibold flex gap-2 items-center">
               <TbCalendarDue /> <span>Due:</span>
             </span>
-            <span className="text-sm">{totalDue}</span>
+            <span className="text-sm flex items-center">
+              {numberToFixed(+totalDue)}
+              <TbCurrencyTaka className="text-xl font-thin text-gray-500" />
+            </span>
           </p>
         </div>
       </div>
@@ -197,22 +204,14 @@ export default function SingleDyeing({ params }) {
           <h3 className="text-center py-2 text-2xl font-medium text-slate-700">
             Payments
           </h3>
-          {dyeing?.chalans?.length ? (
-            <DyeingPaymentTable
-              data={payments}
-              dyeing={{
-                dyeingId: dyeing?.id,
-              }}
-              dueAmount={totalDue}
-            />
-          ) : (
-            <div
-              className="text-center text-lg
-          font-semibold w-full py-10 text-red-500"
-            >
-              Couldn&apos;t find any payment data
-            </div>
-          )}
+
+          <DyeingPaymentTable
+            data={payments}
+            dyeing={{
+              dyeingId: dyeing?.id,
+            }}
+            dueAmount={totalDue}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

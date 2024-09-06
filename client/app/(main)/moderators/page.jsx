@@ -1,6 +1,6 @@
 "use client";
 import PageTitle from "@/components/PageTitle";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import {
   Breadcrumb,
   BreadcrumbItem,

@@ -77,6 +77,14 @@ const dyeingApi = dyeingSlice.injectEndpoints({
       }),
       providesTags: ["DyeingPayments"],
     }),
+    toggleDyeingChalanMarkedById: builder.mutation({
+      query: (data) => ({
+        url: `/toggle-marked/${data.id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["DyeingPayments", "Dyeing"],
+    }),
   }),
 });
 
@@ -91,4 +99,5 @@ export const {
   useUpdateDyeingPaymentByIdMutation,
   useUpdateDyeingChalanProductsMutation,
   useGetAllDyeingsPaymentsQuery,
+  useToggleDyeingChalanMarkedByIdMutation,
 } = dyeingApi;

@@ -1,4 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { numberToFixed } from "../helper";
+import Link from "next/link";
 
 export default function BoughtCard({ grays }) {
   const chalans = grays
@@ -16,7 +18,9 @@ export default function BoughtCard({ grays }) {
         <Card className="mt-4 bg-slate-100/30" key={chalan?.id}>
           <CardContent className="overflow-hidden">
             <h4 className="text-center text-lg pt-3 font-semibold pb-3 text-nowrap">
-              {chalan?.gray?.name}
+              <Link href={`/grays/all/${chalan?.gray?.id}`}>
+                {chalan?.gray?.name}
+              </Link>
             </h4>
 
             {chalan?.products?.map((product) => (
@@ -24,14 +28,21 @@ export default function BoughtCard({ grays }) {
                 className="py-2 bg-slate-200/40 rounded-md p-2 mt-3 shadow-[4px_4px_2px_1px__#eee] border"
                 key={product.id}
               >
-                <p className=" font-semibold py-1">{product?.name}</p>
+                <Link
+                  href={`/products/all/${product?.id}`}
+                  className=" font-semibold py-1"
+                >
+                  {product?.name}
+                </Link>
                 <p className="flex justify-between gap-2 items-center py-1">
-                  <span title="Amount">{product?.gray_amount}</span>
+                  <span title="Amount">
+                    {numberToFixed(+product?.gray_amount)}
+                  </span>
                   <span>x</span>
-                  <span title="Rate">{product?.gray_rate}</span>
+                  <span title="Rate">{numberToFixed(+product?.gray_rate)}</span>
                   <span>=</span>
                   <span title="Total">
-                    {product?.gray_amount * product?.gray_rate}
+                    {numberToFixed(product?.gray_amount * product?.gray_rate)}
                   </span>
                 </p>
               </div>

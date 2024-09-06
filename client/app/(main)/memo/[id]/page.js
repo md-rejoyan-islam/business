@@ -1,7 +1,10 @@
 "use client";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetCustomerChalanByIdQuery } from "@/features/customers/customerApi";
+import {
+  useGetCustomerChalanByIdQuery,
+  useGetCustomerPaymentByIdQuery,
+} from "@/features/customers/customerApi";
 import React, { useState } from "react";
 import {
   Breadcrumb,
@@ -10,22 +13,13 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+
 import Link from "next/link";
-import CreatableSelect from "react-select/creatable";
-import BuyProduct from "../card/BuyProduct";
-import SelectedProduct from "../card/SelectedProduct";
-import CountCost from "../card/CountCost";
-import PaymentCount from "../card/PaymentCount";
+
 import { format } from "date-fns";
-import SingleMemo from "./SingleMemo";
+import SingleMemo from "../../components/memo/SingleMemo";
 
 export default function SingleMemoPage({ params }) {
   const { id } = params;
@@ -42,7 +36,12 @@ export default function SingleMemoPage({ params }) {
       };
     }) || [];
 
-  if (isLoading) {
+  const {
+    data: { data: chalanPayment = {} } = {},
+    isLoading: isPaymentLoading,
+  } = useGetCustomerPaymentByIdQuery(chalan?.paymentWithPurchaseId);
+
+  if (isLoading || isPaymentLoading) {
     return (
       <div className="p-4 sm:p-6 md:p-8 lg:p-10">
         <Skeleton className="h-[30px] w-[300px] rounded-md" />
@@ -151,11 +150,15 @@ export default function SingleMemoPage({ params }) {
           </div>
         </div>
         <SingleMemo
-          payments={chalan?.payments || []}
+          payment={chalanPayment}
           products={products}
-          customer={chalan?.customer}
+          customer={{
+            ...chalan?.customer,
+            chalanId: chalan?.id,
+          }}
           chalan={{
             id: chalan.id,
+            ...chalan,
           }}
         />
       </div>

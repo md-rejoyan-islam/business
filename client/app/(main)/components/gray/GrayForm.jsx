@@ -64,7 +64,7 @@ export default function GrayForm({ type = "add", formData = {}, setOpen }) {
       });
       if (res.data?.success) {
         setOpen && setOpen(false);
-        toast.success(res.data?.message);
+        toast.success("Successfully updated.");
       } else if (!res?.error?.data?.success) {
         toast.error(res?.error?.data?.error?.message);
       }
@@ -73,7 +73,7 @@ export default function GrayForm({ type = "add", formData = {}, setOpen }) {
     else if (type === "add") {
       const res = await addGray(values);
       if (res.data?.success) {
-        toast.success(res.data?.message);
+        toast.success("Successfully added.");
         form.reset();
         setOpen && setOpen(false);
       } else if (!res?.error?.data?.success) {

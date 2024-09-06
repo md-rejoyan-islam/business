@@ -45,7 +45,9 @@ export default function SoldCard({ customers }) {
                     key={product?.id}
                   >
                     <p className=" font-semibold py-1">
-                      {product?.product?.name}
+                      <Link href={`/products/all/${product?.product?.id}`}>
+                        {product?.product?.name}
+                      </Link>
                     </p>
                     <p className="flex justify-between gap-2 items-center py-1">
                       <span title="Amount">{totalAmount}</span>

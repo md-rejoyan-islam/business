@@ -184,17 +184,18 @@ model Customer {
 // customer chalan
 
 model CustomerChalan {
-  id               Int               @id @default(autoincrement())
-  products         Product[]
-  customerId       Int
-  customer         Customer          @relation(fields: [customerId], references: [id])
-  payments         CustomerPayment[]
-  date             String
-  markedPaid       Boolean           @default(false)
-  discount         Float?
-  customerProducts CustomerProduct[]
-  createAt         DateTime          @default(now())
-  updateAt         DateTime          @updatedAt
+  id                    Int               @id @default(autoincrement())
+  products              Product[]
+  customerId            Int
+  customer              Customer          @relation(fields: [customerId], references: [id])
+  payments              CustomerPayment[]
+  paymentWithPurchaseId Int?
+  date                  String
+  markedPaid            Boolean           @default(false)
+  discount              Float?
+  customerProducts      CustomerProduct[]
+  createAt              DateTime          @default(now())
+  updateAt              DateTime          @updatedAt
 }
 
 // customer sell product model
@@ -229,6 +230,7 @@ model CustomerPayment {
 model DailyCash {
   id         Int               @id @default(autoincrement())
   previous   Float
+  cashIn     Float?
   date       String            @unique
   othersCost DailyOthersCost[]
   createAt   DateTime          @default(now())
@@ -254,6 +256,7 @@ model CustomerCheck {
   date       String
   bank       String
   customerId Int
+  status     Boolean  @default(false)
   customer   Customer @relation(fields: [customerId], references: [id])
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt

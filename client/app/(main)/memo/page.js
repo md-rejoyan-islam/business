@@ -33,12 +33,12 @@ import { useState } from "react";
 
 import CreatableSelect from "react-select/creatable";
 
-import BuyProduct from "./card/BuyProduct";
-import SelectedProduct from "./card/SelectedProduct";
-import CountCost from "./card/CountCost";
-import PaymentCount from "./card/PaymentCount";
+import BuyProduct from "../components/memo/card/BuyProduct";
+import SelectedProduct from "../components/memo/card/SelectedProduct";
+import CountCost from "../components/memo/card/CountCost";
+import PaymentCount from "../components/memo/card/PaymentCount";
 import { Skeleton } from "@/components/ui/skeleton";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 
 export default function Memo() {
   const { data: { data: customers = [] } = {}, isLoading } =
@@ -47,7 +47,7 @@ export default function Memo() {
   const { data: { data: customersChalan = [] } = {}, refetch } =
     useGetAllCustomerChalanQuery();
 
-  const lastChalanId = [...customersChalan].sort((a, b) => b.id - a.id)[0]?.id;
+  const lastChalanId = [...customersChalan]?.sort((a, b) => b.id - a.id)[0]?.id;
 
   // customers names
   const customerNames = customers.map((customer) => ({
@@ -111,7 +111,7 @@ export default function Memo() {
               Memo no.
             </span>
             <span className="border  h-8 inline-flex items-end justify-center w-20 bg-slate-50 px-2 py-1.5 text-sm rounded-r-md">
-              {lastChalanId ? lastChalanId + 1 : 999}
+              {lastChalanId ? lastChalanId + 1 : 1}
             </span>
           </p>
           <p className="flex items-center">

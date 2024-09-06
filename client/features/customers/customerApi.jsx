@@ -71,6 +71,13 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       invalidatesTags: ["Customers", "Customer", "CustomersPayments"],
     }),
+    getCustomerPaymentById: builder.query({
+      query: (id) => ({
+        url: `/customer-payment/${id}`,
+        method: "GET",
+      }),
+      invalidatesTags: ["Customers", "Customer", "CustomersPayments"],
+    }),
     customerPayment: builder.mutation({
       query: (data) => ({
         url: "/customer-payment",
@@ -131,6 +138,14 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       invalidatesTags: ["Customer", "Customers"],
     }),
+    completeCustomerCheckById: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/check-complete/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers"],
+    }),
   }),
 });
 
@@ -151,4 +166,6 @@ export const {
   useAddCustomerCheckMutation,
   useUpdateCustomerCheckByIdMutation,
   useDeleteCustomerCheckByIdMutation,
+  useCompleteCustomerCheckByIdMutation,
+  useGetCustomerPaymentByIdQuery,
 } = customerApi;

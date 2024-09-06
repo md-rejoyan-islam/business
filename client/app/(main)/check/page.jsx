@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import CheckCard from "./CheckCard";
+import CheckCard from "../components/check/CheckCard";
 import { useGetAllCustomerCheckQuery } from "@/features/customers/customerApi";
 
 export default function Check() {

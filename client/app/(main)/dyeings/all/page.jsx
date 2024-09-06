@@ -9,16 +9,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
-import DyeingTable from "@/app/(main)/dyeings/all/dyeingTable";
+import DyeingTable from "@/app/(main)/components/dyeings/dyeingTable";
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
-import { totalSingeGrayAmount } from "../../grays/all/gray.helper";
+import { totalSingeGrayAmount } from "../../components/gray/gray.helper";
 import {
   totalSingleDyeingCost,
   totalSingleDyeingDiscount,
   totalSingleDyeingPaid,
-} from "./dyeing.helper";
+} from "../../components/dyeings/dyeing.helper";
 export default function AllDyeing() {
   const { data: { data: dyeings = [] } = {}, isLoading } =
     useGetAllDyeingsQuery();

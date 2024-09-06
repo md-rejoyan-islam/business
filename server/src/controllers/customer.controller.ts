@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
+import { formatISO } from "date-fns";
 
 interface DateQuery {
   gte?: string;
@@ -118,6 +119,14 @@ export const addCustomer = asyncHandler(async (req: Request, res: Response) => {
   if (!name || !phone || !address) {
     throw createError.BadRequest("Please provide all the required fields");
   }
+
+  const exist = await prismaClient.customer.findUnique({
+    where: {
+      phone: req.body.phone,
+    },
+  });
+
+  if (exist) throw createError.Conflict("Phone number already exist.");
 
   const customer = await prismaClient.customer.create({
     data: {
@@ -240,6 +249,30 @@ export const paymentForCustomerChalan = asyncHandler(
     successResponse(res, {
       statusCode: 201,
       message: "Payment done successfully",
+      payload: {
+        data: payment,
+      },
+    });
+  }
+);
+
+// get customer payment by id
+export const getCustomerPaymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.params.id) throw createError.NotFound("Id is required!");
+
+    const payment = await prismaClient.customerPayment.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    if (!payment)
+      throw createError.NotFound("Couldn't find any customer payment.");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Customer payment data.",
       payload: {
         data: payment,
       },
@@ -386,14 +419,13 @@ export const getCustomerChalanById = asyncHandler(
 // add customer check
 export const addCustomerCheck = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log(req.body);
-
     const check = await prismaClient.customerCheck.create({
       data: {
         amount: +req.body.amount,
         bank: req.body.bank,
-        date: req.body.date.split("T")[0],
+        date: formatISO(new Date(req?.body?.date)).split("T")[0],
         customerId: +req.body.customerId,
+        status: false,
       },
     });
 
@@ -417,7 +449,7 @@ export const updateCustomerCheckById = asyncHandler(
       data: {
         ...req.body,
         amount: +req.body.amount,
-        date: req.body.date.split("T")[0],
+        date: formatISO(new Date(req?.body?.date)).split("T")[0],
       },
     });
 
@@ -442,13 +474,11 @@ export const getAllCustomersChecks = asyncHandler(
       },
     });
 
-    if (!checks.length) throw createError.NotFound("Couldn't find any checks");
-
     successResponse(res, {
       statusCode: 200,
       message: "All Checks data",
       payload: {
-        data: checks,
+        data: checks?.length ? checks : [],
       },
     });
   }
@@ -474,6 +504,47 @@ export const deleteCustomerCheckById = asyncHandler(
       message: "Successfully deleted.",
       payload: {
         data: check,
+      },
+    });
+  }
+);
+
+// complete customer check by id
+export const completeCustomerCheckById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const check = await prismaClient.customerCheck.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    if (!check) throw createError.NotFound("Couldn't find customer check.");
+
+    // payment added
+    const payment = await prismaClient.customerPayment.create({
+      data: {
+        date: formatISO(new Date()).split("T")[0],
+        customerId: req.body.customerId,
+        amount: req.body.amount,
+      },
+    });
+
+    // check update
+    await prismaClient.customerCheck.update({
+      where: {
+        id: +req.params?.id,
+      },
+      data: {
+        status: true,
+      },
+    });
+
+    // response
+    successResponse(res, {
+      statusCode: 200,
+      message: "Successfully payment done",
+      payload: {
+        data: payment,
       },
     });
   }

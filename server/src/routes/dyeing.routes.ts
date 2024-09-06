@@ -8,6 +8,7 @@ import {
   getAllDyeingPayment,
   getAllDyeings,
   getDyeingById,
+  toggleDyeingChalanMarkedById,
   updateDyeingById,
   updateDyeingChalanProducts,
   updateDyeingPaymentById,
@@ -31,6 +32,8 @@ dyeingRouter.route("/dyeing-payment").post(dyeingPayment);
 dyeingRouter.route("/all-dyeing-payments").get(getAllDyeingPayment);
 dyeingRouter.route("/dyeing-payment/:id").patch(updateDyeingPaymentById);
 dyeingRouter.route("/dyeing-payment/:id").delete(deleteDyeingPaymentById);
+
+dyeingRouter.route("/toggle-marked/:id").patch(toggleDyeingChalanMarkedById);
 
 dyeingRouter
   .route("/:id")

@@ -2,6 +2,7 @@ import express from "express";
 import {
   addCustomer,
   addCustomerCheck,
+  completeCustomerCheckById,
   deleteCustomerById,
   deleteCustomerCheckById,
   deleteCustomerPaymentById,
@@ -11,6 +12,7 @@ import {
   getAllCustomersChecks,
   getCustomerById,
   getCustomerChalanById,
+  getCustomerPaymentById,
   paymentForCustomerChalan,
   toggleCustomerChalanMarkedById,
   updateCustomerById,
@@ -36,13 +38,18 @@ customerRouter
   .route("/checks")
   .get(getAllCustomersChecks)
   .post(addCustomerCheck);
+
 customerRouter
   .route("/checks/:id")
   .patch(updateCustomerCheckById)
   .delete(deleteCustomerCheckById);
 
+// complete check
+customerRouter.route("/check-complete/:id").patch(completeCustomerCheckById);
+
 customerRouter
   .route("/customer-payment/:id")
+  .get(getCustomerPaymentById)
   .put(updateCustomerPaymentById)
   .delete(deleteCustomerPaymentById);
 customerRouter

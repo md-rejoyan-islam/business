@@ -25,12 +25,13 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
     useCreateGrayDyeingProductMutation();
   const [fields, setFields] = useState([null]);
   const [grayName, setGrayName] = useState("");
+  const [grayId, setGrayId] = useState("");
 
   const grayNames = grays?.data.map((dt) => {
     return {
       value: dt.name,
       label: dt?.name,
-      id: dt.name,
+      id: dt.id,
     };
   });
 
@@ -67,9 +68,9 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
   };
 
   const onSubmit = async (values) => {
-    const { gray_name, gray_date, product_1, amount_1, rate_1 } = values;
+    const { gray_name, product_1, amount_1, rate_1 } = values;
 
-    const gray = grays?.data?.find((data) => data.name === gray_name);
+    const gray = grays?.data?.find((data) => data.id === grayId);
 
     if (!gray_name) return toast.error("Gray name is required!!");
 
@@ -77,6 +78,9 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
       if (!values.gray_address) return toast.error("Gray Address is required!");
       else if (!values.gray_phone)
         return toast.error("Gray Phone number is required!");
+      else if (grays?.data?.find((data) => data.phone === values.gray_phone)) {
+        return toast.error("Phone number already exist.");
+      }
     }
 
     if (!product_1) return toast.error("Product-1 name is required!!");
@@ -135,7 +139,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
           form.reset();
           setOpen(false);
           setGrayName("");
-          toast.success(res.data?.message);
+          toast.success("Successfully purchase.");
         }
       })
       .catch((err) => {
@@ -165,55 +169,61 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
                 }}
                 onChange={(value) => {
                   form.setValue(`gray_name`, value?.value);
-                  if (!grayNames?.find((data) => data.value === grayName)) {
+                  const gray = grayNames.find((data) => data.id === value?.id);
+
+                  if (!gray) {
                     form.setValue(`gray_address`, "");
                     form.setValue(`gray_phone`, "");
                   }
                   setGrayName(value?.value);
+                  if (value?.id) {
+                    setGrayId(value?.id);
+                  } else {
+                    setGrayId("");
+                  }
                 }}
               />
             </div>
 
             <>
-              {grayName &&
-                !grayNames?.find((data) => data.value === grayName) && (
-                  <>
-                    <FormField
-                      control={form.control}
-                      name={"gray_address"}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Gray Address </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                              placeholder="Enter gray address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={"gray_phone"}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Gray Phone </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                              placeholder="Enter gray address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </>
-                )}
+              {grayName && !grayNames?.find((data) => data.id === grayId) && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name={"gray_address"}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gray Address </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
+                            placeholder="Enter gray address"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={"gray_phone"}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gray Phone </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
+                            placeholder="Enter gray address"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </>
           </div>
 

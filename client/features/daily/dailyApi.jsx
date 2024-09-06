@@ -39,6 +39,14 @@ const dailyApi = dailySlice.injectEndpoints({
       }),
       invalidatesTags: ["Daily"],
     }),
+    addBalance: builder.mutation({
+      query: (data) => ({
+        url: `/add-balance`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Daily"],
+    }),
   }),
 });
 
@@ -47,6 +55,6 @@ export const {
   useGetAllDailyCashQuery,
   useAddOthersCostMutation,
   useDeleteDailyByIdMutation,
-    useGetDailyByDateQuery,
-  
+  useGetDailyByDateQuery,
+  useAddBalanceMutation,
 } = dailyApi;

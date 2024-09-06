@@ -548,6 +548,7 @@ export const createGrayDyeingProduct = asyncHandler(
           grayId,
           grayChalanId: grayChalan.id,
           delivery_status: product?.dyeingId ? "IN_MILL" : "RUNNING",
+          gray_date: formatISO(new Date()).split("T")[0],
         };
       }),
     });
@@ -573,6 +574,14 @@ export const purchaseProduct = asyncHandler(
     let customerId = null;
     // if customer is new
     if (!customer?.beforeData) {
+      const exist = await prismaClient.customer.findUnique({
+        where: {
+          phone: customer?.phone,
+        },
+      });
+
+      if (exist) throw createError.Conflict("Phone number already exist.");
+
       const newCustomer = await prismaClient.customer.create({
         data: {
           name: customer.name,
@@ -625,12 +634,22 @@ export const purchaseProduct = asyncHandler(
 
     // if payment done
     if (payment?.amount) {
-      await prismaClient.customerPayment.create({
+      const chalanPayment = await prismaClient.customerPayment.create({
         data: {
           customerId: +customerId,
           amount: +payment.amount,
           date: new Date().toISOString().split("T")[0],
           customerChalanId: customerChalan.id,
+        },
+      });
+
+      // update customer chalan with paymentWithPurchaseId
+      await prismaClient.customerChalan.update({
+        where: {
+          id: customerChalan.id,
+        },
+        data: {
+          paymentWithPurchaseId: chalanPayment?.id,
         },
       });
     }
@@ -648,7 +667,7 @@ export const purchaseProduct = asyncHandler(
 // update purchase product
 export const updatePurchaseProductById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { customer, products } = req.body;
+    const { customer, products, payment } = req.body;
 
     const chalan = await prismaClient.customerChalan.findUnique({
       where: { id: +req.params.id },
@@ -668,9 +687,42 @@ export const updatePurchaseProductById = asyncHandler(
       },
     });
 
-    // const filter: Prisma.IntNullableFilter = {
-    //   in: chalan?.customerProducts?.map((product) => product.id),
-    // };
+    console.log(payment);
+
+    // payment add
+    if (payment) {
+      if (payment?.paymentData?.amount) {
+        await prismaClient.customerPayment.update({
+          where: {
+            id: payment?.paymentData?.id,
+          },
+          data: {
+            amount: payment.amount || 0,
+          },
+        });
+      } else {
+        const chalanPayment = await prismaClient.customerPayment.create({
+          data: {
+            customerId: +customer?.id,
+            amount: +payment?.amount || 0,
+            date: new Date().toISOString().split("T")[0],
+            customerChalanId: chalan.id,
+          },
+        });
+        // update customer chalan with paymentWithPurchaseId
+        await prismaClient.customerChalan.update({
+          where: {
+            id: chalan.id,
+          },
+          data: {
+            paymentWithPurchaseId: chalanPayment?.id,
+          },
+        });
+      }
+    }
+
+    console.log(req.body);
+
     // before purchase all product remove from customer products and finished product will be is_sold:false
 
     // is_sold false for before purchase product

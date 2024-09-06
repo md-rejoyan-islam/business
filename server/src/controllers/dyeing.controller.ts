@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import createError from "http-errors";
+import { formatISO } from "date-fns";
 
 /**
  *
@@ -399,7 +400,9 @@ export const updateDyeingChalanProducts = asyncHandler(
         products.map(async (product: any) => {
           // dyeing date provide
           if (product.dyeing_date) {
-            product.dyeing_date = product.dyeing_date.split("T")[0];
+            product.dyeing_date = formatISO(
+              new Date(product.dyeing_date)
+            ).split("T")[0];
           }
 
           const updatedProduct = await prismaClient.product.update({
@@ -420,6 +423,35 @@ export const updateDyeingChalanProducts = asyncHandler(
       message: "Chalan updated successfully",
       payload: {
         data: updatedProducts,
+      },
+    });
+  }
+);
+
+// toggle dyeing marked
+export const toggleDyeingChalanMarkedById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const chalan = await prismaClient.dyeingChalan.findUnique({
+      where: { id: +id },
+    });
+
+    if (!chalan) throw createError.NotFound("Chalan not found!");
+
+    const updatedChalan = await prismaClient.dyeingChalan.update({
+      where: { id: +id },
+      data: {
+        markedPaid: req.body.markedPaid,
+        discount: req.body.discount,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Change marked.",
+      payload: {
+        data: updatedChalan,
       },
     });
   }

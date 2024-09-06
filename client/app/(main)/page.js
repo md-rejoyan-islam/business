@@ -34,7 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CashOutTab from "./components/home/CashOutTab";
-import { DatePickerWithRange } from "./grays/all/[id]/DatePickerWithRange";
+import { DatePickerWithRange } from "./components/gray/DatePickerWithRange";
 import { useState } from "react";
 import {
   Popover,
@@ -45,6 +45,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useGetDailyByDateQuery } from "@/features/daily/dailyApi";
+import BalanceCashIn from "./components/home/BalanceCashIn";
 
 const today = new Date();
 
@@ -155,6 +156,7 @@ export default function Home() {
             <CashOutTab setOpen={setOpen} />
           </DialogContent>
         </Dialog>
+        <BalanceCashIn />
       </div>
 
       <ResizablePanelGroup

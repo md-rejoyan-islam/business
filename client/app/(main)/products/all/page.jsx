@@ -7,54 +7,43 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
-import ProductTable from "@/components/table/ProductTable";
+import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
+import ProductTable from "@/app/(main)/components/products/ProductTable";
 
 import { useGetAllProductsQuery } from "@/features/products/productApi";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
+import { numberToFixed, productShortage } from "../../components/helper";
 
 export default function AllProduct() {
   const { data: { data: products = [] } = {}, isLoading } =
     useGetAllProductsQuery();
 
   const processData = products.map((product) => {
-    const finishedProduct = product?.finished_products?.reduce((sum, thaan) => {
-      return sum + thaan?.amount;
-    }, 0);
+    // finished product
+    const finishedProduct = product?.finished_products?.reduce(
+      (acc, product) => {
+        acc += product?.amount;
+        return acc;
+      },
+      0
+    );
 
-    const gray_cost =
-      product?.gray_rate && product?.gray_amount
-        ? product?.gray_rate * product?.gray_amount
-        : null;
-    const dyeing_cost =
-      product?.dyeing_rate && finishedProduct
-        ? product?.dyeing_rate * finishedProduct
-        : null;
+    const gRate = product?.gray_rate;
+    const dRate = product?.dyeing_rate;
+
+    // sortage furmula
+    const shortage = productShortage(product);
 
     const unit_cost =
-      gray_cost && dyeing_cost && finishedProduct
-        ? ((gray_cost + dyeing_cost) / finishedProduct).toFixed(2)
-        : null;
-    const all_unit_cost =
-      product?.gray_rate && product?.dyeing_rate
-        ? product?.gray_rate * product?.dyeing_rate
-        : null;
-    // const rate_with_benefit = all_unit_cost ? all_unit_cost + 2 : null;
+      gRate && dRate && numberToFixed(+gRate + +dRate + +shortage);
 
     return {
-      // id: product?.id,
-      // name: product?.name,
-      gray_cost,
-      dyeing_cost,
-      total_unit: finishedProduct,
       unit_cost,
-      all_unit_cost,
-
+      dyeing_name: product?.dyeing?.name,
+      gray_name: product?.gray?.name,
+      shortage,
       ...product,
-
-      // gray_rate: product?.gray_rate,
-      // dyeing_rate: product?.dyeing_rate,
     };
   });
 
