@@ -7,15 +7,18 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { FaRegEdit } from "react-icons/fa";
-import ThaanAddForm from "./ThaanAddForm";
 import { useState } from "react";
+import AddFinishedProductForm from "./finisshedProduct/AddFinishedProductForm";
 
 export default function AddFinishedProduct({ product }) {
   const [open, setOpen] = useState();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border">
+      <DialogTrigger
+        className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border"
+        title="Add Finished Product"
+      >
         <FaRegEdit className="text-sm" />
       </DialogTrigger>
       <DialogContent className="overflow-scroll ">
@@ -25,13 +28,11 @@ export default function AddFinishedProduct({ product }) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <ThaanAddForm
-          type="add"
+        <AddFinishedProductForm
+          type={"add"}
           setOpen={setOpen}
-          showDefect={Boolean(product?.finished_products?.length)}
           product={{
             id: product?.id,
-
             finished_products: [],
           }}
         />

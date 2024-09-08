@@ -95,6 +95,14 @@ const productApi = productSlice.injectEndpoints({
       }),
       invalidatesTags: ["Product", "Products"],
     }),
+    updateFinishedProductDefectById: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/update-defect/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Product", "Products"],
+    }),
   }),
 });
 
@@ -111,4 +119,5 @@ export const {
   useUpdateMultipleFinishedDataToProductMutation,
   useUpdateConfirmPurchaseMutation,
   useConfirmPurchaseMutation,
+  useUpdateFinishedProductDefectByIdMutation,
 } = productApi;

@@ -9,6 +9,7 @@ import {
   getProductById,
   productAddToDyeing,
   purchaseProduct,
+  updateFinishedProductDefectById,
   updateMultipleFinishedData,
   updateProductById,
   updatePurchaseProductById,
@@ -36,6 +37,12 @@ productRouter
 productRouter
   .route("/create-gray-dyeing-products")
   .post(createGrayDyeingProduct);
+
+// update product defect
+
+productRouter
+  .route("/update-defect/:id")
+  .patch(updateFinishedProductDefectById);
 
 productRouter.route("/confirm-purchase").post(purchaseProduct);
 productRouter.route("/confirm-purchase/:id").put(updatePurchaseProductById);

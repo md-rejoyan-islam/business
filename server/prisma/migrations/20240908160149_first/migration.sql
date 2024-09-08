@@ -123,6 +123,9 @@ CREATE TABLE `Product` (
 CREATE TABLE `FinishedProduct` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `amount` DOUBLE NOT NULL,
+    `color` VARCHAR(191) NULL,
+    `colorCode` VARCHAR(191) NULL,
+    `design` VARCHAR(191) NULL,
     `productId` INTEGER NOT NULL,
     `is_sold` BOOLEAN NOT NULL DEFAULT false,
     `customerProductId` INTEGER NULL,
@@ -189,12 +192,23 @@ CREATE TABLE `CustomerPayment` (
 CREATE TABLE `DailyCash` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `previous` DOUBLE NOT NULL,
-    `cashIn` DOUBLE NULL,
     `date` VARCHAR(191) NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `DailyCash_date_key`(`date`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CashIn` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `amount` DOUBLE NOT NULL,
+    `date` VARCHAR(191) NOT NULL,
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
+    `dailyCashId` INTEGER NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -281,6 +295,9 @@ ALTER TABLE `CustomerPayment` ADD CONSTRAINT `CustomerPayment_customerId_fkey` F
 
 -- AddForeignKey
 ALTER TABLE `CustomerPayment` ADD CONSTRAINT `CustomerPayment_customerChalanId_fkey` FOREIGN KEY (`customerChalanId`) REFERENCES `CustomerChalan`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CashIn` ADD CONSTRAINT `CashIn_dailyCashId_fkey` FOREIGN KEY (`dailyCashId`) REFERENCES `DailyCash`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `DailyOthersCost` ADD CONSTRAINT `DailyOthersCost_dailyCashId_fkey` FOREIGN KEY (`dailyCashId`) REFERENCES `DailyCash`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

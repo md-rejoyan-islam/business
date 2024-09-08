@@ -42,7 +42,6 @@ import {
 import GrayForm from "@/app/(main)/components/gray/GrayForm";
 import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { numberToFixed } from "../helper";
-import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { TbCoinTaka, TbCoinTakaFilled, TbCurrencyTaka } from "react-icons/tb";
 
 const GrayTable = ({ data, isLoading }) => {

@@ -335,7 +335,7 @@ export const productAddToDyeing = asyncHandler(
 // thaan count
 export const countFinishedProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const { productId, finishedProducts, total_defected } = req.body;
+    const { productId, finishedProducts } = req.body;
 
     // product check
     const product = await prismaClient.product.findUnique({
@@ -346,14 +346,6 @@ export const countFinishedProduct = asyncHandler(
     if (!product) throw createError.NotFound("Couldn't find any product.");
 
     // update product data
-    await prismaClient.product.update({
-      where: {
-        id: +productId,
-      },
-      data: {
-        total_defected: +total_defected,
-      },
-    });
 
     if (!product) throw createError.NotFound("Couldn't find any product.");
 
@@ -380,7 +372,7 @@ export const countFinishedProduct = asyncHandler(
 // update multiple thaan data
 export const updateMultipleFinishedData = asyncHandler(
   async (req: Request, res: Response) => {
-    const { productId, finishedProducts, total_defected } = req.body;
+    const { productId, finishedProducts } = req.body;
 
     // product check
     const product = await prismaClient.product.findUnique({
@@ -389,17 +381,17 @@ export const updateMultipleFinishedData = asyncHandler(
 
     if (!product) throw createError.NotFound("Couldn't find any product.");
 
-    // update product data
-    if (product?.total_defected !== +total_defected) {
-      await prismaClient.product.update({
-        where: {
-          id: +productId,
-        },
-        data: {
-          total_defected: +total_defected,
-        },
-      });
-    }
+    // // update product data
+    // if (product?.total_defected !== +total_defected) {
+    //   await prismaClient.product.update({
+    //     where: {
+    //       id: +productId,
+    //     },
+    //     data: {
+    //       total_defected: +total_defected,
+    //     },
+    //   });
+    // }
 
     // update finished product data and return data
     const updatedFinishedProduct = await Promise.all(
@@ -700,7 +692,7 @@ export const updatePurchaseProductById = asyncHandler(
             amount: payment.amount || 0,
           },
         });
-      } else {
+      } else if (payment?.amount) {
         const chalanPayment = await prismaClient.customerPayment.create({
           data: {
             customerId: +customer?.id,
@@ -788,6 +780,30 @@ export const updatePurchaseProductById = asyncHandler(
       message: "Product purchased successfully",
       payload: {
         data: null,
+      },
+    });
+  }
+);
+
+// add product defect
+export const updateFinishedProductDefectById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const product = await prismaClient.product.update({
+      where: {
+        id: +req.params.id,
+      },
+      data: {
+        total_defected: +req.body.defect,
+      },
+    });
+
+    if (!product) throw createError.NotFound("Product Not Found.");
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Update product defect",
+      payload: {
+        data: product,
       },
     });
   }

@@ -29,6 +29,10 @@ export default function CashInCard({
 
   const todayCash = todaySold + (dailyCash?.previous || 0) - totalCost;
 
+  const todayBalanceAdd = dailyCash?.cashIn?.reduce((sum, cash) => {
+    return sum + cash?.amount;
+  }, 0);
+
   return (
     <>
       <Card className="mt-4 bg-slate-100/50">
@@ -55,6 +59,12 @@ export default function CashInCard({
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Previous</span>
               <span>{numberToFixed(dailyCash?.previous) || 0}</span>
+            </p>
+          </div>
+          <div className="p-2 py-2">
+            <p className="flex justify-between items-center gap-4 ">
+              <span className="font-semibold">Balance Add</span>
+              <span>{numberToFixed(todayBalanceAdd) || 0}</span>
             </p>
           </div>
           <div>

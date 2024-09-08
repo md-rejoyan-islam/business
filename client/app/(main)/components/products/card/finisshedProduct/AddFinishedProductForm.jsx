@@ -11,16 +11,8 @@ import { useForm } from "react-hook-form";
 import { RxCrossCircled } from "react-icons/rx";
 import { toast } from "react-toastify";
 
-export default function ThaanAddForm({
-  product,
-  setOpen,
-  type,
-  showDefect = false,
-  refetch,
-}) {
-  const datas = type === "update" ? product?.finished_products : [null];
-
-  const [fields, setFields] = useState(datas);
+export default function AddFinishedProductForm({ product, setOpen, type }) {
+  const [fields, setFields] = useState([null]);
 
   const [addFinishedProduct, { isLoading }] =
     useAddFinishedDataToProductMutation();
@@ -64,6 +56,12 @@ export default function ThaanAddForm({
     }
   };
 
+  const [inputs, setInputs] = useState({
+    color: "",
+    colorCode: "",
+    design: "",
+  });
+
   const onSubmit = (data) => {
     const values = Object.entries(data).reduce((acc, [key, value]) => {
       const [name, index] = key.split("_");
@@ -74,6 +72,9 @@ export default function ThaanAddForm({
             ...acc[index],
             ...product?.finished_products[index],
             amount: +value,
+            color: inputs?.color ? inputs.color : null,
+            design: inputs?.design ? inputs.design : null,
+            colorCode: inputs.colorCode ? inputs.colorCode : null,
           };
         }
       }
@@ -81,10 +82,14 @@ export default function ThaanAddForm({
     }, []);
 
     const result = {
-      total_defected: +data.defect,
       productId: +product.id,
       finishedProducts: values?.filter((item) => item),
     };
+
+    // if finishedProducts length zero
+    if (!result?.finishedProducts?.length) {
+      return toast.error("Add amount.");
+    }
 
     if (type === "update") {
       updateFinishedProduct(result).then((response) => {
@@ -99,7 +104,6 @@ export default function ThaanAddForm({
       addFinishedProduct(result).then((response) => {
         if (response?.data?.success) {
           setOpen(false);
-          refetch && refetch();
           toast.success(response.data?.message);
         } else if (!response.error?.data?.success) {
           toast.error(response?.error?.data?.error?.message);
@@ -111,35 +115,7 @@ export default function ThaanAddForm({
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div
-          className={`${
-            type === "update"
-              ? "block"
-              : type == "add" && showDefect
-              ? "hidden"
-              : "block"
-          }`}
-        >
-          <Label
-            htmlFor="defect"
-            className={`${errors.name ? "text-red-500" : ""} pt-3 pb-2 block`}
-          >
-            Defect
-          </Label>
-
-          <Input
-            id="name"
-            type="number"
-            className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-            defaultValue={product?.total_defected || 0}
-            {...register("defect", { min: 0 })}
-          />
-
-          {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-        </div>
-
         {/* color  */}
-
         <div className="flex gap-1">
           <div className="group pt-1 w-full">
             <Label
@@ -151,9 +127,14 @@ export default function ThaanAddForm({
 
             <Input
               type="text"
-              defaultValue={""}
+              value={inputs?.color}
               className={` focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80  `}
-              {...register("color")}
+              onChange={(e) => {
+                setInputs((prev) => ({
+                  ...prev,
+                  color: e.target.value,
+                }));
+              }}
             />
           </div>
           <div className="group pt-1 w-full">
@@ -166,9 +147,14 @@ export default function ThaanAddForm({
 
             <Input
               type="text"
-              defaultValue={""}
+              value={inputs.design}
               className={` focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80  `}
-              {...register("design")}
+              onChange={(e) => {
+                setInputs((prev) => ({
+                  ...prev,
+                  design: e.target.value,
+                }));
+              }}
             />
           </div>
           <div className="group pt-1 w-full">
@@ -181,9 +167,14 @@ export default function ThaanAddForm({
 
             <Input
               type="color"
-              defaultValue={""}
+              value={inputs?.colorCode}
               className={` focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80  py-1 px-1 `}
-              {...register("color_code")}
+              onChange={(e) => {
+                setInputs((prev) => ({
+                  ...prev,
+                  colorCode: e.target.value,
+                }));
+              }}
             />
           </div>
         </div>

@@ -158,6 +158,9 @@ model Product {
 model FinishedProduct {
   id                Int              @id @default(autoincrement())
   amount            Float
+  color             String?
+  colorCode         String?
+  design            String?
   product           Product          @relation(fields: [productId], references: [id])
   productId         Int
   is_sold           Boolean          @default(false)
@@ -230,11 +233,23 @@ model CustomerPayment {
 model DailyCash {
   id         Int               @id @default(autoincrement())
   previous   Float
-  cashIn     Float?
+  cashIn     CashIn[]
   date       String            @unique
   othersCost DailyOthersCost[]
   createAt   DateTime          @default(now())
   updateAt   DateTime          @updatedAt
+}
+
+// model cash in
+
+model CashIn {
+  id          Int        @id @default(autoincrement())
+  amount      Float
+  date        String
+  createAt    DateTime   @default(now())
+  updateAt    DateTime   @updatedAt
+  DailyCash   DailyCash? @relation(fields: [dailyCashId], references: [id])
+  dailyCashId Int?
 }
 
 // daily other cost

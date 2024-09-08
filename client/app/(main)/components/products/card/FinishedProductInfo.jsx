@@ -12,11 +12,18 @@ import ThaanAddForm from "./ThaanAddForm";
 import { useState } from "react";
 import { MdUpdate } from "react-icons/md";
 import AddFinishedProduct from "./AddFinishedProduct";
+import AddDefectForm from "./AddDefectForm";
+import UpdateFinishedProductForm from "./finisshedProduct/UpdateFinishedProductForm";
 export default function FinishedProductInfo({ product }) {
   const [open, setOpen] = useState(false);
 
+  const groupFinishedProducts = Object.groupBy(
+    product?.finished_products,
+    (item) => item.color
+  );
+
   return (
-    <Card className="shadow-md" title="Add Finished Product">
+    <Card className="shadow-md">
       <CardHeader className="bg-slate-100 rounded-t-md py-3">
         <CardTitle className="text-center flex justify-between items-center">
           <span>Finished Product</span>
@@ -26,7 +33,10 @@ export default function FinishedProductInfo({ product }) {
               className={`${!product?.finished_products?.length && "hidden"}`}
             >
               <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border">
+                <DialogTrigger
+                  className="py-2 h-8 rounded-md flex items-center px-3  bg-white active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-blue-400 disabled:bg-black/5 disabled:text-slate-400  border"
+                  title="Update Finished Product"
+                >
                   <MdUpdate className="text-base" />
                 </DialogTrigger>
                 <DialogContent className="overflow-scroll ">
@@ -36,46 +46,29 @@ export default function FinishedProductInfo({ product }) {
                     </DialogTitle>
                     <DialogDescription></DialogDescription>
                   </DialogHeader>
-                  <ThaanAddForm
-                    product={product}
-                    type="update"
-                    showDefect={true}
+                  <UpdateFinishedProductForm
+                    type={"update"}
                     setOpen={setOpen}
+                    product={product}
                   />
                 </DialogContent>
               </Dialog>
             </div>
             <AddFinishedProduct product={product} />
+            <AddDefectForm
+              type={product?.total_defected ? "update" : "add"}
+              data={{
+                defect: product?.total_defected,
+                id: product?.id,
+              }}
+            />
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="grid grid-cols-5 ">
-          <div
-            className={`flex gap-x-4 gap-y-3 items-center flex-wrap   ${
-              product?.finished_products?.length ? "col-span-3" : "col-span-5"
-            }`}
-          >
-            {product?.finished_products?.map((item, index) => (
-              <span
-                className={`${
-                  item?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
-                } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
-                key={item.id}
-              >
-                {item?.amount}
-              </span>
-            ))}
-
-            {/* if finished_products is empty  */}
-            {!product?.finished_products?.length && (
-              <p className="text-center w-full text-red-500">
-                No Finished Product
-              </p>
-            )}
-          </div>
+        <div className="grid ">
           {product?.finished_products?.length > 0 && (
-            <div className="h-full w-full flex justify-center  items-center  col-span-2 border-l ">
+            <div className="h-full w-full flex justify-center  items-center pb-3 ">
               <div className="flex flex-wrap  gap-4 h-fit  items-center justify-center px-2  ">
                 <p className="flex items-center justify-center h-fit gap-1 flex-col border p-2 w-[70px] text-sm rounded-md bg-green-50">
                   <span className="font-semibold">Stock</span>
@@ -106,6 +99,42 @@ export default function FinishedProductInfo({ product }) {
               </div>
             </div>
           )}
+          <div
+            className={`flex gap-x-4 gap-y-3 items-center flex-wrap border-t pt-3 `}
+          >
+            {Object.keys(groupFinishedProducts)?.map((group, index) => {
+              const items = groupFinishedProducts[group];
+
+              return (
+                <div key={index} className="block w-full">
+                  <span className="text-gray-600 font-bold pb-2 block">
+                    {group === "null" ? "Without Color" : group}
+                    <span className="px-1 font-medium">({items?.length})</span>
+                  </span>
+
+                  <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                    {items?.map((item, index) => (
+                      <span
+                        className={`${
+                          item?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
+                        } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
+                        key={item.id}
+                      >
+                        {item?.amount}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* if finished_products is empty  */}
+            {!product?.finished_products?.length && (
+              <p className="text-center w-full text-red-500">
+                No Finished Product
+              </p>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

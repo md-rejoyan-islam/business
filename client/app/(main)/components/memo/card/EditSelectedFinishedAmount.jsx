@@ -45,6 +45,11 @@ export default function EditSelectedFinishedAmount({
     setOpen(false);
   };
 
+  const groupFinishedProducts = Object.groupBy(
+    originalProduct?.finished_products,
+    (item) => item.color
+  );
+
   console.log(originalProduct);
 
   return (
@@ -54,7 +59,7 @@ export default function EditSelectedFinishedAmount({
       </h3>
       <div className="border p-4 rounded-md ">
         <div className="flex gap-3 flex-wrap">
-          {originalProduct?.finished_products?.map((item, index) => (
+          {/* {originalProduct?.finished_products?.map((item, index) => (
             <p
               className={`${
                 item?.is_sold &&
@@ -102,7 +107,70 @@ export default function EditSelectedFinishedAmount({
                 {item?.amount}
               </Toggle>
             </p>
-          ))}
+          ))} */}
+          {Object.keys(groupFinishedProducts)?.map((group, index) => {
+            const items = groupFinishedProducts[group];
+
+            return (
+              <div key={index} className="block w-full">
+                <span className="text-gray-600 font-bold pb-2 block">
+                  {group === "null" ? "Without Color" : group} + {}
+                  <span className="px-1 font-medium">({items?.length})</span>
+                </span>
+
+                <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                  {items?.map((item, index) => (
+                    <p
+                      className={`${
+                        item?.is_sold ? "bg-red-50" : ""
+                      } h-16 w-16 rounded-md border flex justify-center items-center`}
+                      key={index}
+                    >
+                      <Toggle
+                        className="h-full w-full data-[state=on]:bg-slate-200"
+                        disabled={
+                          item?.is_sold &&
+                          allSelectedProducts?.every((product) => {
+                            return product?.items?.every(
+                              (dt) =>
+                                dt?.customerProductId !==
+                                item?.customerProductId
+                            );
+                          })
+                        }
+                        pressed={
+                          selectedItem.items.findIndex(
+                            (i) => i.id === item.id
+                          ) !== -1
+                        }
+                        onPressedChange={(state) => {
+                          setSelectedItem((prev) => {
+                            if (state) {
+                              return {
+                                ...prev,
+                                id: product.id,
+                                name: product.name,
+                                items: [...prev.items, item],
+                              };
+                            } else {
+                              return {
+                                ...prev,
+                                items: prev.items.filter(
+                                  (i) => i.id !== item.id
+                                ),
+                              };
+                            }
+                          });
+                        }}
+                      >
+                        {item?.amount}
+                      </Toggle>
+                    </p>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
         <div>
           {originalProduct?.finished_products?.length === 0 && (

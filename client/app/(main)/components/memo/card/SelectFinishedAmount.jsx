@@ -39,12 +39,15 @@ export default function SelectFinishedAmount({
         };
       }
 
-      console.log(newSelectedProducts);
-
       return newSelectedProducts;
     });
     setOpen(false);
   };
+
+  const groupFinishedProducts = Object.groupBy(
+    product?.finished_products,
+    (item) => item.color
+  );
 
   return (
     <div className="flex-1 h-full">
@@ -53,7 +56,7 @@ export default function SelectFinishedAmount({
       </h3>
       <div className="border p-4 rounded-md ">
         <div className="flex gap-3 flex-wrap">
-          {product?.finished_products?.map((item, index) => (
+          {/* {product?.finished_products?.map((item, index) => (
             <p
               className={`${
                 item?.is_sold ? "bg-red-50" : ""
@@ -84,7 +87,56 @@ export default function SelectFinishedAmount({
                 {item?.amount}
               </Toggle>
             </p>
-          ))}
+          ))} */}
+          {Object.keys(groupFinishedProducts)?.map((group, index) => {
+            const items = groupFinishedProducts[group];
+
+            return (
+              <div key={index} className="block w-full">
+                <span className="text-gray-600 font-bold pb-2 block">
+                  {group === "null" ? "Without Color" : group} + {}
+                  <span className="px-1 font-medium">({items?.length})</span>
+                </span>
+
+                <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                  {items?.map((item, index) => (
+                    <p
+                      className={`${
+                        item?.is_sold ? "bg-red-50" : ""
+                      } h-16 w-16 rounded-md border flex justify-center items-center`}
+                      key={index}
+                    >
+                      <Toggle
+                        className="h-full w-full data-[state=on]:bg-slate-200"
+                        disabled={item?.is_sold}
+                        onPressedChange={(state) => {
+                          setSelectedItem((prev) => {
+                            if (state) {
+                              return {
+                                ...prev,
+                                id: product.id,
+                                name: product.name,
+                                items: [...prev.items, item],
+                              };
+                            } else {
+                              return {
+                                ...prev,
+                                items: prev.items.filter(
+                                  (i) => i.id !== item.id
+                                ),
+                              };
+                            }
+                          });
+                        }}
+                      >
+                        {item?.amount}
+                      </Toggle>
+                    </p>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
         <div>
           {product?.finished_products?.length === 0 && (

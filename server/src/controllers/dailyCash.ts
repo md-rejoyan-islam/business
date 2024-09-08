@@ -54,6 +54,7 @@ export const getDailyCashByDate = asyncHandler(
       },
       include: {
         othersCost: true,
+        cashIn: true,
       },
     });
 
@@ -130,14 +131,23 @@ export const addBalance = asyncHandler(async (req: Request, res: Response) => {
 
   if (!amount) throw createError.NotFound("Amount is required!.");
 
-  const cash = await prismaClient.dailyCash.update({
+  const todayCash = await prismaClient.dailyCash.findUnique({
     where: {
       date: formatISO(new Date()).split("T")[0],
     },
-    data: {
-      cashIn: +amount,
-    },
   });
+
+  let cash = null;
+
+  if (todayCash) {
+    cash = await prismaClient.cashIn.create({
+      data: {
+        amount: +amount,
+        date: formatISO(new Date()).split("T")[0],
+        dailyCashId: todayCash.id,
+      },
+    });
+  }
 
   successResponse(res, {
     statusCode: 201,
