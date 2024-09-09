@@ -26,12 +26,12 @@ export default function CashInCard({
     }, 0) || 0;
 
   const totalCost = totalDyeingsPayment + totalGraysPayment + othersCost;
-
-  const todayCash = todaySold + (dailyCash?.previous || 0) - totalCost;
-
   const todayBalanceAdd = dailyCash?.cashIn?.reduce((sum, cash) => {
     return sum + cash?.amount;
   }, 0);
+
+  const todayCash =
+    todaySold + (dailyCash?.previous || 0) + todayBalanceAdd - totalCost;
 
   return (
     <>
@@ -74,7 +74,8 @@ export default function CashInCard({
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Today&apos;s Cash</span>
               <span>
-                {todaySold + (numberToFixed(dailyCash?.previous) || 0)}
+                {todaySold +
+                  (numberToFixed(dailyCash?.previous + todayBalanceAdd) || 0)}
               </span>
             </p>
           </div>
@@ -88,7 +89,11 @@ export default function CashInCard({
             <hr />
           </div>
           <div className="p-2 py-2">
-            <p className="flex justify-between items-center gap-4 ">
+            <p
+              className={`${
+                todayCash < 0 ? "text-red-500" : ""
+              } flex justify-between items-center gap-4 `}
+            >
               <span className="font-semibold">Total Cash </span>
               <span>{numberToFixed(todayCash)}</span>
             </p>

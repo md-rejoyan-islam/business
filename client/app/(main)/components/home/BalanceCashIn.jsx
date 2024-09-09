@@ -13,6 +13,9 @@ import { useState } from "react";
 import SubmitLoader from "../SubmitLoader";
 import { toast } from "react-toastify";
 import { useAddBalanceMutation } from "@/features/daily/dailyApi";
+import { MdAddCircle } from "react-icons/md";
+import { IoAddCircle } from "react-icons/io5";
+import { RiAddCircleLine } from "react-icons/ri";
 
 export default function BalanceCashIn() {
   const [open, setOpen] = useState();
@@ -29,7 +32,9 @@ export default function BalanceCashIn() {
       amount,
     });
     if (response?.data?.success) {
-      toast.success(response?.data?.message);
+      toast.success("Balance added.");
+      e?.target?.reset();
+      setAmount(0);
       setOpen(false);
     } else {
       toast.error(response?.error?.data?.error?.message);
@@ -38,8 +43,9 @@ export default function BalanceCashIn() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="py-2 h-8 bg-black/5 hover:bg-black/10 rounded-md flex items-center px-3 active:scale-95 transition-all duration-100 text-black    border">
-        Add Balance
+      <DialogTrigger className="py-2 h-8 bg-black/5 hover:bg-black/10 rounded-md flex items-center px-3 active:scale-95 transition-all duration-100 text-black    border  gap-1">
+        <RiAddCircleLine />
+        Balance
       </DialogTrigger>
       <DialogContent className="overflow-scroll ">
         <DialogHeader>

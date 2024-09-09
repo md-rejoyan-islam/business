@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { useState } from "react";
 import AddFinishedProductFromMemo from "./AddFinishedProduct";
+import RateAskInfo from "./RateAskInfo";
 
 export default function SelectFinishedAmount({
   product,
@@ -46,7 +47,7 @@ export default function SelectFinishedAmount({
 
   const groupFinishedProducts = Object.groupBy(
     product?.finished_products,
-    (item) => item.color
+    (item) => item.color && item?.color?.toUpperCase()
   );
 
   return (
@@ -56,84 +57,71 @@ export default function SelectFinishedAmount({
       </h3>
       <div className="border p-4 rounded-md ">
         <div className="flex gap-3 flex-wrap">
-          {/* {product?.finished_products?.map((item, index) => (
-            <p
-              className={`${
-                item?.is_sold ? "bg-red-50" : ""
-              } h-16 w-16 rounded-md border flex justify-center items-center`}
-              key={index}
-            >
-              <Toggle
-                className="h-full w-full data-[state=on]:bg-slate-200"
-                disabled={item?.is_sold}
-                onPressedChange={(state) => {
-                  setSelectedItem((prev) => {
-                    if (state) {
-                      return {
-                        ...prev,
-                        id: product.id,
-                        name: product.name,
-                        items: [...prev.items, item],
-                      };
-                    } else {
-                      return {
-                        ...prev,
-                        items: prev.items.filter((i) => i.id !== item.id),
-                      };
-                    }
-                  });
-                }}
-              >
-                {item?.amount}
-              </Toggle>
-            </p>
-          ))} */}
           {Object.keys(groupFinishedProducts)?.map((group, index) => {
             const items = groupFinishedProducts[group];
 
+            const designGroup = Object.groupBy(items, (item) => item?.design);
+
             return (
-              <div key={index} className="block w-full">
-                <span className="text-gray-600 font-bold pb-2 block">
-                  {group === "null" ? "Without Color" : group} + {}
+              <div
+                key={index}
+                className="block w-full border rounded-md p-3 shadow-sm bg-slate-50/10"
+              >
+                <span className="text-gray-600 font-bold text-[15px] pb-1 block text-center border-b mb-2">
+                  {group === "null" ? "Without Color" : group}
                   <span className="px-1 font-medium">({items?.length})</span>
                 </span>
-
-                <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
-                  {items?.map((item, index) => (
-                    <p
-                      className={`${
-                        item?.is_sold ? "bg-red-50" : ""
-                      } h-16 w-16 rounded-md border flex justify-center items-center`}
-                      key={index}
-                    >
-                      <Toggle
-                        className="h-full w-full data-[state=on]:bg-slate-200"
-                        disabled={item?.is_sold}
-                        onPressedChange={(state) => {
-                          setSelectedItem((prev) => {
-                            if (state) {
-                              return {
-                                ...prev,
-                                id: product.id,
-                                name: product.name,
-                                items: [...prev.items, item],
-                              };
-                            } else {
-                              return {
-                                ...prev,
-                                items: prev.items.filter(
-                                  (i) => i.id !== item.id
-                                ),
-                              };
-                            }
-                          });
-                        }}
-                      >
-                        {item?.amount}
-                      </Toggle>
-                    </p>
-                  ))}
-                </div>
+                {Object.keys(designGroup)?.map((design, i) => {
+                  const designItems = designGroup[design];
+                  return (
+                    <div key={i}>
+                      <p>
+                        <span className="text-gray-600 font-bold pb-2 block capitalize  text-sm">
+                          {design === "null" ? "Without Design" : design}
+                          <span className="px-1 font-medium ">
+                            ({designItems?.length})
+                          </span>
+                        </span>
+                      </p>
+                      <div className="flex gap-x-4 gap-y-3 items-center flex-wrap  pb-3">
+                        {designItems?.map((dt, index) => (
+                          <p
+                            className={`${
+                              dt?.is_sold ? "bg-red-50" : ""
+                            } h-12 w-12 rounded-md border text-[12px] flex justify-center items-center`}
+                            key={index}
+                          >
+                            <Toggle
+                              className="h-full w-full data-[state=on]:bg-slate-200"
+                              disabled={dt?.is_sold}
+                              onPressedChange={(state) => {
+                                setSelectedItem((prev) => {
+                                  if (state) {
+                                    return {
+                                      ...prev,
+                                      id: product.id,
+                                      name: product.name,
+                                      items: [...prev.items, dt],
+                                    };
+                                  } else {
+                                    return {
+                                      ...prev,
+                                      items: prev.items.filter(
+                                        (i) => i.id !== dt.id
+                                      ),
+                                    };
+                                  }
+                                });
+                              }}
+                            >
+                              {dt?.amount}
+                            </Toggle>
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}
@@ -146,6 +134,12 @@ export default function SelectFinishedAmount({
           )}
         </div>
       </div>
+
+      <div>
+        {/* ask rate  */}
+        <RateAskInfo product={product} />
+      </div>
+
       <div className="pt-6">
         <h2 className="text-xl font-semibold text-center">Confirm Product </h2>
         <div className="mt-1  bg-slate-100 flex  p-4 rounded-md">

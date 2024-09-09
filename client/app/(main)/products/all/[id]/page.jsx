@@ -115,7 +115,9 @@ export default function SingleProduct({ params }) {
         <AskInfo product={productData} />
 
         {/* finished product info  */}
-        <FinishedProductInfo product={productData} />
+        <div className="col-span-2">
+          <FinishedProductInfo product={productData} />
+        </div>
       </div>
     </div>
   );

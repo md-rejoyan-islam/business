@@ -5,7 +5,7 @@ export default function ProductInfo({ product }) {
   const shortage = productShortage(product);
 
   return (
-    <table className="w-full">
+    <table className="w-full text-[14px]">
       <thead>
         <tr className="bg-slate-50 rounded-md">
           <th className="border border-collapse px-4 py-2">Gray</th>

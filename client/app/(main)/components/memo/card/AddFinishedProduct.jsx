@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import ThaanAddForm from "../../products/card/ThaanAddForm";
 import { useEffect, useState } from "react";
+import AddFinishedProductForm from "../../products/card/finisshedProduct/AddFinishedProductForm";
 
 export default function AddFinishedProductFromMemo({ product, refetch }) {
   const [open, setOpen] = useState();
@@ -24,7 +25,7 @@ export default function AddFinishedProductFromMemo({ product, refetch }) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <ThaanAddForm
+        <AddFinishedProductForm
           type={"add"}
           setOpen={setOpen}
           refetch={refetch}
@@ -33,6 +34,15 @@ export default function AddFinishedProductFromMemo({ product, refetch }) {
             finished_products: [],
           }}
         />
+        {/* <ThaanAddForm
+          type={"add"}
+          setOpen={setOpen}
+          refetch={refetch}
+          product={{
+            id: product?.id,
+            finished_products: [],
+          }}
+        /> */}
       </DialogContent>
     </Dialog>
   );

@@ -105,7 +105,7 @@ export default function CashOutTab({ setOpen }) {
 
   return (
     <div className="w-full">
-      <Tabs defaultValue="account" className="min-w-[400px] w-full">
+      <Tabs defaultValue="others" className="min-w-[400px] w-full">
         <TabsList className="w-full">
           <TabsTrigger value="gray" className="w-full">
             Gray Payment

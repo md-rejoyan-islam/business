@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { useState } from "react";
 import AddFinishedProductFromMemo from "./AddFinishedProduct";
+import RateAskInfo from "./RateAskInfo";
 
 export default function EditSelectedFinishedAmount({
   product,
@@ -50,8 +51,6 @@ export default function EditSelectedFinishedAmount({
     (item) => item.color
   );
 
-  console.log(originalProduct);
-
   return (
     <div className="flex-1 h-full">
       <h3 className="text-xl font-semibold text-center pt-2 pb-2">
@@ -59,115 +58,85 @@ export default function EditSelectedFinishedAmount({
       </h3>
       <div className="border p-4 rounded-md ">
         <div className="flex gap-3 flex-wrap">
-          {/* {originalProduct?.finished_products?.map((item, index) => (
-            <p
-              className={`${
-                item?.is_sold &&
-                allSelectedProducts?.every((product) => {
-                  return product?.items?.every(
-                    (dt) => dt?.customerProductId !== item?.customerProductId
-                  );
-                })
-                  ? "bg-red-50"
-                  : ""
-              } h-16 w-16 rounded-md border flex justify-center items-center`}
-              key={index}
-            >
-              <Toggle
-                className="h-full w-full data-[state=on]:bg-slate-200"
-                disabled={
-                  item?.is_sold &&
-                  allSelectedProducts?.every((product) => {
-                    return product?.items?.every(
-                      (dt) => dt?.customerProductId !== item?.customerProductId
-                    );
-                  })
-                }
-                pressed={
-                  selectedItem.items.findIndex((i) => i.id === item.id) !== -1
-                }
-                onPressedChange={(state) => {
-                  setSelectedItem((prev) => {
-                    if (state) {
-                      return {
-                        ...prev,
-                        id: product.id,
-                        name: product.name,
-                        items: [...prev.items, item],
-                      };
-                    } else {
-                      return {
-                        ...prev,
-                        items: prev.items.filter((i) => i.id !== item.id),
-                      };
-                    }
-                  });
-                }}
-              >
-                {item?.amount}
-              </Toggle>
-            </p>
-          ))} */}
           {Object.keys(groupFinishedProducts)?.map((group, index) => {
             const items = groupFinishedProducts[group];
+            const designGroup = Object.groupBy(items, (item) => item?.design);
 
             return (
-              <div key={index} className="block w-full">
-                <span className="text-gray-600 font-bold pb-2 block">
-                  {group === "null" ? "Without Color" : group} + {}
+              <div
+                key={index}
+                className="block w-full border rounded-md p-3 shadow-sm bg-slate-50/10"
+              >
+                <p className="text-gray-600 font-bold text-[15px] pb-1 block text-center border-b mb-2">
+                  {group === "null" ? "Without Color" : group}
                   <span className="px-1 font-medium">({items?.length})</span>
-                </span>
+                </p>
 
-                <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
-                  {items?.map((item, index) => (
-                    <p
-                      className={`${
-                        item?.is_sold ? "bg-red-50" : ""
-                      } h-16 w-16 rounded-md border flex justify-center items-center`}
-                      key={index}
-                    >
-                      <Toggle
-                        className="h-full w-full data-[state=on]:bg-slate-200"
-                        disabled={
-                          item?.is_sold &&
-                          allSelectedProducts?.every((product) => {
-                            return product?.items?.every(
-                              (dt) =>
-                                dt?.customerProductId !==
-                                item?.customerProductId
-                            );
-                          })
-                        }
-                        pressed={
-                          selectedItem.items.findIndex(
-                            (i) => i.id === item.id
-                          ) !== -1
-                        }
-                        onPressedChange={(state) => {
-                          setSelectedItem((prev) => {
-                            if (state) {
-                              return {
-                                ...prev,
-                                id: product.id,
-                                name: product.name,
-                                items: [...prev.items, item],
-                              };
-                            } else {
-                              return {
-                                ...prev,
-                                items: prev.items.filter(
-                                  (i) => i.id !== item.id
-                                ),
-                              };
-                            }
-                          });
-                        }}
-                      >
-                        {item?.amount}
-                      </Toggle>
-                    </p>
-                  ))}
-                </div>
+                {Object.keys(designGroup)?.map((design, i) => {
+                  const designItems = designGroup[design];
+                  return (
+                    <div key={i}>
+                      <p>
+                        <span className="text-gray-600 font-bold pb-2 block capitalize  text-sm">
+                          {design === "null" ? "Without Design" : design}
+                          <span className="px-1 font-medium ">
+                            ({designItems?.length})
+                          </span>
+                        </span>
+                      </p>
+                      <div className="flex gap-x-4 gap-y-3 items-center flex-wrap pb-3">
+                        {designItems?.map((item, index) => (
+                          <p
+                            className={`${
+                              item?.is_sold ? "bg-red-50" : ""
+                            } h-16 w-16 rounded-md border flex justify-center items-center`}
+                            key={index}
+                          >
+                            <Toggle
+                              className="h-full w-full data-[state=on]:bg-slate-200"
+                              disabled={
+                                item?.is_sold &&
+                                allSelectedProducts?.every((product) => {
+                                  return product?.items?.every(
+                                    (dt) =>
+                                      dt?.customerProductId !==
+                                      item?.customerProductId
+                                  );
+                                })
+                              }
+                              pressed={
+                                selectedItem.items.findIndex(
+                                  (i) => i.id === item.id
+                                ) !== -1
+                              }
+                              onPressedChange={(state) => {
+                                setSelectedItem((prev) => {
+                                  if (state) {
+                                    return {
+                                      ...prev,
+                                      id: product.id,
+                                      name: product.name,
+                                      items: [...prev.items, item],
+                                    };
+                                  } else {
+                                    return {
+                                      ...prev,
+                                      items: prev.items.filter(
+                                        (i) => i.id !== item.id
+                                      ),
+                                    };
+                                  }
+                                });
+                              }}
+                            >
+                              {item?.amount}
+                            </Toggle>
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}
@@ -179,6 +148,10 @@ export default function EditSelectedFinishedAmount({
             </div>
           )}
         </div>
+      </div>
+      <div>
+        {/* ask rate  */}
+        <RateAskInfo product={product} />
       </div>
       <div className="pt-6">
         <h2 className="text-xl font-semibold text-center">Confirm Product </h2>

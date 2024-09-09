@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useGetCustomerByIdQuery } from "@/features/customers/customerApi";
 
 import {
   useConfirmPurchaseMutation,
@@ -153,7 +154,7 @@ export default function PaymentCount({
               phone: "",
             });
 
-          Swal.fire("Success!", "Data has been saven", "success");
+          Swal.fire("Success!", "Data saved.", "success");
         } else {
           Swal.fire({
             title: "Failed",

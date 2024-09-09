@@ -22,8 +22,6 @@ export default function SingleMemo({
 }) {
   const [allSelectedProducts, setAllSelectedProducts] = useState(products);
 
-  // console.log(allSelectedProducts);
-
   const [payment, setPayment] = useState(paymentData);
 
   useEffect(() => {

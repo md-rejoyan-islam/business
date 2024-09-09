@@ -37,7 +37,7 @@ const customerApi = customersSlice.injectEndpoints({
         url: `/${id}`,
         method: "GET",
       }),
-      providesTags: ["Customer", "CustomersPayments"],
+      providesTags: ["Customer", "CustomersPayments", "Customers"],
     }),
 
     getAllcustomersPayments: builder.query({

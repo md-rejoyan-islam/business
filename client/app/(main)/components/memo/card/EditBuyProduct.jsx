@@ -47,7 +47,7 @@ export default function EditBuyProduct({
               <ProductInfo product={originalProduct} />
             </div>
 
-            <div className="flex  justify-between gap-4 flex-wrap">
+            <div className="">
               {/* select finished amount  */}
               <EditSelectedFinishedAmount
                 product={product}
@@ -57,9 +57,6 @@ export default function EditBuyProduct({
                 setAllSelectedProducts={setAllSelectedProducts}
                 allSelectedProducts={allSelectedProducts}
               />
-
-              {/* ask rate  */}
-              <RateAskInfo product={product} />
             </div>
           </div>
         </DialogHeader>

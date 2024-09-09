@@ -70,7 +70,7 @@ export default function MemoProduct({
           {product && (
             <div className="py-4">
               <div>
-                <h3 className="text-2xl font-semibold text-center py-2">
+                <h3 className="text-2xl font-semibold text-center pt-2">
                   <span>{product?.name} </span>
                 </h3>
               </div>
@@ -89,8 +89,6 @@ export default function MemoProduct({
                   setAllSelectedProducts={setAllSelectedProducts}
                   allSelectedProducts={allSelectedProducts}
                 />
-                {/* ask rate  */}
-                <RateAskInfo product={product} />
               </div>
             </div>
           )}

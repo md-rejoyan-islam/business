@@ -14,12 +14,13 @@ import { MdUpdate } from "react-icons/md";
 import AddFinishedProduct from "./AddFinishedProduct";
 import AddDefectForm from "./AddDefectForm";
 import UpdateFinishedProductForm from "./finisshedProduct/UpdateFinishedProductForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function FinishedProductInfo({ product }) {
   const [open, setOpen] = useState(false);
 
   const groupFinishedProducts = Object.groupBy(
     product?.finished_products,
-    (item) => item.color
+    (item) => item.color && item.color?.toUpperCase()
   );
 
   return (
@@ -100,33 +101,73 @@ export default function FinishedProductInfo({ product }) {
             </div>
           )}
           <div
-            className={`flex gap-x-4 gap-y-3 items-center flex-wrap border-t pt-3 `}
+            className={`flex gap-x-4 gap-y-3 items-center flex-wrap border-t pt-3`}
           >
-            {Object.keys(groupFinishedProducts)?.map((group, index) => {
-              const items = groupFinishedProducts[group];
-
-              return (
-                <div key={index} className="block w-full">
-                  <span className="text-gray-600 font-bold pb-2 block">
-                    {group === "null" ? "Without Color" : group}
-                    <span className="px-1 font-medium">({items?.length})</span>
-                  </span>
-
-                  <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
-                    {items?.map((item, index) => (
-                      <span
-                        className={`${
-                          item?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
-                        } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
-                        key={item.id}
-                      >
-                        {item?.amount}
+            <Tabs
+              defaultValue={
+                Object?.keys(groupFinishedProducts)?.length
+                  ? Object.keys(groupFinishedProducts)[0]
+                  : ""
+              }
+              className={
+                Object?.keys(groupFinishedProducts)?.length
+                  ? "min-w-[400px] w-full overflow-hidden "
+                  : "hidden"
+              }
+            >
+              <TabsList className="w-full  ">
+                {Object.keys(groupFinishedProducts)?.map((group, index) => {
+                  const items = groupFinishedProducts[group];
+                  return (
+                    <TabsTrigger value={group} className="w-full " key={index}>
+                      {group === "null" ? "Without Color" : group}
+                      <span className="px-1 font-medium">
+                        ({items?.length})
                       </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+              {Object.keys(groupFinishedProducts)?.map((group, index) => {
+                const items = groupFinishedProducts[group];
+
+                const designGroup = Object.groupBy(
+                  items,
+                  (item) => item?.design
+                );
+
+                return (
+                  <TabsContent value={group} key={index} className="w-full p-4">
+                    {Object.keys(designGroup)?.map((design, i) => {
+                      const designItems = designGroup[design];
+                      return (
+                        <div key={i} className="block w-full mb-4">
+                          <span className="text-gray-600 font-bold pb-2 block capitalize ">
+                            {design === "null" ? "Without Design" : design}
+                            <span className="px-1 font-medium">
+                              ({designItems?.length})
+                            </span>
+                          </span>
+
+                          <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                            {designItems?.map((dt, index) => (
+                              <span
+                                className={`${
+                                  dt?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
+                                } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
+                                key={dt.id}
+                              >
+                                {dt?.amount}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
 
             {/* if finished_products is empty  */}
             {!product?.finished_products?.length && (
