@@ -24,7 +24,7 @@ import { isLoggedIn } from "../middlewares/verify";
 
 const productRouter = express.Router();
 
-productRouter.use(isLoggedIn);
+// productRouter.use(isLoggedIn);
 
 productRouter
   .route("/")

@@ -10,7 +10,7 @@ import {
 import { isLoggedIn } from "../middlewares/verify";
 
 const dailyCashRouter = Router();
-dailyCashRouter.use(isLoggedIn);
+// dailyCashRouter.use(isLoggedIn);
 
 dailyCashRouter.route("/").get(getAllDailyCash).post(createDailyCash);
 

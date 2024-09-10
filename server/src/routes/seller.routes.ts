@@ -10,7 +10,7 @@ import { isLoggedIn } from "../middlewares/verify";
 
 const sellerRouter = express.Router();
 
-sellerRouter.use(isLoggedIn);
+// sellerRouter.use(isLoggedIn);
 
 sellerRouter.route("/").get(getAllSellers).post(createSeller);
 

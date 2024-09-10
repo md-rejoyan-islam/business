@@ -12,7 +12,7 @@ import { isLoggedIn } from "../middlewares/verify";
 
 const userRouter = Router();
 
-userRouter.use(isLoggedIn);
+// userRouter.use(isLoggedIn);
 
 userRouter
   .route("/")

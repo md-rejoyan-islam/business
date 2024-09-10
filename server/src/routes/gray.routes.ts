@@ -18,7 +18,7 @@ import { isLoggedIn } from "../middlewares/verify";
 
 const grayRouter = express.Router();
 
-grayRouter.use(isLoggedIn);
+// grayRouter.use(isLoggedIn);
 
 grayRouter
   .route("/")

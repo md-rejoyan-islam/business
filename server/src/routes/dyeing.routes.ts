@@ -18,7 +18,7 @@ import { isLoggedIn } from "../middlewares/verify";
 
 const dyeingRouter = express.Router();
 
-dyeingRouter.use(isLoggedIn);
+// dyeingRouter.use(isLoggedIn);
 
 dyeingRouter
   .route("/")
