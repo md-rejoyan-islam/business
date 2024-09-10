@@ -14,7 +14,7 @@ import {
   updateDyeingPaymentById,
 } from "../controllers/dyeing.controller";
 import { createDyeingZodSchema } from "../middlewares/validation/validation";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const dyeingRouter = express.Router();
 

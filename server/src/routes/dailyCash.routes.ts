@@ -7,7 +7,7 @@ import {
   getAllDailyCash,
   getDailyCashByDate,
 } from "../controllers/dailyCash";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const dailyCashRouter = Router();
 // dailyCashRouter.use(isLoggedIn);

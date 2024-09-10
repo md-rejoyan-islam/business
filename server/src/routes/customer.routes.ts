@@ -19,7 +19,7 @@ import {
   updateCustomerCheckById,
   updateCustomerPaymentById,
 } from "../controllers/customer.controller";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const customerRouter = express.Router();
 

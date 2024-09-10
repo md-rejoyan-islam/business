@@ -14,7 +14,7 @@ import {
 } from "../controllers/gray.controller";
 import validateRequest from "../middlewares/validationRequest";
 import { createGrayZodSchema } from "../middlewares/validation/validation";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const grayRouter = express.Router();
 

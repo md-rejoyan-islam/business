@@ -6,7 +6,7 @@ import {
   getSellerById,
   updateSellerById,
 } from "../controllers/seller.controllers ";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const sellerRouter = express.Router();
 

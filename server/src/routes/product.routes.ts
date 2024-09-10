@@ -20,7 +20,7 @@ import {
   productAddToDyeingZodSchema,
 } from "../middlewares/validation/validation";
 import validateRequest from "../middlewares/validationRequest";
-import { isLoggedIn } from "../middlewares/verify";
+// import { isLoggedIn } from "../middlewares/verify";
 
 const productRouter = express.Router();
 
