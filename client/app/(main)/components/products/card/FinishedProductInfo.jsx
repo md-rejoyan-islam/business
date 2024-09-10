@@ -8,20 +8,23 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import ThaanAddForm from "./ThaanAddForm";
 import { useState } from "react";
 import { MdUpdate } from "react-icons/md";
 import AddFinishedProduct from "./AddFinishedProduct";
 import AddDefectForm from "./AddDefectForm";
 import UpdateFinishedProductForm from "./finisshedProduct/UpdateFinishedProductForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function FinishedProductInfo({ product }) {
   const [open, setOpen] = useState(false);
 
-  const groupFinishedProducts = Object.groupBy(
+  const colorWiseGroupFinishedProducts = Object.groupBy(
     product?.finished_products,
     (item) => item.color && item.color?.toUpperCase()
   );
+
+  // array  split with 2 items
+  const colorGroupNameKeyArray = Object.keys(colorWiseGroupFinishedProducts);
+
+  const [checked, setChecked] = useState(colorGroupNameKeyArray[0]);
 
   return (
     <Card className="shadow-md">
@@ -67,7 +70,7 @@ export default function FinishedProductInfo({ product }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="grid ">
+        <div>
           {product?.finished_products?.length > 0 && (
             <div className="h-full w-full flex justify-center  items-center pb-3 ">
               <div className="flex flex-wrap  gap-4 h-fit  items-center justify-center px-2  ">
@@ -100,75 +103,65 @@ export default function FinishedProductInfo({ product }) {
               </div>
             </div>
           )}
-          <div
-            className={`flex gap-x-4 gap-y-3 items-center flex-wrap border-t pt-3`}
-          >
-            <Tabs
-              defaultValue={
-                Object?.keys(groupFinishedProducts)?.length
-                  ? Object.keys(groupFinishedProducts)[0]
-                  : ""
-              }
-              className={
-                Object?.keys(groupFinishedProducts)?.length
-                  ? "min-w-[400px] w-full overflow-hidden "
-                  : "hidden"
-              }
-            >
-              <TabsList className="w-full  ">
-                {Object.keys(groupFinishedProducts)?.map((group, index) => {
-                  const items = groupFinishedProducts[group];
-                  return (
-                    <TabsTrigger value={group} className="w-full " key={index}>
-                      {group === "null" ? "Without Color" : group}
-                      <span className="px-1 font-medium">
-                        ({items?.length})
-                      </span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-              {Object.keys(groupFinishedProducts)?.map((group, index) => {
-                const items = groupFinishedProducts[group];
-
-                const designGroup = Object.groupBy(
-                  items,
-                  (item) => item?.design
-                );
-
+          <div className="border-t pt-4">
+            <div className="flex justify-center w-full gap-2 pb-2 px-4">
+              {colorGroupNameKeyArray?.sort()?.map((tab, index) => {
                 return (
-                  <TabsContent value={group} key={index} className="w-full p-4">
-                    {Object.keys(designGroup)?.map((design, i) => {
-                      const designItems = designGroup[design];
-                      return (
-                        <div key={i} className="block w-full mb-4">
-                          <span className="text-gray-600 font-bold pb-2 block capitalize ">
-                            {design === "null" ? "Without Design" : design}
-                            <span className="px-1 font-medium">
-                              ({designItems?.length})
-                            </span>
-                          </span>
-
-                          <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
-                            {designItems?.map((dt, index) => (
-                              <span
-                                className={`${
-                                  dt?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
-                                } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
-                                key={dt.id}
-                              >
-                                {dt?.amount}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </TabsContent>
+                  <label
+                    key={index}
+                    className={` py-1 px-2 text-[12px] font-semibold rounded-md bg-slate-200 text-gray-600 cursor-pointer ${
+                      checked === tab ? "bg-blue-200" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      value={tab}
+                      className="hidden"
+                      onChange={(e) => setChecked(e.target.value)}
+                    />
+                    {tab}
+                  </label>
                 );
               })}
-            </Tabs>
+            </div>
+            <div className="pt-4 px-4">
+              {Object?.keys(
+                Object?.groupBy(
+                  colorWiseGroupFinishedProducts[checked] || [],
+                  (item) => item?.design?.toUpperCase()
+                )
+              )?.map((design, i) => {
+                const designItems = Object.groupBy(
+                  colorWiseGroupFinishedProducts[checked],
+                  (item) => item?.design?.toUpperCase()
+                )[design];
+                return (
+                  <div key={i} className="block w-full mb-4">
+                    <span className="text-gray-600 font-bold pb-2 block capitalize ">
+                      {design === "null" ? "Without Design" : design}
+                      <span className="px-1 font-medium">
+                        ({designItems?.length})
+                      </span>
+                    </span>
 
+                    <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                      {designItems
+                        ?.sort((a, b) => a?.amount - b?.amount)
+                        ?.map((dt) => (
+                          <span
+                            className={`${
+                              dt?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
+                            } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
+                            key={dt.id}
+                          >
+                            {dt?.amount}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             {/* if finished_products is empty  */}
             {!product?.finished_products?.length && (
               <p className="text-center w-full text-red-500">

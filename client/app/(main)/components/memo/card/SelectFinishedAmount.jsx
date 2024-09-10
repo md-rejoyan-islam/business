@@ -45,10 +45,15 @@ export default function SelectFinishedAmount({
     setOpen(false);
   };
 
-  const groupFinishedProducts = Object.groupBy(
+  const colorWiseGroupFinishedProducts = Object.groupBy(
     product?.finished_products,
-    (item) => item.color && item?.color?.toUpperCase()
+    (item) => item.color && item.color?.toUpperCase()
   );
+
+  // array  split with 2 items
+  const colorGroupNameKeyArray = Object.keys(colorWiseGroupFinishedProducts);
+
+  const [checked, setChecked] = useState(colorGroupNameKeyArray[0]);
 
   return (
     <div className="flex-1 h-full">
@@ -56,76 +61,91 @@ export default function SelectFinishedAmount({
         Finished Amount
       </h3>
       <div className="border p-4 rounded-md ">
-        <div className="flex gap-3 flex-wrap">
-          {Object.keys(groupFinishedProducts)?.map((group, index) => {
-            const items = groupFinishedProducts[group];
+        <div>
+          <div className="flex justify-center w-full gap-2 pb-3 px-4 ">
+            {colorGroupNameKeyArray?.sort()?.map((tab, index) => {
+              return (
+                <label
+                  key={index}
+                  className={` py-1 px-2 text-[12px] font-semibold rounded-md bg-slate-200 text-gray-600 cursor-pointer ${
+                    checked === tab ? "bg-blue-200" : ""
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    value={tab}
+                    className="hidden"
+                    onChange={(e) => setChecked(e.target.value)}
+                  />
+                  {tab}
+                </label>
+              );
+            })}
+          </div>
+          <div className="pt-4 px-4">
+            {Object?.keys(
+              Object?.groupBy(
+                colorWiseGroupFinishedProducts[checked] || [],
+                (item) => item?.design?.toUpperCase()
+              )
+            )?.map((design, i) => {
+              const designItems = Object.groupBy(
+                colorWiseGroupFinishedProducts[checked],
+                (item) => item?.design?.toUpperCase()
+              )[design];
+              return (
+                <div key={i} className="block w-full mb-4">
+                  <span className="text-gray-600 font-bold pb-2 block capitalize ">
+                    {design === "null" ? "Without Design" : design}
+                    <span className="px-1 font-medium">
+                      ({designItems?.length})
+                    </span>
+                  </span>
 
-            const designGroup = Object.groupBy(items, (item) => item?.design);
-
-            return (
-              <div
-                key={index}
-                className="block w-full border rounded-md p-3 shadow-sm bg-slate-50/10"
-              >
-                <span className="text-gray-600 font-bold text-[15px] pb-1 block text-center border-b mb-2">
-                  {group === "null" ? "Without Color" : group}
-                  <span className="px-1 font-medium">({items?.length})</span>
-                </span>
-                {Object.keys(designGroup)?.map((design, i) => {
-                  const designItems = designGroup[design];
-                  return (
-                    <div key={i}>
-                      <p>
-                        <span className="text-gray-600 font-bold pb-2 block capitalize  text-sm">
-                          {design === "null" ? "Without Design" : design}
-                          <span className="px-1 font-medium ">
-                            ({designItems?.length})
-                          </span>
-                        </span>
-                      </p>
-                      <div className="flex gap-x-4 gap-y-3 items-center flex-wrap  pb-3">
-                        {designItems?.map((dt, index) => (
-                          <p
-                            className={`${
-                              dt?.is_sold ? "bg-red-50" : ""
-                            } h-12 w-12 rounded-md border text-[12px] flex justify-center items-center`}
-                            key={index}
+                  <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
+                    {designItems
+                      ?.sort((a, b) => a?.amount - b?.amount)
+                      ?.map((dt) => (
+                        <p
+                          className={`${
+                            dt?.is_sold ? "bg-red-50" : ""
+                          } h-12 w-12 rounded-md border text-[12px] flex justify-center items-center`}
+                          key={dt?.id}
+                        >
+                          <Toggle
+                            className="h-full w-full data-[state=on]:bg-slate-200"
+                            disabled={dt?.is_sold}
+                            onPressedChange={(state) => {
+                              setSelectedItem((prev) => {
+                                if (state) {
+                                  return {
+                                    ...prev,
+                                    id: product.id,
+                                    name: product.name,
+                                    items: [...prev.items, dt],
+                                  };
+                                } else {
+                                  return {
+                                    ...prev,
+                                    items: prev.items.filter(
+                                      (i) => i.id !== dt.id
+                                    ),
+                                  };
+                                }
+                              });
+                            }}
                           >
-                            <Toggle
-                              className="h-full w-full data-[state=on]:bg-slate-200"
-                              disabled={dt?.is_sold}
-                              onPressedChange={(state) => {
-                                setSelectedItem((prev) => {
-                                  if (state) {
-                                    return {
-                                      ...prev,
-                                      id: product.id,
-                                      name: product.name,
-                                      items: [...prev.items, dt],
-                                    };
-                                  } else {
-                                    return {
-                                      ...prev,
-                                      items: prev.items.filter(
-                                        (i) => i.id !== dt.id
-                                      ),
-                                    };
-                                  }
-                                });
-                              }}
-                            >
-                              {dt?.amount}
-                            </Toggle>
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+                            {dt?.amount}
+                          </Toggle>
+                        </p>
+                      ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
+
         <div>
           {product?.finished_products?.length === 0 && (
             <div>

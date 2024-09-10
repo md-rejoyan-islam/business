@@ -68,7 +68,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
   };
 
   const onSubmit = async (values) => {
-    const { gray_name, product_1, amount_1, rate_1 } = values;
+    const { gray_name, product_1, amount_1, rate_1, dyeing_id_1 } = values;
 
     const gray = grays?.data?.find((data) => data.id === grayId);
 
@@ -86,6 +86,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
     if (!product_1) return toast.error("Product-1 name is required!!");
     if (!amount_1) return toast.error("Product-1 amount is required!!");
     if (!rate_1) return toast.error("Product-1 rate is required!!");
+    if (!dyeing_id_1) return toast.error("Dyeing name is required!");
 
     const products = [];
 
@@ -101,10 +102,6 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
           dyeing_name: values[`dyeing_name_${index}`],
           dyeingId: values[`dyeing_id_${index}`],
         };
-        if (!product.dyeing_name) {
-          delete product.dyeing_name;
-          delete product.dyeingId;
-        }
 
         if (!product.name) {
           isError = true;
@@ -115,7 +112,11 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
         } else if (!product.gray_rate) {
           isError = true;
           return toast.error(`Product-${index} rate is required!`);
+        } else if (!product.dyeingId) {
+          isError = true;
+          return toast.error(`Dyeing-${index} name is required!`);
         }
+
         if (array.length - 1 === indexValue) {
           isError = false;
         }

@@ -1,5 +1,4 @@
 import productRouter from "../routes/product.routes";
-import buyerRouter from "../routes/buyer.routes";
 import sellerRouter from "../routes/seller.routes";
 import userRouter from "../routes/user.routes";
 import authRouter from "../routes/auth.routes";
@@ -12,10 +11,6 @@ const routes = [
   {
     path: "/api/v1/products",
     route: productRouter,
-  },
-  {
-    path: "/api/v1/buyers",
-    route: buyerRouter,
   },
   {
     path: "/api/v1/grays",

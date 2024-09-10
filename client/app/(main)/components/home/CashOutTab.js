@@ -187,7 +187,7 @@ export default function CashOutTab({ setOpen }) {
                   }}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Gray" />
+                    <SelectValue placeholder="Select Dyeing" />
                   </SelectTrigger>
                   <SelectContent className="w-full">
                     {dyeings?.map((dyeing) => {

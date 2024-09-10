@@ -19,8 +19,11 @@ import {
   updateCustomerCheckById,
   updateCustomerPaymentById,
 } from "../controllers/customer.controller";
+import { isLoggedIn } from "../middlewares/verify";
 
 const customerRouter = express.Router();
+
+customerRouter.use(isLoggedIn);
 
 customerRouter.route("/").get(getAllCustomers).post(addCustomer);
 

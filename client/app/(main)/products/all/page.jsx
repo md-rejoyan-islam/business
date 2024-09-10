@@ -13,7 +13,11 @@ import ProductTable from "@/app/(main)/components/products/ProductTable";
 import { useGetAllProductsQuery } from "@/features/products/productApi";
 import ElahiVorsa from "@/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
-import { numberToFixed, productShortage } from "../../components/helper";
+import {
+  numberToFixed,
+  productShortage,
+  productStatus,
+} from "../../components/helper";
 
 export default function AllProduct() {
   const { data: { data: products = [] } = {}, isLoading } =
@@ -43,6 +47,7 @@ export default function AllProduct() {
       dyeing_name: product?.dyeing?.name,
       gray_name: product?.gray?.name,
       shortage,
+      status: productStatus(product),
       ...product,
     };
   });

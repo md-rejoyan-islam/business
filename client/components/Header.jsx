@@ -77,7 +77,9 @@ export default function Header({ showFull, setShowFull }) {
               <PopoverTrigger>
                 <Avatar className="ring-[3px] w-9 h-9">
                   <AvatarImage src="/user.png" />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.toUpperCase()?.slice(0, 2)}
+                  </AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
               <PopoverContent align="end" className="p-2 w-[200px]">

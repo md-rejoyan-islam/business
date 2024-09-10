@@ -106,12 +106,12 @@ export default function PaymentCount({
     if (type === "update") {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: "Confirm the purchase.",
+        text: "Update the purchase.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Yes, update it!",
       });
 
       if (result?.isConfirmed) {
@@ -138,7 +138,7 @@ export default function PaymentCount({
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Yes, purchase it!",
       });
 
       if (result?.isConfirmed) {

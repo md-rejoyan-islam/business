@@ -1,13 +1,13 @@
 import { Response } from "express";
+import { nodeEnv } from "../app/secret";
 // import { nodeEnv } from "../app/secret";
 // import { nodeEnv } from "../app/secret";
 
 // clear cookie
 export const clearCookie = (res: Response, cookieName: string) => {
   res.clearCookie(cookieName, {
-    secure: true,
+    secure: nodeEnv === "development" ? false : true,
     sameSite: "none",
-    // secure: nodeEnv == "development" ? false : true,
     // sameSite: nodeEnv === "development" ? "strict" : "none",
     httpOnly: true,
   });
@@ -27,11 +27,9 @@ export const setCookie = ({
 }) => {
   res.cookie(cookieName, cookieValue, {
     httpOnly: true,
-    // httpOnly: false,
     maxAge,
-    secure: true, // only https
+    secure: nodeEnv === "development" ? false : true, // only https
     sameSite: "none", // when use cross site
-    // secure: nodeEnv === "development" ? false : true, // only https
     // sameSite: nodeEnv === "development" ? "strict" : "none", // when use cross site
   });
 };

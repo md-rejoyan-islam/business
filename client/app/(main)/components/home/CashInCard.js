@@ -26,9 +26,10 @@ export default function CashInCard({
     }, 0) || 0;
 
   const totalCost = totalDyeingsPayment + totalGraysPayment + othersCost;
-  const todayBalanceAdd = dailyCash?.cashIn?.reduce((sum, cash) => {
-    return sum + cash?.amount;
-  }, 0);
+  const todayBalanceAdd =
+    dailyCash?.cashIn?.reduce((sum, cash) => {
+      return sum + cash?.amount;
+    }, 0) || 0;
 
   const todayCash =
     todaySold + (dailyCash?.previous || 0) + todayBalanceAdd - totalCost;
@@ -75,7 +76,7 @@ export default function CashInCard({
               <span className="font-semibold">Today&apos;s Cash</span>
               <span>
                 {todaySold +
-                  (numberToFixed(dailyCash?.previous + todayBalanceAdd) || 0)}
+                  numberToFixed((dailyCash?.previous || 0) + todayBalanceAdd)}
               </span>
             </p>
           </div>

@@ -24,25 +24,44 @@ export default function ProductInfo({ product }) {
       <CardContent className="p-4">
         <div className="space-y-2">
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
-            <span className="font-medium">Received From Dyeing - Gray Lot</span>
-            <span>
-              {product?.dyeing_amount &&
-                product?.gray_amount &&
-                numberToFixed(product?.dyeing_amount - product?.gray_amount)}
-            </span>
+            <span className="font-medium">Gray Amount </span>
+            <span>{numberToFixed(product?.gray_amount)}</span>
+          </p>
+          <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
+            <span className="font-medium">Dyeing Amount</span>
+            <span>{numberToFixed(product?.dyeing_amount)}</span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Finished Product</span>
             <span>{finishedProduct}</span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
-            <span className="font-medium">Finished Product - Dyeing</span>
+            <span className="font-medium">Gray-dyeing difference</span>
             <span>
-              {finishedProduct &&
-                product?.dyeing_amount &&
-                numberToFixed(finishedProduct - product?.dyeing_amount)}
+              {product?.dyeing_amount &&
+                product?.gray_amount &&
+                numberToFixed(product?.gray_amount - product?.dyeing_amount)}
             </span>
           </p>
+          <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
+            <span className="font-medium">
+              Gray-finished_product difference
+            </span>
+            <span>
+              {product?.gray_amount &&
+                numberToFixed((product?.gray_amount || 0) - finishedProduct)}
+            </span>
+          </p>
+          <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
+            <span className="font-medium">
+              Dyeing-finished_product difference
+            </span>
+            <span>
+              {product?.dyeing_amount &&
+                numberToFixed((product?.dyeing_amount || 0) - finishedProduct)}
+            </span>
+          </p>
+
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Shortage</span>
             <span>{shortage}</span>

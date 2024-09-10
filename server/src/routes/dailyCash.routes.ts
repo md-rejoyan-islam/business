@@ -7,8 +7,10 @@ import {
   getAllDailyCash,
   getDailyCashByDate,
 } from "../controllers/dailyCash";
+import { isLoggedIn } from "../middlewares/verify";
 
 const dailyCashRouter = Router();
+dailyCashRouter.use(isLoggedIn);
 
 dailyCashRouter.route("/").get(getAllDailyCash).post(createDailyCash);
 

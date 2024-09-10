@@ -34,15 +34,6 @@ export default function AddFinishedProductFromMemo({ product, refetch }) {
             finished_products: [],
           }}
         />
-        {/* <ThaanAddForm
-          type={"add"}
-          setOpen={setOpen}
-          refetch={refetch}
-          product={{
-            id: product?.id,
-            finished_products: [],
-          }}
-        /> */}
       </DialogContent>
     </Dialog>
   );

@@ -49,7 +49,7 @@ const formSchema = z.object({
       required_error: "Gray name is required.",
       invalid_type_error: "Gray name must be string",
     })
-    .min(1, "Gray name must be at least 1 character"),
+    .min(1, "Gray name is required!"),
   grayId: z.coerce.number({
     required_error: "Gray id is required.",
     invalid_type_error: "Gray id must be number",
@@ -84,14 +84,13 @@ const formSchema = z.object({
   dyeing_date: z.date().optional(),
   dyeing_name: z
     .string({
+      required_error: "Dyeing name is required.",
       invalid_type_error: "Dyeing name must be string",
     })
-    .optional(),
-  dyeingId: z.coerce
-    .number({
-      invalid_type_error: "Dyeing id must be number",
-    })
-    .optional(),
+    .min(1, "Dyeing name is required!"),
+  dyeingId: z.coerce.number({
+    invalid_type_error: "Dyeing id must be number",
+  }),
 
   // delivery
   delivery_status: z
@@ -174,17 +173,16 @@ export default function ProductForm({ type = "add", formData = {}, setOpen }) {
       if (dyeing_name) {
         delete values.dyeing_name;
       } else {
+        if (!values.dyeing_name) return toast.error("Dyeing name is required!");
+        else if (!values.dyeing_amount)
+          return toast.error("Dyeing amount is required!");
         delete values.dyeing_name;
-        delete values.dyeingId;
-        delete values.dyeing_amount;
-        delete values.dyeing_rate;
       }
-
       const res = await addProduct(values);
       if (res.data?.success) {
         setOpen(false);
         form.reset();
-        toast.success(res.data?.message);
+        toast.success("Successfully product added.");
       } else if (!res?.error?.data?.success) {
         toast.error(res?.error?.data?.error?.message);
       }
@@ -386,7 +384,7 @@ export default function ProductForm({ type = "add", formData = {}, setOpen }) {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="dyeing_amount"
             render={({ field }) => (
@@ -426,7 +424,7 @@ export default function ProductForm({ type = "add", formData = {}, setOpen }) {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           {type === "update" ? (
             <Button type="submit">

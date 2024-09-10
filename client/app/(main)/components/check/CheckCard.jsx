@@ -185,6 +185,7 @@ export default function CheckCard({ data, isLoading }) {
             <Button
               className=" text-lg py-2 h-8 px-2 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
               onClick={() => handleDelete(row?.original?.id)}
+              disabled={true}
             >
               <IoTrashOutline />
             </Button>

@@ -108,6 +108,7 @@ export const EditPayment = ({ payment }) => {
       <Button
         className=" text-lg   py-1.5 px-1.5 h-fit bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
         onClick={() => handleDelete(payment.id)}
+        disabled={true}
       >
         <IoTrashOutline className="text-[12px]" />
       </Button>
@@ -164,6 +165,7 @@ export const ThaanEdit = ({ thaan }) => {
       <Button
         className=" text-lg   py-1.5 px-1.5 h-fit bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
         onClick={() => handleDelete(thaan?.id)}
+        disabled={true}
       >
         <IoTrashOutline className="text-[12px]" />
       </Button>

@@ -46,6 +46,7 @@ import ProductForm from "./ProductForm";
 import { GrAddCircle } from "react-icons/gr";
 import TableSkeleton from "../skeleton/TableSkeleton";
 import { TbCoinTakaFilled } from "react-icons/tb";
+import { numberToFixed } from "../helper";
 
 const ProductTable = ({ data, isLoading }) => {
   const [open, setOpen] = React.useState();
@@ -107,8 +108,62 @@ const ProductTable = ({ data, isLoading }) => {
       ),
     },
     {
+      accessorKey: "gray_rate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Gray Rate
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4 flex items-center gap-1">
+          {numberToFixed(row.getValue("gray_rate"))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "dyeing_rate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Dyeing Rate
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4 flex items-center gap-1">
+          {numberToFixed(row.getValue("dyeing_rate"))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "shortage",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Shortage
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize pl-4">{row.getValue("shortage")}</div>
+      ),
+    },
+    {
       accessorKey: "unit_cost",
-
       header: ({ column }) => {
         return (
           <Button
@@ -134,24 +189,12 @@ const ProductTable = ({ data, isLoading }) => {
       ),
     },
     {
-      accessorKey: "shortage",
-
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Shortage
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }) => (
-        <div className="capitalize pl-4">{row.getValue("shortage")}</div>
+        <div className="capitalize text-[11px]">{row.getValue("status")}</div>
       ),
     },
-
     {
       accessorKey: "Action",
       header: "Action",
@@ -164,7 +207,7 @@ const ProductTable = ({ data, isLoading }) => {
             <DialogContent className="overflow-scroll ">
               <DialogHeader>
                 <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                  Update Gray Data
+                  Update Product Data
                 </DialogTitle>
                 <DialogDescription></DialogDescription>
               </DialogHeader>
@@ -220,7 +263,7 @@ const ProductTable = ({ data, isLoading }) => {
           <DialogContent className="overflow-scroll ">
             <DialogHeader>
               <DialogTitle className="pb-6  text-3xl font-bold tracking-tight text-center">
-                Add Product Data
+                Add Product
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>

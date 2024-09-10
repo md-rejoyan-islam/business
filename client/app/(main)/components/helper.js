@@ -1,11 +1,11 @@
 export const productStatus = (product) => {
   let status = null;
-  if (product?.dyeing_date) {
-    status = "IN HOME";
-  } else if (product?.dyeing_date && product?.gray_date) {
-    status = "IN MILE";
-  } else {
+  if (product?.gray_date && !product?.dyeing?.name) {
     status = "IN RUNNING";
+  } else if (product?.dyeing_date && product?.gray_date) {
+    status = "IN HOME";
+  } else {
+    status = "IN MILE";
   }
 
   return status;
