@@ -5,7 +5,7 @@ export const productStatus = (product) => {
   } else if (product?.dyeing_date && product?.gray_date) {
     status = "IN HOME";
   } else {
-    status = "IN MILE";
+    status = "IN MILL";
   }
 
   return status;
