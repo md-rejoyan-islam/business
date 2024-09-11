@@ -32,6 +32,18 @@ export default function SideContent() {
         </li>
         <li
           className={`${
+            pathname.includes("/memo")
+              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
+              : "hover:bg-[#f4f4f5]"
+          } py-2 px-2 rounded-md hover:no-underline   `}
+        >
+          <Link href="/memo" className="flex gap-3 items-center">
+            <CiMemoPad />
+            <span>Memo</span>
+          </Link>
+        </li>
+        <li
+          className={`${
             pathname.includes("/grays/")
               ? "bg-[#18181b] hover:bg-[#18181b] text-white"
               : "hover:bg-[#f4f4f5]"
@@ -78,16 +90,17 @@ export default function SideContent() {
             <span>Cutomers</span>
           </Link>
         </li>
+
         <li
           className={`${
-            pathname.includes("/memo")
+            pathname.includes("/customers/due")
               ? "bg-[#18181b] hover:bg-[#18181b] text-white"
               : "hover:bg-[#f4f4f5]"
           } py-2 px-2 rounded-md hover:no-underline   `}
         >
-          <Link href="/memo" className="flex gap-3 items-center">
-            <CiMemoPad />
-            <span>Memo</span>
+          <Link href="/customers/due" className="flex gap-3 items-center">
+            <BiCheckSquare />
+            <span>Customers Due</span>
           </Link>
         </li>
         <li

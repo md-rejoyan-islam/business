@@ -135,15 +135,26 @@ export default function Home() {
               selected={date}
               onSelect={setDate}
               initialFocus
+              disabled={(date) =>
+                date > new Date() || date < new Date("1900-01-01")
+              }
             />
           </PopoverContent>
         </Popover>
       </div>
 
       <div className="mb-10 py-4 px-4  gap-2 flex">
-        <BuyModal refetchGrays={refetchGrays} />
+        <BuyModal
+          refetchGrays={refetchGrays}
+          disabled={format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")}
+        />
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger className="py-2 h-8 bg-black/5 hover:bg-black/10 rounded-md flex items-center px-3 active:scale-95 transition-all duration-100 text-black    border">
+          <DialogTrigger
+            className="py-2 h-8 bg-black/5 hover:bg-black/10 rounded-md flex items-center px-3 active:scale-95 transition-all duration-100 text-black    border disabled:active:scale-100 disabled:bg-black/5 disabled:hover:bg-black/5  disabled:text-slate-400  "
+            disabled={
+              format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")
+            }
+          >
             Cash Out
           </DialogTrigger>
           <DialogContent className="overflow-scroll ">
@@ -156,7 +167,9 @@ export default function Home() {
             <CashOutTab setOpen={setOpen} />
           </DialogContent>
         </Dialog>
-        <BalanceCashIn />
+        <BalanceCashIn
+          disabled={format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")}
+        />
       </div>
 
       <ResizablePanelGroup
@@ -192,6 +205,7 @@ export default function Home() {
               <CashInCard
                 customersPayments={customersPayments}
                 dailyCash={dailyCash}
+                date={date ? format(date, "yyyy-MM-dd") : ""}
                 graysPayments={graysPayments}
                 dyeingsPayments={dyeingsPayments}
               />

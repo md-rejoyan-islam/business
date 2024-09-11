@@ -11,7 +11,19 @@ interface DateQuery {
   eq?: string;
 }
 
-// get all customers
+/**
+ *
+ * @description        Get All Cutomers
+ * @method             GET
+ *
+ * @route              /api/v1/customers
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const getAllCustomers = asyncHandler(
   async (req: Request, res: Response) => {
     const dateQuery = req.query?.date as DateQuery;
@@ -58,7 +70,19 @@ export const getAllCustomers = asyncHandler(
   }
 );
 
-// get customer by id
+/**
+ *
+ * @description        Get Customer by id
+ * @method             GET
+ *
+ * @route              /api/v1/customers/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const getCustomerById = asyncHandler(
   async (req: Request, res: Response) => {
     const dateQuery = req.query?.date as DateQuery;
@@ -112,7 +136,19 @@ export const getCustomerById = asyncHandler(
   }
 );
 
-// add customer
+/**
+ *
+ * @description        Add New Customer
+ * @method             POST
+ *
+ * @route              /api/v1/customers
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const addCustomer = asyncHandler(async (req: Request, res: Response) => {
   const { name, phone, address } = req.body;
 
@@ -145,7 +181,19 @@ export const addCustomer = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-// delete customer by id
+/**
+ *
+ * @description        Delete Customer by id
+ * @method             DELETE
+ *
+ * @route              /api/v1/customers/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const deleteCustomerById = asyncHandler(
   async (req: Request, res: Response) => {
     const customer = await prismaClient.customer.findUnique({
@@ -172,7 +220,19 @@ export const deleteCustomerById = asyncHandler(
   }
 );
 
-// update customer by id
+/**
+ *
+ * @description        Update Customer by id
+ * @method             PATCH
+ *
+ * @route              /api/v1/customers/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const updateCustomerById = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -198,7 +258,19 @@ export const updateCustomerById = asyncHandler(
   }
 );
 
-// get all cutomer payment
+/**
+ *
+ * @description        Get All Cutomers Payments
+ * @method             GET
+ *
+ * @route              /api/v1/customers/all-customers-payments
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const getAllCustomerPayments = asyncHandler(
   async (req: Request, res: Response) => {
     const dateQuery = req.query?.date as DateQuery;
@@ -206,6 +278,7 @@ export const getAllCustomerPayments = asyncHandler(
     const payments = await prismaClient.customerPayment.findMany({
       include: {
         customer: true,
+        CustomerChalan: true,
       },
       where: {
         date: dateQuery
@@ -231,7 +304,19 @@ export const getAllCustomerPayments = asyncHandler(
   }
 );
 
-// payment for customer chalan
+/**
+ *
+ * @description        Payment for Customer chalan
+ * @method             POST
+ *
+ * @route              /api/v1/customers/customer-payment
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const paymentForCustomerChalan = asyncHandler(
   async (req: Request, res: Response) => {
     const { customerChalanId, customerId, amount, date } = req.body;
@@ -256,7 +341,19 @@ export const paymentForCustomerChalan = asyncHandler(
   }
 );
 
-// get customer payment by id
+/**
+ *
+ * @description        Get Customer Payment by id
+ * @method             GET
+ *
+ * @route              /api/v1/customers/customer-payment/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const getCustomerPaymentById = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.params.id) throw createError.NotFound("Id is required!");
@@ -280,7 +377,19 @@ export const getCustomerPaymentById = asyncHandler(
   }
 );
 
-// update customer payment by id
+/**
+ *
+ * @description        Update Customer Payment by id
+ * @method             PUT
+ *
+ * @route              /api/v1/customers/customer-payment/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const updateCustomerPaymentById = asyncHandler(
   async (req: Request, res: Response) => {
     console.log(req.body);
@@ -311,7 +420,19 @@ export const updateCustomerPaymentById = asyncHandler(
   }
 );
 
-// delete customer payment by id
+/**
+ *
+ * @description        Delete Customer Payment by id
+ * @method             DELETE
+ *
+ * @route              /api/v1/customers/customer-payment/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const deleteCustomerPaymentById = asyncHandler(
   async (req: Request, res: Response) => {
     const payment = await prismaClient.customerPayment.findUnique({
@@ -337,7 +458,19 @@ export const deleteCustomerPaymentById = asyncHandler(
   }
 );
 
-// toggle gray marked
+/**
+ *
+ * @description        Toggle Customer Chalan payment marked by id
+ * @method             PATCH
+ *
+ * @route              /api/v1/customers/toggle-marked/:id
+ * @access             Private
+ *
+ * @success            { success : true  , data }
+ * @failed             { success : false, error : { status : code , message} }
+ * @error              ( Not Found 404 )   Customer data not found.
+ *
+ */
 export const toggleCustomerChalanMarkedById = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;

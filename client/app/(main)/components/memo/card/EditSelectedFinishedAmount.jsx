@@ -68,8 +68,8 @@ export default function EditSelectedFinishedAmount({
               return (
                 <label
                   key={index}
-                  className={` py-1 px-2 text-[12px] font-semibold rounded-md bg-slate-200 text-gray-600 cursor-pointer ${
-                    checked === tab ? "bg-blue-200" : ""
+                  className={` py-1 px-2 text-[12px] font-semibold rounded-md  text-gray-600 cursor-pointer ${
+                    checked === tab ? "bg-blue-200" : "bg-slate-200"
                   }`}
                 >
                   <input
@@ -78,7 +78,7 @@ export default function EditSelectedFinishedAmount({
                     className="hidden"
                     onChange={(e) => setChecked(e.target.value)}
                   />
-                  {tab}
+                  {tab === "null" ? "No Color" : tab}
                 </label>
               );
             })}
@@ -97,7 +97,7 @@ export default function EditSelectedFinishedAmount({
               return (
                 <div key={i} className="block w-full mb-4">
                   <span className="text-gray-600 font-bold pb-2 block capitalize ">
-                    {design === "null" ? "Without Design" : design}
+                    {design === "undefined" ? "No Design" : design}
                     <span className="px-1 font-medium">
                       ({designItems?.length})
                     </span>

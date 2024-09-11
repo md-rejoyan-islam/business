@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useCreateGrayDyeingProductMutation } from "@/features/products/productApi";
 import SubmitLoader from "../SubmitLoader";
+import { RiTestTubeFill } from "react-icons/ri";
 
 export default function BuyProduct({ setOpen, refetchGrays }) {
   const { data: grays, refetch } = useGetAllGraysQuery();
@@ -105,13 +106,13 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
 
         if (!product.name) {
           isError = true;
-          return toast.error(`Product-${index} name is required!`);
+          return toast.error(`Gray-${index} name is required!`);
         } else if (!product.gray_amount) {
           isError = true;
-          return toast.error(`Product-${index} amount is required!`);
+          return toast.error(`Gray-${index} amount is required!`);
         } else if (!product.gray_rate) {
           isError = true;
-          return toast.error(`Product-${index} rate is required!`);
+          return toast.error(`Gray-${index} rate is required!`);
         } else if (!product.dyeingId) {
           isError = true;
           return toast.error(`Dyeing-${index} name is required!`);
@@ -157,7 +158,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
             className={`${fields?.length ? "border-b pb-4 " : ""} space-y-4`}
           >
             <div>
-              <Label>Gray Name</Label>
+              <Label className="font-semibold">Gray Company</Label>
               <CreatableSelect
                 isClearable
                 options={grayNames}

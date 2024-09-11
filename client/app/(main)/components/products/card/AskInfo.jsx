@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import SubmitLoader from "@/app/(main)/components/SubmitLoader";
 import { useUpdateProductByIdMutation } from "@/features/products/productApi";
 import { toast } from "react-toastify";
+import { TbCoinTakaFilled } from "react-icons/tb";
 
 export default function AskInfo({ product }) {
   const [open, setOpen] = useState();
@@ -149,19 +150,31 @@ export default function AskInfo({ product }) {
         <div className="space-y-2">
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Due Ask Rate</span>
-            <span>{product?.due_ask_rate}</span>
+            <span className="flex items-center gap-1">
+              <TbCoinTakaFilled className="text-lg mt-[2px]" />
+              {product?.due_ask_rate || 0}
+            </span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Due Sell Rate</span>
-            <span>{product?.due_sell_rate}</span>
+            <span className="flex items-center gap-1">
+              <TbCoinTakaFilled className="text-lg mt-[2px]" />
+              {product?.due_sell_rate || 0}
+            </span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Cash Ask Rate</span>
-            <span>{product?.cash_ask_rate}</span>
+            <span className="flex items-center gap-1">
+              <TbCoinTakaFilled className="text-lg mt-[2px]" />
+              {product?.cash_ask_rate || 0}
+            </span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Cash Sell Rate</span>
-            <span>{product?.cash_sell_rate}</span>
+            <span className="flex items-center gap-1">
+              <TbCoinTakaFilled className="text-lg mt-[2px]" />
+              {product?.cash_sell_rate || 0}
+            </span>
           </p>
         </div>
       </CardContent>

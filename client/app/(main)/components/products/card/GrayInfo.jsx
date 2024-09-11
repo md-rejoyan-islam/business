@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import SubmitLoader from "@/app/(main)/components/SubmitLoader";
 import { toast } from "react-toastify";
 import { useUpdateProductByIdMutation } from "@/features/products/productApi";
+import { numberToFixed } from "../../helper";
+import { TbCoinTakaFilled, TbCurrencyTaka } from "react-icons/tb";
 
 export default function GrayInfo({ name, amount, rate, date, id, productId }) {
   const [open, setOpen] = useState();
@@ -126,6 +128,13 @@ export default function GrayInfo({ name, amount, rate, date, id, productId }) {
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium"> Rate</span>
             <span>{rate}</span>
+          </p>
+          <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
+            <span className="font-medium"> Total</span>
+            <span className="flex items-center gap-1">
+              <TbCoinTakaFilled className="text-lg mt-[2px]" />
+              {numberToFixed((amount || 0) * (rate || 0))}
+            </span>
           </p>
         </div>
       </CardContent>

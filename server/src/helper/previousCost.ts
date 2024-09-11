@@ -3,7 +3,7 @@ import { serverURL } from "../app/secret";
 
 export const previousCashCalculate = async (
   previousDate: string,
-  previousCash: any
+  previousCash: any = {}
 ) => {
   const {
     data: { data: graysPayments },

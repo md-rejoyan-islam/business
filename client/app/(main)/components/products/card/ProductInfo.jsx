@@ -29,18 +29,19 @@ export default function ProductInfo({ product }) {
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Dyeing Amount</span>
-            <span>{numberToFixed(product?.dyeing_amount)}</span>
+            <span>{numberToFixed(product?.dyeing_amount || 0)}</span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Finished Product</span>
-            <span>{finishedProduct}</span>
+            <span>{finishedProduct || 0}</span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
             <span className="font-medium">Gray-dyeing difference</span>
             <span>
-              {product?.dyeing_amount &&
+              {(product?.dyeing_amount &&
                 product?.gray_amount &&
-                numberToFixed(product?.gray_amount - product?.dyeing_amount)}
+                numberToFixed(product?.gray_amount - product?.dyeing_amount)) ||
+                0}
             </span>
           </p>
           <p className="flex items-center justify-between gap-4 bg-slate-50 py-1 px-3 rounded-md">
@@ -57,8 +58,11 @@ export default function ProductInfo({ product }) {
               Dyeing-finished_product difference
             </span>
             <span>
-              {product?.dyeing_amount &&
-                numberToFixed((product?.dyeing_amount || 0) - finishedProduct)}
+              {(product?.dyeing_amount &&
+                numberToFixed(
+                  (product?.dyeing_amount || 0) - finishedProduct
+                )) ||
+                0}
             </span>
           </p>
 

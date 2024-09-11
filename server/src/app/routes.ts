@@ -1,5 +1,4 @@
 import productRouter from "../routes/product.routes";
-import sellerRouter from "../routes/seller.routes";
 import userRouter from "../routes/user.routes";
 import authRouter from "../routes/auth.routes";
 import grayRouter from "../routes/gray.routes";
@@ -20,10 +19,7 @@ const routes = [
     path: "/api/v1/dyeings",
     route: dyeingRouter,
   },
-  {
-    path: "/api/v1/sellers",
-    route: sellerRouter,
-  },
+
   {
     path: "/api/v1/customers",
     route: customerRouter,

@@ -679,8 +679,6 @@ export const updatePurchaseProductById = asyncHandler(
       },
     });
 
-    console.log(payment);
-
     // payment add
     if (payment) {
       if (payment?.paymentData?.amount) {

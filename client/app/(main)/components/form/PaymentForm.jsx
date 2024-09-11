@@ -62,7 +62,7 @@ export default function PaymentForm({
     ),
     defaultValues: {
       amount: type === "update" ? beforePaymentData?.amount : 0,
-      date: type === "update" ? new Date(beforePaymentData?.date) : "",
+      date: type === "update" ? new Date(beforePaymentData?.date) : new Date(),
     },
   });
 

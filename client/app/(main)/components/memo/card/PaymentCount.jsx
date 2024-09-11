@@ -9,13 +9,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useGetCustomerByIdQuery } from "@/features/customers/customerApi";
+import {
+  useGetAllCustomersQuery,
+  useGetCustomerByIdQuery,
+} from "@/features/customers/customerApi";
 
 import {
   useConfirmPurchaseMutation,
   useGetAllProductsQuery,
   useUpdateConfirmPurchaseMutation,
 } from "@/features/products/productApi";
+import { format } from "date-fns";
 import React, { useState } from "react";
 import { CiSquareRemove } from "react-icons/ci";
 import { FiEdit } from "react-icons/fi";
@@ -40,6 +44,11 @@ export default function PaymentCount({
     }, 0);
     return acc;
   }, 0);
+
+  // customers data refetch after product purchase
+  const { refetch: refetchCustomers } = useGetAllCustomersQuery(
+    `?date[eq]=${format(new Date(), "yyyy-MM-dd")}`
+  );
 
   const [isMarkedPaid, setIsMarkedPaid] = useState(
     type === "update" ? chalan?.markedPaid : false
@@ -121,6 +130,7 @@ export default function PaymentCount({
         });
         if (res?.data?.success) {
           refetch && refetch();
+          refetchCustomers();
           Swal.fire("Success!", "Successfully product sell.", "success");
         } else {
           Swal.fire({
@@ -144,6 +154,7 @@ export default function PaymentCount({
       if (result?.isConfirmed) {
         const res = await confirmPurchase(data);
         refetch();
+        refetchCustomers();
         if (res?.data?.success) {
           setPayment({});
           setAllSelectedProducts([]);

@@ -5,6 +5,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -30,7 +37,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex justify-between items-center">
-                <span>Product- {index}</span>
+                <span>Gray-{index}</span>
                 {removeField && (
                   <span
                     onClick={removeField}
@@ -43,7 +50,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
               <FormControl>
                 <Input
                   className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
-                  placeholder="Enter product name"
+                  placeholder="Enter gray name"
                   {...field}
                 />
               </FormControl>
@@ -64,7 +71,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                     min={0}
                     step="0.01"
-                    placeholder="Enter product amount"
+                    placeholder="Enter gray amount"
                     {...field}
                   />
                 </FormControl>
@@ -85,7 +92,7 @@ export default function ProductField({ index, removeField, form, showBorder }) {
                     min={0}
                     className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"
                     step="0.01"
-                    placeholder="Enter product rate"
+                    placeholder="Enter gray rate"
                     {...field}
                   />
                 </FormControl>
@@ -94,49 +101,40 @@ export default function ProductField({ index, removeField, form, showBorder }) {
             )}
           />
         </div>
-        <div>
-          <Label>Dyeing for product-{index}</Label>
-          <CreatableSelect
-            isClearable
-            options={dyeingNames}
-            className="mt-2"
-            styles={{
-              control: (baseStyles, state) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? "#a9b5c6" : "#e2e8f0",
-              }),
-            }}
-            onChange={(value) => {
-              form.setValue(`dyeing_name_${index}`, value?.value);
-              form.setValue(`dyeing_id_${index}`, value?.id);
-            }}
-          />
-        </div>
-
-        {/* <FormField
+        <FormField
           control={form.control}
-          name={`dyeing_name_${index}`}
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Dyeing for product-{index}</FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange}>
+              <FormLabel>Dyeing for gray-{index}</FormLabel>
+              <Select
+                onValueChange={(date) => {
+                  const [value, id] = date.split("___");
+
+                  form.setValue(`dyeing_name_${index}`, value);
+                  form.setValue(`dyeing_id_${index}`, +id);
+                }}
+                defaultValue={field.value}
+              >
+                <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Dyeing Name" />
+                    <SelectValue placeholder="Select Dyeing" />
                   </SelectTrigger>
-                  <SelectContent {...field}>
-                    {dyeings?.data?.map((dyeing) => (
-                      <SelectItem value={dyeing.name} key={dyeing.id}>
-                        {dyeing.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
+                </FormControl>
+                <SelectContent>
+                  {dyeingNames?.map((dyeing) => (
+                    <SelectItem
+                      value={dyeing.value + "___" + dyeing?.id}
+                      key={dyeing.id}
+                    >
+                      {dyeing.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormItem>
           )}
-        /> */}
+        />
       </div>
     </>
   );

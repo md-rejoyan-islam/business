@@ -71,46 +71,45 @@ export default function FinishedProductInfo({ product }) {
       </CardHeader>
       <CardContent className="p-4">
         <div>
-          {product?.finished_products?.length > 0 && (
-            <div className="h-full w-full flex justify-center  items-center pb-3 ">
-              <div className="flex flex-wrap  gap-4 h-fit  items-center justify-center px-2  ">
-                <p className="flex items-center justify-center h-fit gap-1 flex-col border p-2 w-[70px] text-sm rounded-md bg-green-50">
-                  <span className="font-semibold">Stock</span>
-                  <span>
-                    {product?.finished_products.reduce((acc, item) => {
-                      if (!item.is_sold) {
-                        acc += item.amount;
-                      }
-                      return acc;
-                    }, 0)}
-                  </span>
-                </p>
-                <p className="flex items-center h-fit justify-center gap-1 flex-col border p-2 w-[70px] text-sm rounded-md bg-slate-50">
-                  <span className="font-semibold">Sold</span>
-                  <span>
-                    {product?.finished_products.reduce((acc, item) => {
-                      if (item.is_sold) {
-                        acc += item.amount;
-                      }
-                      return acc;
-                    }, 0)}
-                  </span>
-                </p>
-                <p className="flex h-fit w-[70px] items-center justify-center gap-1 flex-col border p-2 text-sm rounded-md bg-red-50">
-                  <span className="font-semibold">Defect</span>
-                  <span>{product?.total_defected}</span>
-                </p>
-              </div>
+          <div className="h-full w-full flex justify-center  items-center pb-3 ">
+            <div className="flex flex-wrap  gap-4 h-fit  items-center justify-center px-2  ">
+              <p className="flex items-center justify-center h-fit gap-1 flex-col border p-2 w-[70px] text-sm rounded-md bg-green-50">
+                <span className="font-semibold">Stock</span>
+                <span>
+                  {product?.finished_products.reduce((acc, item) => {
+                    if (!item.is_sold) {
+                      acc += item.amount;
+                    }
+                    return acc;
+                  }, 0)}
+                </span>
+              </p>
+              <p className="flex items-center h-fit justify-center gap-1 flex-col border p-2 w-[70px] text-sm rounded-md bg-slate-50">
+                <span className="font-semibold">Sold</span>
+                <span>
+                  {product?.finished_products.reduce((acc, item) => {
+                    if (item.is_sold) {
+                      acc += item.amount;
+                    }
+                    return acc;
+                  }, 0)}
+                </span>
+              </p>
+              <p className="flex h-fit w-[70px] items-center justify-center gap-1 flex-col border p-2 text-sm rounded-md bg-red-50">
+                <span className="font-semibold">Defect</span>
+                <span>{product?.total_defected || 0}</span>
+              </p>
             </div>
-          )}
+          </div>
+
           <div className="border-t pt-4">
             <div className="flex justify-center w-full gap-2 pb-2 px-4">
               {colorGroupNameKeyArray?.sort()?.map((tab, index) => {
                 return (
                   <label
                     key={index}
-                    className={` py-1 px-2 text-[12px] font-semibold rounded-md bg-slate-200 text-gray-600 cursor-pointer ${
-                      checked === tab ? "bg-blue-200" : ""
+                    className={` py-1 px-2 text-[12px] font-semibold rounded-md  text-gray-600 cursor-pointer ${
+                      checked === tab ? "bg-blue-200" : "bg-slate-200"
                     }`}
                   >
                     <input
@@ -119,7 +118,7 @@ export default function FinishedProductInfo({ product }) {
                       className="hidden"
                       onChange={(e) => setChecked(e.target.value)}
                     />
-                    {tab}
+                    {tab === "null" ? "No Color" : tab}
                   </label>
                 );
               })}
@@ -138,7 +137,7 @@ export default function FinishedProductInfo({ product }) {
                 return (
                   <div key={i} className="block w-full mb-4">
                     <span className="text-gray-600 font-bold pb-2 block capitalize ">
-                      {design === "null" ? "Without Design" : design}
+                      {design === "undefined" ? "No Design" : design}
                       <span className="px-1 font-medium">
                         ({designItems?.length})
                       </span>

@@ -58,42 +58,42 @@ export const getDailyCashByDate = asyncHandler(
       },
     });
 
-    // load previous cash
-    const date = new Date();
+    const date = new Date(req.params.date);
+    // previous date
+    const previousDay = formatISO(date.setDate(date.getDate() - 1)).split(
+      "T"
+    )[0];
 
-    const previousDay = date.setDate(date.getDate() - 1);
-
-    // update daily cash data
-    const todayDailyCash = await prismaClient.dailyCash.findUnique({
+    const previousCash = await prismaClient.dailyCash.findMany({
       where: {
-        date: new Date().toISOString().split("T")[0],
+        date: {
+          lt: req.params?.date,
+        },
+      },
+      orderBy: {
+        createAt: "desc",
       },
     });
 
-    if (!todayDailyCash) {
-      const previousCash = await prismaClient.dailyCash.findUnique({
-        where: {
-          date: new Date(previousDay).toISOString().split("T")[0],
-        },
-        include: {
-          othersCost: true,
-        },
-      });
+    const previousCashCal = await previousCashCalculate(
+      previousDay,
+      previousCash ? previousCash[0] : {}
+    );
 
-      const previousCashCal = await previousCashCalculate(
-        new Date(previousDay).toISOString().split("T")[0],
-        previousCash
-      );
-
-      // console.log(previousCash, previousCashCal);
-
-      await prismaClient.dailyCash.create({
-        data: {
-          previous: previousCash ? previousCashCal : 0,
-          date: new Date().toISOString().split("T")[0],
-        },
-      });
-    }
+    await prismaClient.dailyCash.upsert({
+      where: {
+        date: req.params?.date,
+      },
+      update: {
+        previous: +previousCashCal || 0,
+        date: req.params?.date,
+      },
+      create: {
+        previous: +previousCashCal || 0,
+        date: req.params?.date,
+      },
+    });
+    // }
 
     successResponse(res, {
       statusCode: 200,

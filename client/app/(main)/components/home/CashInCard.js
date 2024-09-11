@@ -1,15 +1,30 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { numberToFixed } from "../helper";
+import Link from "next/link";
 
 export default function CashInCard({
   customersPayments,
   dailyCash,
   graysPayments,
   dyeingsPayments,
+  date,
 }) {
   const todaySold = customersPayments?.reduce((acc, payment) => {
     return acc + payment?.amount;
   }, 0);
+
+  const [onlyTodaySold, previosSoldPayment] = customersPayments?.reduce(
+    (acc, payment) => {
+      if (payment?.CustomerChalan?.date === date) {
+        acc[0] = acc[0] + payment?.amount;
+        return acc;
+      } else {
+        acc[1] = acc[1] + payment?.amount;
+      }
+      return acc;
+    },
+    [0, 0]
+  );
 
   const totalGraysPayment =
     graysPayments?.reduce((sum, payment) => {
@@ -44,7 +59,12 @@ export default function CashInCard({
               key={payment?.id}
             >
               <p className="flex justify-between items-center gap-4 ">
-                <span className="font-medium">{payment?.customer?.name}</span>
+                <Link
+                  href={`/customers/all/${payment?.customer?.id}`}
+                  className="font-medium"
+                >
+                  {payment?.customer?.name}
+                </Link>
                 <span> {payment?.amount}</span>
               </p>
             </div>
@@ -53,7 +73,7 @@ export default function CashInCard({
           <div className="py-2 mt-4 bg-green-100/70 rounded-md p-2 flex gap-2 justify-between items-center">
             <p className=" font-semibold py-1">Sold</p>
             <p className="flex justify-between gap-2 items-center py-1">
-              {numberToFixed(todaySold)}
+              {numberToFixed(onlyTodaySold)}
             </p>
           </div>
           <div className="p-2 py-2">
@@ -65,7 +85,9 @@ export default function CashInCard({
           <div className="p-2 py-2">
             <p className="flex justify-between items-center gap-4 ">
               <span className="font-semibold">Balance Add</span>
-              <span>{numberToFixed(todayBalanceAdd) || 0}</span>
+              <span>
+                {numberToFixed(todayBalanceAdd + previosSoldPayment) || 0}
+              </span>
             </p>
           </div>
           <div>
