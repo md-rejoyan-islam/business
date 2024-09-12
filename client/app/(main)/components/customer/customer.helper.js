@@ -10,17 +10,19 @@ export const totalSingleCustomerAmount = (customer) => {
 
 export const totalSingleCustomerCost = (customer) => {
   return customer?.products?.reduce((sum, product) => {
-    const finishedSum = product?.finishedProducts?.reduce((sum, product) => {
-      return sum + product?.amount;
-    }, 0);
+    const finishedSum =
+      product?.finishedProducts?.reduce((sum, product) => {
+        return sum + product?.amount;
+      }, 0) || 0;
 
-    return sum + (finishedSum || 0 * product?.product_rate);
+    return sum + finishedSum * product?.product_rate;
   }, 0);
 };
 
 export const totalSingleCustomerPaid = (customer) => {
   return customer?.customerPayments?.reduce((sum, payment) => {
-    return sum + payment?.amount || 0;
+    if (!payment?.isPreviousPayment) return sum + payment?.amount || 0;
+    else return sum;
   }, 0);
 };
 

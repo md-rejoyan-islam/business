@@ -37,3 +37,19 @@ export const productShortage = (product) => {
 
   return shortage ? shortage : 0;
 };
+
+export const getContrastColor = (hexColor) => {
+  // Remove hash if present
+  hexColor = hexColor.replace("#", "");
+
+  // Convert hex to RGB
+  const r = parseInt(hexColor.substring(0, 2), 16);
+  const g = parseInt(hexColor.substring(2, 4), 16);
+  const b = parseInt(hexColor.substring(4, 6), 16);
+
+  // Calculate luminance
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  // Return black or white based on luminance
+  return luminance > 128 ? "#000000" : "#FFFFFF";
+};

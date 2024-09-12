@@ -143,6 +143,7 @@ CREATE TABLE `Customer` (
     `phone` VARCHAR(191) NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
+    `previousDue` DOUBLE NOT NULL DEFAULT 0,
 
     UNIQUE INDEX `Customer_phone_key`(`phone`),
     PRIMARY KEY (`id`)
@@ -182,6 +183,7 @@ CREATE TABLE `CustomerPayment` (
     `amount` DOUBLE NOT NULL,
     `customerId` INTEGER NOT NULL,
     `customerChalanId` INTEGER NULL,
+    `isPreviousPayment` BOOLEAN NOT NULL DEFAULT false,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateAt` DATETIME(3) NOT NULL,
 

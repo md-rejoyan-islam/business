@@ -65,6 +65,7 @@ export default function SingleCustomer({ params }) {
   const totalCost = totalSingleCustomerCost(customer);
   const totalPaid = totalSingleCustomerPaid(customer);
   const totalDiscount = totalSingleCustomerDiscount(customer);
+  console.log(totalCost);
 
   const totalDue = (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
 
@@ -79,6 +80,7 @@ export default function SingleCustomer({ params }) {
         payment: payment?.amount,
         chalanId: payment?.chalanId,
         id: payment?.id,
+        isPreviousPayment: payment?.isPreviousPayment,
       };
     });
 

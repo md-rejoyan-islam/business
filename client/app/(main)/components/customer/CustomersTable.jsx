@@ -44,6 +44,8 @@ import { useDeleteCustomeryIdMutation } from "@/features/customers/customerApi";
 import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { numberToFixed } from "../helper";
 import { TbCoinTakaFilled } from "react-icons/tb";
+import { LuRotateCw } from "react-icons/lu";
+import EditPreviousDue from "./EditPreviousDue";
 
 const CustomersTable = ({ data, isLoading }) => {
   const [open, setOpen] = React.useState();
@@ -141,6 +143,38 @@ const CustomersTable = ({ data, isLoading }) => {
         <div className="capitalize pl-4 flex gap-1 items-center">
           <TbCoinTakaFilled className="text-lg mt-[2px]" />
           {numberToFixed(row.getValue("due"))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "previous",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Previous
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex gap-3 items-center">
+          <div className="capitalize pl-4 flex gap-1 items-center">
+            <TbCoinTakaFilled className="text-lg mt-[2px]" />
+            {numberToFixed(row.getValue("previous"))}
+          </div>
+
+          {!row.original?.previous && (
+            <EditPreviousDue
+              previous={row.getValue("previous")}
+              type={row.getValue("previous") ? "update" : "add"}
+              data={{
+                id: row.original.id,
+              }}
+            />
+          )}
         </div>
       ),
     },

@@ -27,8 +27,18 @@ export default function AllCustomers() {
     const totalCost = totalSingleCustomerCost(customer);
     const totalPaid = totalSingleCustomerPaid(customer);
     const totalDiscount = totalSingleCustomerDiscount(customer);
+
     const totalDue =
       (totalCost && totalCost - (totalPaid + totalDiscount)) || 0;
+
+    const totalPreviousPayment =
+      customer?.customerPayments?.reduce((acc, item) => {
+        if (item?.isPreviousPayment) return acc + item?.amount;
+        else return acc;
+      }, 0) || 0;
+
+    const currentPreviousDue =
+      (customer?.previousDue || 0) - totalPreviousPayment;
 
     return {
       id: customer?.id,
@@ -37,6 +47,8 @@ export default function AllCustomers() {
       phone: customer?.phone,
       total_amount: totalAmount || 0,
       due: totalDue,
+      previous: currentPreviousDue || 0,
+      customerId: customer.id,
     };
   });
 

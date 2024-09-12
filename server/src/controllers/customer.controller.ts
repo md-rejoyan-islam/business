@@ -319,7 +319,8 @@ export const getAllCustomerPayments = asyncHandler(
  */
 export const paymentForCustomerChalan = asyncHandler(
   async (req: Request, res: Response) => {
-    const { customerChalanId, customerId, amount, date } = req.body;
+    const { customerChalanId, customerId, amount, date, isPreviousPayment } =
+      req.body;
 
     // create payment
     const payment = await prismaClient.customerPayment.create({
@@ -328,6 +329,7 @@ export const paymentForCustomerChalan = asyncHandler(
         amount: +amount,
         date: date.split("T")[0],
         customerChalanId: customerChalanId ? +customerChalanId : null,
+        isPreviousPayment: isPreviousPayment || false,
       },
     });
 
@@ -678,6 +680,34 @@ export const completeCustomerCheckById = asyncHandler(
       message: "Successfully payment done",
       payload: {
         data: payment,
+      },
+    });
+  }
+);
+
+// update previous due by id
+export const updatePreviousDueById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const customer = await prismaClient.customer.findUnique({
+      where: { id: +id },
+    });
+
+    if (!customer) throw createError.NotFound("Customer not found!");
+
+    const updatedCustomer = await prismaClient.customer.update({
+      where: { id: +id },
+      data: {
+        previousDue: req.body.previousDue,
+      },
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Customer previous due updated successfully",
+      payload: {
+        data: updatedCustomer,
       },
     });
   }

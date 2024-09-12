@@ -18,6 +18,7 @@ import {
   updateCustomerById,
   updateCustomerCheckById,
   updateCustomerPaymentById,
+  updatePreviousDueById,
 } from "../controllers/customer.controller";
 // import { isLoggedIn } from "../middlewares/verify";
 
@@ -35,6 +36,9 @@ customerRouter.route("/customer-chalan/:id").get(getCustomerChalanById);
 
 customerRouter.route("/all-customers-payments").get(getAllCustomerPayments);
 customerRouter.route("/customer-payment").post(paymentForCustomerChalan);
+
+// previous due
+customerRouter.route("/update-previous-due/:id").patch(updatePreviousDueById);
 
 // check
 customerRouter

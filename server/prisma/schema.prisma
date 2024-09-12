@@ -182,10 +182,10 @@ model Customer {
   createAt         DateTime          @default(now())
   updateAt         DateTime          @updatedAt
   CustomerCheck    CustomerCheck[]
+  previousDue      Float             @default(0)
 }
 
 // customer chalan
-
 model CustomerChalan {
   id                    Int               @id @default(autoincrement())
   products              Product[]
@@ -218,15 +218,16 @@ model CustomerProduct {
 
 // customer payment model 
 model CustomerPayment {
-  id               Int             @id @default(autoincrement())
-  date             String
-  amount           Float
-  customerId       Int
-  customer         Customer        @relation(fields: [customerId], references: [id])
-  CustomerChalan   CustomerChalan? @relation(fields: [customerChalanId], references: [id])
-  customerChalanId Int?
-  createAt         DateTime        @default(now())
-  updateAt         DateTime        @updatedAt
+  id                Int             @id @default(autoincrement())
+  date              String
+  amount            Float
+  customerId        Int
+  customer          Customer        @relation(fields: [customerId], references: [id])
+  CustomerChalan    CustomerChalan? @relation(fields: [customerChalanId], references: [id])
+  customerChalanId  Int?
+  isPreviousPayment Boolean         @default(false)
+  createAt          DateTime        @default(now())
+  updateAt          DateTime        @updatedAt
 }
 
 // daily cash

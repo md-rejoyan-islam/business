@@ -146,6 +146,14 @@ const customerApi = customersSlice.injectEndpoints({
       }),
       invalidatesTags: ["Customer", "Customers"],
     }),
+    updatePreviuosDueById: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `update-previous-due/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Customer", "Customers"],
+    }),
   }),
 });
 
@@ -168,4 +176,5 @@ export const {
   useDeleteCustomerCheckByIdMutation,
   useCompleteCustomerCheckByIdMutation,
   useGetCustomerPaymentByIdQuery,
+  useUpdatePreviuosDueByIdMutation,
 } = customerApi;

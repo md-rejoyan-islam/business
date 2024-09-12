@@ -63,6 +63,8 @@ export default function AddFinishedProductForm({ product, setOpen, type }) {
   });
 
   const onSubmit = (data) => {
+    if (!inputs.colorCode) return toast.error("Color Code is required!");
+
     const values = Object.entries(data).reduce((acc, [key, value]) => {
       const [name, index] = key.split("_");
 

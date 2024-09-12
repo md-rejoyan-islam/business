@@ -13,18 +13,28 @@ import { MdUpdate } from "react-icons/md";
 import AddFinishedProduct from "./AddFinishedProduct";
 import AddDefectForm from "./AddDefectForm";
 import UpdateFinishedProductForm from "./finisshedProduct/UpdateFinishedProductForm";
+import { getContrastColor } from "../../helper";
 export default function FinishedProductInfo({ product }) {
   const [open, setOpen] = useState(false);
 
-  const colorWiseGroupFinishedProducts = Object.groupBy(
+  const colorCodeWiseGroupFinishedProducts = Object.groupBy(
     product?.finished_products,
-    (item) => item.color && item.color?.toUpperCase()
+    (item) => item.colorCode
   );
 
-  // array  split with 2 items
-  const colorGroupNameKeyArray = Object.keys(colorWiseGroupFinishedProducts);
+  const colorCodeGroupNameKeyArray = Object.keys(
+    colorCodeWiseGroupFinishedProducts
+  );
 
-  const [checked, setChecked] = useState(colorGroupNameKeyArray[0]);
+  // codeCodeName array replace by color name
+  const groups = colorCodeGroupNameKeyArray.map((code) => {
+    return {
+      code,
+      name: colorCodeWiseGroupFinishedProducts[code][0]?.color,
+    };
+  });
+
+  const [checked, setChecked] = useState(colorCodeGroupNameKeyArray[0]);
 
   return (
     <Card className="shadow-md">
@@ -104,34 +114,43 @@ export default function FinishedProductInfo({ product }) {
 
           <div className="border-t pt-4">
             <div className="flex justify-center w-full gap-2 pb-2 px-4">
-              {colorGroupNameKeyArray?.sort()?.map((tab, index) => {
-                return (
-                  <label
-                    key={index}
-                    className={` py-1 px-2 text-[12px] font-semibold rounded-md  text-gray-600 cursor-pointer ${
-                      checked === tab ? "bg-blue-200" : "bg-slate-200"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      value={tab}
-                      className="hidden"
-                      onChange={(e) => setChecked(e.target.value)}
-                    />
-                    {tab === "null" ? "No Color" : tab}
-                  </label>
-                );
-              })}
+              {groups
+                ?.sort((a, b) => {
+                  if (a.name < b.name) return -1;
+                  if (a.name > b.name) return 1;
+                })
+                ?.map((tab, index) => {
+                  return (
+                    <label
+                      key={index}
+                      className={` py-1 px-2 text-[12px] font-semibold rounded-md  border cursor-pointer ${
+                        checked === tab?.code ? "  ring-2 ring-offset-2" : ` `
+                      }`}
+                      style={{
+                        backgroundColor: tab?.code,
+                        color: getContrastColor(tab.code),
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        value={tab?.code}
+                        className="hidden"
+                        onChange={(e) => setChecked(e.target.value)}
+                      />
+                      {tab?.name || tab?.code}
+                    </label>
+                  );
+                })}
             </div>
             <div className="pt-4 px-4">
               {Object?.keys(
                 Object?.groupBy(
-                  colorWiseGroupFinishedProducts[checked] || [],
+                  colorCodeWiseGroupFinishedProducts[checked] || [],
                   (item) => item?.design?.toUpperCase()
                 )
               )?.map((design, i) => {
                 const designItems = Object.groupBy(
-                  colorWiseGroupFinishedProducts[checked],
+                  colorCodeWiseGroupFinishedProducts[checked],
                   (item) => item?.design?.toUpperCase()
                 )[design];
                 return (

@@ -93,18 +93,6 @@ export default function SideContent() {
 
         <li
           className={`${
-            pathname.includes("/customers/due")
-              ? "bg-[#18181b] hover:bg-[#18181b] text-white"
-              : "hover:bg-[#f4f4f5]"
-          } py-2 px-2 rounded-md hover:no-underline   `}
-        >
-          <Link href="/customers/due" className="flex gap-3 items-center">
-            <BiCheckSquare />
-            <span>Customers Due</span>
-          </Link>
-        </li>
-        <li
-          className={`${
             pathname.includes("/check")
               ? "bg-[#18181b] hover:bg-[#18181b] text-white"
               : "hover:bg-[#f4f4f5]"

@@ -91,6 +91,13 @@ export default function CustomerPaymentTable({
       cell: ({ row }) => (
         <div className="capitalize flex items-center text-[12px]">
           {row.getValue("date")}
+          {row.original?.isPreviousPayment ? (
+            <span className="ml-2 py-0 bg-blue-200 px-1 rounded-md text-[9px]">
+              pre
+            </span>
+          ) : (
+            ""
+          )}
         </div>
       ),
     },
