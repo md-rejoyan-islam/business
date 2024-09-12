@@ -31,7 +31,8 @@ export const logger = createLogger({
   transports: [
     new transports.Console(),
     new DailyRotateFile({
-      filename: "src/logs/success/success-%DATE%.log",
+      filename: "",
+      // filename: "src/logs/success/success-%DATE%.log",
       datePattern: "YYYY-MM-DD-HH-mm",
       zippedArchive: true,
       maxSize: "20m",
@@ -56,7 +57,8 @@ export const errorLogger = createLogger({
   transports: [
     new transports.Console(),
     new DailyRotateFile({
-      filename: "src/logs/error/error-%DATE%.log",
+      filename: "",
+      // filename: "src/logs/error/error-%DATE%.log",
       datePattern: "YYYY-MM-DD-HH-mm",
       zippedArchive: true,
       maxSize: "20m",
