@@ -2,6 +2,9 @@ import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 const { combine, timestamp, label, printf, colorize } = format;
 
+// Define the path to the writable directory
+const logPath = "/tmp/logs";
+
 const myFormat = printf(({ message, label, timestamp }) => {
   const date = new Date(timestamp);
   const hour = date.getHours();
@@ -31,7 +34,7 @@ export const logger = createLogger({
   transports: [
     new transports.Console(),
     new DailyRotateFile({
-      filename: "",
+      filename: `${logPath}/success-%DATE%.log`,
       // filename: "src/logs/success/success-%DATE%.log",
       datePattern: "YYYY-MM-DD-HH-mm",
       zippedArchive: true,
@@ -57,7 +60,7 @@ export const errorLogger = createLogger({
   transports: [
     new transports.Console(),
     new DailyRotateFile({
-      filename: "",
+      filename: `${logPath}/success-%DATE%.log`,
       // filename: "src/logs/error/error-%DATE%.log",
       datePattern: "YYYY-MM-DD-HH-mm",
       zippedArchive: true,
