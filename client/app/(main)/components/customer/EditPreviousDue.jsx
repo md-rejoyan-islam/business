@@ -93,7 +93,7 @@ export default function EditPreviousDue({ previous, type = "add", data }) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Payment Amount</FormLabel>
+                  <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input
                       className="   focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-slate-400/80"

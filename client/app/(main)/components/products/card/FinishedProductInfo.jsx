@@ -124,7 +124,7 @@ export default function FinishedProductInfo({ product }) {
                     <label
                       key={index}
                       className={` py-1 px-2 text-[12px] font-semibold rounded-md  border cursor-pointer ${
-                        checked === tab?.code ? "  ring-2 ring-offset-2" : ` `
+                        checked === tab?.code ? "ring-2 ring-offset-2" : ``
                       }`}
                       style={{
                         backgroundColor: tab?.code,
