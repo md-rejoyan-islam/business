@@ -59,6 +59,7 @@ export const getDailyCashByDate = asyncHandler(
     });
 
     const date = new Date(req.params.date);
+
     // previous date
     const previousDay = formatISO(date.setDate(date.getDate() - 1)).split(
       "T"
@@ -71,7 +72,12 @@ export const getDailyCashByDate = asyncHandler(
         },
       },
       orderBy: {
-        createAt: "desc",
+        // createAt: "",
+        date: "desc",
+      },
+      include: {
+        othersCost: true,
+        cashIn: true,
       },
     });
 
@@ -93,7 +99,6 @@ export const getDailyCashByDate = asyncHandler(
         date: req.params?.date,
       },
     });
-    // }
 
     successResponse(res, {
       statusCode: 200,

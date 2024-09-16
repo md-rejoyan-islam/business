@@ -28,9 +28,10 @@ export const productShortage = (product) => {
   const gRate = product?.gray_rate;
   const difference =
     (finishedProduct && gAmount && finishedProduct - gAmount) || 0;
+
   // sortage furmula
   const shortage =
-    difference > 0 &&
+    difference < 0 &&
     gRate &&
     finishedProduct &&
     ((difference * gRate) / finishedProduct).toFixed(2);

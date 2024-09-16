@@ -111,6 +111,8 @@ export const getDyeingById = asyncHandler(
             products: {
               include: {
                 finished_products: true,
+                gray: true,
+                dyeing: true,
               },
             },
             payments: true,

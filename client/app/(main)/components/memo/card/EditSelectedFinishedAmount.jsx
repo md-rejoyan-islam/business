@@ -133,7 +133,7 @@ export default function EditSelectedFinishedAmount({
                           key={item?.id}
                         >
                           <Toggle
-                            className="h-full w-full data-[state=on]:bg-slate-200"
+                            className="h-full w-full data-[state=on]:bg-green-200 hover:bg-green-200"
                             disabled={
                               item?.is_sold &&
                               allSelectedProducts?.every((product) => {

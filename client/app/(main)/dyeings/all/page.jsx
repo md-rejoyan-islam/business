@@ -11,7 +11,7 @@ import Link from "next/link";
 
 import DyeingTable from "@/app/(main)/components/dyeings/dyeingTable";
 import { useGetAllDyeingsQuery } from "@/features/dyeing/dyeingApi";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
 import { totalSingeGrayAmount } from "../../components/gray/gray.helper";
 import {

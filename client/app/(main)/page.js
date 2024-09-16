@@ -1,30 +1,7 @@
 "use client";
-import { arabicDate, banglaDate, dayName, englishDate } from "@/lib/helper";
-import { siliguri } from "../layout";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import BoughtCard from "./components/home/BoughtCard";
-import SoldCard from "./components/home/SoldCard";
-import CashInCard from "./components/home/CashInCard";
-import CashOutCard from "./components/home/CashOutCard";
-import CardTitle from "./components/home/CardTitle";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import { Button } from "@/components/ui/button";
-import BuyModal from "./components/home/BuyModal";
-import ElahiVorsa from "@/components/ElahiVorsa";
-import {
-  useGetAllGraysPaymentsQuery,
-  useGetAllGraysQuery,
-} from "@/features/gray/grayApi";
-import { addMonths, format, parseISO } from "date-fns";
-import CardLoader from "./components/home/CardLoader";
-import {
-  useGetAllcustomersPaymentsQuery,
-  useGetAllCustomersQuery,
-} from "@/features/customers/customerApi";
-import { useGetAllDyeingsPaymentsQuery } from "@/features/dyeing/dyeingApi";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -33,19 +10,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import CashOutTab from "./components/home/CashOutTab";
-import { DatePickerWithRange } from "./components/gray/DatePickerWithRange";
-import { useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import {
+  useGetAllcustomersPaymentsQuery,
+  useGetAllCustomersQuery,
+} from "@/features/customers/customerApi";
 import { useGetDailyByDateQuery } from "@/features/daily/dailyApi";
-import BalanceCashIn from "./components/home/BalanceCashIn";
+import { useGetAllDyeingsPaymentsQuery } from "@/features/dyeing/dyeingApi";
+import {
+  useGetAllGraysPaymentsQuery,
+  useGetAllGraysQuery,
+} from "@/features/gray/grayApi";
+import { arabicDate, banglaDate, dayName, englishDate } from "@/lib/helper";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { siliguri } from "../layout";
+import BalanceCashIn from "@/app/(main)/components/home/BalanceCashIn";
+import BoughtCard from "./components/home/BoughtCard";
+import BuyModal from "./components/home/BuyModal";
+import CardLoader from "./components/home/CardLoader";
+import CardTitle from "./components/home/CardTitle";
+import CashInCard from "./components/home/CashInCard";
+import CashOutCard from "./components/home/CashOutCard";
+import CashOutTab from "./components/home/CashOutTab";
+import SoldCard from "./components/home/SoldCard";
 
 const today = new Date();
 

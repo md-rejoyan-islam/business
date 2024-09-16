@@ -41,9 +41,18 @@ export const previousCashCalculate = async (
       return sum + (cost?.amount || 0);
     }, 0) || 0;
 
+  const totalCashIn =
+    previousCash?.cashIn.reduce((sum: number, cash: any) => {
+      return sum + (cash?.amount || 0);
+    }, 0) || 0;
+
+  console.log(totalCashIn, previousCash);
+  console.log(previousDate);
+
   const totalCost = totalDyeingsPayment + totalGraysPayment + othersCost;
 
-  const todayCash = todaySold + previousCash?.previous - totalCost;
+  const todayCash =
+    todaySold + previousCash?.previous + totalCashIn - totalCost;
 
   return todayCash;
 };

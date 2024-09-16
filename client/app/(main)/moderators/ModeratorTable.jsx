@@ -29,8 +29,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IoTrashOutline } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
-import { useDeleteGrayByIdMutation } from "@/features/gray/grayApi";
 import { GrAddCircle } from "react-icons/gr";
 import Swal from "sweetalert2";
 import {
@@ -42,10 +40,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserAddForm from "./UserAddForm";
-import { useDeleteUserByIdMutation } from "@/features/auth/authApi";
+import {
+  useDeleteUserByIdMutation,
+  useLoggedInUserQuery,
+} from "@/features/auth/authApi";
 import UpdateUser from "./UpdateUser";
 
 const ModeratorTable = ({ data }) => {
+  const { data: { data: user = {} } = null } = useLoggedInUserQuery();
+
   const [open, setOpen] = React.useState();
 
   const [deleteUser] = useDeleteUserByIdMutation();
@@ -125,7 +128,7 @@ const ModeratorTable = ({ data }) => {
             <Button
               className=" text-lg py-2 h-8 px-2 bg-transparent active:scale-95 transition-all duration-100 text-black hover:bg-black/5 hover:text-red-400  border"
               onClick={() => handleDelete(row?.original?.id)}
-              disabled={true}
+              disabled={user?.id === row?.original?.id}
             >
               <IoTrashOutline />
             </Button>

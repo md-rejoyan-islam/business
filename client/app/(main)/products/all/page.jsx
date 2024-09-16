@@ -11,7 +11,7 @@ import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import ProductTable from "@/app/(main)/components/products/ProductTable";
 
 import { useGetAllProductsQuery } from "@/features/products/productApi";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
 import {
   numberToFixed,

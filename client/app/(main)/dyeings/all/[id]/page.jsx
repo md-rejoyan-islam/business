@@ -20,7 +20,7 @@ import { useGetDyeingByIdQuery } from "@/features/dyeing/dyeingApi";
 import Link from "next/link";
 import { IoLocationOutline } from "react-icons/io5";
 import { FiPhone } from "react-icons/fi";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";
 import { DatePickerWithRange } from "@/app/(main)/components/gray/DatePickerWithRange";

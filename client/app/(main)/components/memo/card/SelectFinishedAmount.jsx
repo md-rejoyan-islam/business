@@ -132,8 +132,13 @@ export default function SelectFinishedAmount({
                           key={dt?.id}
                         >
                           <Toggle
-                            className="h-full w-full data-[state=on]:bg-slate-200"
+                            className="h-full w-full data-[state=on]:bg-green-200 hover:bg-green-200"
                             disabled={dt?.is_sold}
+                            pressed={
+                              selectedItem.items.findIndex(
+                                (i) => i.id === dt.id
+                              ) !== -1
+                            }
                             onPressedChange={(state) => {
                               setSelectedItem((prev) => {
                                 if (state) {

@@ -14,7 +14,7 @@ import { FiPhone } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
 import { useGetCustomerByIdQuery } from "@/features/customers/customerApi";
 import CustomerCard from "../../../components/customer/CustomerCard";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import { DatePickerWithRange } from "@/app/(main)/components/gray/DatePickerWithRange";
 import { useState } from "react";
 import { addMonths, format, parseISO } from "date-fns";

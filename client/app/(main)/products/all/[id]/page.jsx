@@ -10,7 +10,7 @@ import Link from "next/link";
 import TableSkeleton from "@/app/(main)/components/skeleton/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetProductByIdQuery } from "@/features/products/productApi";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 
 import ProductInformation from "../../../components/products/card/ProductInformation";
 import GrayInfo from "../../../components/products/card/GrayInfo";

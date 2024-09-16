@@ -87,7 +87,7 @@ export default function SideContent() {
         >
           <Link href="/customers/all" className="flex gap-3 items-center">
             <FaUserTie />
-            <span>Cutomers</span>
+            <span>Customers</span>
           </Link>
         </li>
 

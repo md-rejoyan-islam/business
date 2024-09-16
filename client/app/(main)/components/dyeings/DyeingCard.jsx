@@ -204,7 +204,7 @@ export default function DyeingCard({ data }) {
                   </p>
                   <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1">
                     <span>Dyeing Rate</span>
-                    <span>{product?.dyeing_amount}</span>
+                    <span>{product?.dyeing_rate}</span>
                   </p>
 
                   <p className="flex justify-between items-center text-[15px] px-2 rounded-md bg-white py-1 ">

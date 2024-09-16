@@ -2,6 +2,7 @@ import React from "react";
 import { CiSquareMinus } from "react-icons/ci";
 import { FaRegEdit } from "react-icons/fa";
 import EditBuyProduct from "./EditBuyProduct";
+import { getContrastColor } from "../../helper";
 
 export default function SelectedProduct({
   allSelectedProducts,
@@ -46,6 +47,10 @@ export default function SelectedProduct({
           {product?.items?.map((item, index) => (
             <li
               className=" py-1.5  inline-flex justify-center items-center border "
+              style={{
+                backgroundColor: item?.colorCode,
+                color: getContrastColor(item?.colorCode),
+              }}
               key={index}
             >
               <span>{item?.amount}</span>

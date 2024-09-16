@@ -19,7 +19,7 @@ import { FiPhone } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
 
 import GrayCard from "../../../components/gray/GrayCard";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import { DatePickerWithRange } from "../../../components/gray/DatePickerWithRange";
 import { addMonths, format, parseISO } from "date-fns";
 import { useState } from "react";

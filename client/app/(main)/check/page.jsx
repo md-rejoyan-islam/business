@@ -1,5 +1,5 @@
 "use client";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import PageTitle from "@/components/PageTitle";
 import {
   Breadcrumb,

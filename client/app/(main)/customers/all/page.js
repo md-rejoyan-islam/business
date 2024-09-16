@@ -10,7 +10,7 @@ import { useGetAllCustomersQuery } from "@/features/customers/customerApi";
 import Link from "next/link";
 import CustomersTable from "../../components/customer/CustomersTable";
 import PageTitle from "@/components/PageTitle";
-import ElahiVorsa from "@/components/ElahiVorsa";
+import ElahiVorsa from "@/app/(main)/components/ElahiVorsa";
 import {
   totalSingleCustomerAmount,
   totalSingleCustomerCost,

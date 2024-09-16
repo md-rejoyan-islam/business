@@ -155,12 +155,37 @@ export default function FinishedProductInfo({ product }) {
                 )[design];
                 return (
                   <div key={i} className="block w-full mb-4">
-                    <span className="text-gray-600 font-bold pb-2 block capitalize ">
-                      {design === "undefined" ? "No Design" : design}
-                      <span className="px-1 font-medium">
-                        ({designItems?.length})
+                    <div className="flex gap-3 items-center pb-4">
+                      <span className="text-gray-600 font-bold block capitalize ">
+                        {design === "undefined" ? "No Design" : design}
+
+                        <span className="px-1 font-medium">
+                          ({designItems?.length})
+                        </span>
                       </span>
-                    </span>
+                      <p className="text-[11px] bg-green-100 py-2 px-3 rounded-md font-semibold">
+                        <span>Stock </span>
+                        <span>
+                          {designItems.reduce((acc, item) => {
+                            if (!item.is_sold) {
+                              acc += item.amount;
+                            }
+                            return acc;
+                          }, 0)}
+                        </span>
+                      </p>
+                      <p className="text-[11px] bg-blue-100/70 py-2 px-3 rounded-md font-semibold">
+                        <span>Sold </span>
+                        <span>
+                          {designItems.reduce((acc, item) => {
+                            if (item.is_sold) {
+                              acc += item.amount;
+                            }
+                            return acc;
+                          }, 0)}
+                        </span>
+                      </p>
+                    </div>
 
                     <div className="flex gap-x-4 gap-y-3 items-center flex-wrap ">
                       {designItems
