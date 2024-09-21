@@ -56,6 +56,7 @@ export default function Home() {
     data: { data: grays = [] } = {},
     isLoading: isGrayLoading,
     refetch: refetchGrays,
+    isFetching: isGrayFetching,
   } = useGetAllGraysQuery(
     `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
   );
@@ -64,7 +65,7 @@ export default function Home() {
   const {
     data: { data: customers = [] } = {},
     isLoading: isCustomerLoading,
-    refetch: refetchCustomers,
+    isFetching: isCustomersFetching,
   } = useGetAllCustomersQuery(
     `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
   );
@@ -73,6 +74,7 @@ export default function Home() {
   const {
     data: { data: customersPayments = [] } = {},
     isLoading: isCustomerPaymentsLoading,
+    isFetching: isCustomerPaymentsFetching,
   } = useGetAllcustomersPaymentsQuery(
     `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
   );
@@ -80,16 +82,15 @@ export default function Home() {
   const {
     data: { data: graysPayments = [] } = {},
     isLoading: isGrayPaymentsLoading,
+    isFetching: isGrayPaymentsFetching,
   } = useGetAllGraysPaymentsQuery(
     `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
   );
   // dyeing payments
-  const {
-    data: { data: dyeingsPayments = [] } = {},
-    isLoading: isDyeingPaymentsLoading,
-  } = useGetAllDyeingsPaymentsQuery(
-    `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
-  );
+  const { data: { data: dyeingsPayments = [] } = {} } =
+    useGetAllDyeingsPaymentsQuery(
+      `?date[eq]=${date ? format(date, "yyyy-MM-dd") : ""}`
+    );
 
   // daily cash
 
@@ -146,13 +147,14 @@ export default function Home() {
         <BuyModal
           refetchGrays={refetchGrays}
           disabled={format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")}
+          date={date}
         />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             className="py-2 h-8 bg-black/5 hover:bg-black/10 rounded-md flex items-center px-3 active:scale-95 transition-all duration-100 text-black    border disabled:active:scale-100 disabled:bg-black/5 disabled:hover:bg-black/5  disabled:text-slate-400  "
-            disabled={
-              format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")
-            }
+            // disabled={
+            //   format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")
+            // }
           >
             Cash Out
           </DialogTrigger>
@@ -163,11 +165,12 @@ export default function Home() {
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
-            <CashOutTab setOpen={setOpen} />
+            <CashOutTab setOpen={setOpen} date={date} />
           </DialogContent>
         </Dialog>
         <BalanceCashIn
           disabled={format(date, "yyyy-MM-dd") !== format(today, "yyyy-MM-dd")}
+          date={date}
         />
       </div>
 
@@ -179,14 +182,18 @@ export default function Home() {
           <div className="w-full ">
             <CardTitle title={"Bought Fabric"} />
 
-            {isGrayLoading ? <CardLoader /> : <BoughtCard grays={grays} />}
+            {isGrayLoading || isGrayFetching ? (
+              <CardLoader />
+            ) : (
+              <BoughtCard grays={grays} />
+            )}
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25} className="p-3">
           <div className="w-full">
             <CardTitle title={"Sold Fabric"} />
-            {isCustomerLoading ? (
+            {isCustomerLoading || isCustomersFetching ? (
               <CardLoader />
             ) : (
               <SoldCard customers={customers} />
@@ -198,7 +205,7 @@ export default function Home() {
           <div className="w-full">
             <CardTitle title={"Cash In"} />
 
-            {isCustomerPaymentsLoading ? (
+            {isCustomerPaymentsLoading || isCustomerPaymentsFetching ? (
               <CardLoader />
             ) : (
               <CashInCard
@@ -216,7 +223,7 @@ export default function Home() {
           <div className="w-full">
             <CardTitle title={"Cash Out"} />
 
-            {isGrayPaymentsLoading ? (
+            {isGrayPaymentsLoading || isGrayPaymentsFetching ? (
               <CardLoader />
             ) : (
               <CashOutCard

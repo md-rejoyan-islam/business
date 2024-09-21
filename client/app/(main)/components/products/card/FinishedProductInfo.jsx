@@ -194,7 +194,7 @@ export default function FinishedProductInfo({ product }) {
                           <span
                             className={`${
                               dt?.is_sold ? "bg-red-100 " : "bg-slate-50/50"
-                            } border min-w-12 px-1 h-12 text-gray-600  rounded-md flex items-center justify-center`}
+                            } border min-w-12 px-1 text-[16px] h-12 text-gray-600  rounded-md flex items-center justify-center`}
                             key={dt.id}
                           >
                             {dt?.amount}

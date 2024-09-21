@@ -128,11 +128,11 @@ export default function SelectFinishedAmount({
                         <p
                           className={`${
                             dt?.is_sold ? "bg-red-50" : ""
-                          } h-12 w-12 rounded-md border text-[12px] flex justify-center items-center`}
+                          } h-12 w-12  rounded-md border  flex justify-center items-center`}
                           key={dt?.id}
                         >
                           <Toggle
-                            className="h-full w-full data-[state=on]:bg-green-200 hover:bg-green-200"
+                            className="h-full text-[16px] w-full data-[state=on]:bg-green-200 hover:bg-green-200"
                             disabled={dt?.is_sold}
                             pressed={
                               selectedItem.items.findIndex(

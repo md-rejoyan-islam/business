@@ -460,7 +460,7 @@ export const deleteThaanById = asyncHandler(
 // gray, dyeing and product create together
 export const createGrayDyeingProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const { gray_phone, products, gray_name } = req.body;
+    const { gray_phone, products, gray_name, date } = req.body;
 
     let grayId = null;
     //  check gray Name
@@ -485,11 +485,13 @@ export const createGrayDyeingProduct = asyncHandler(
       grayId = gray.id;
     }
 
+    console.log(date, new Date());
+
     // create gray chalan
     const grayChalan = await prismaClient.grayChalan.create({
       data: {
         grayId,
-        date: formatISO(new Date()).split("T")[0],
+        date: date,
       },
     });
 
@@ -509,7 +511,7 @@ export const createGrayDyeingProduct = asyncHandler(
         const dyeingChalan = await prismaClient.dyeingChalan.create({
           data: {
             dyeingId: id,
-            date: formatISO(new Date()).split("T")[0],
+            date: date,
           },
         });
         return { dyeingId: id, id: dyeingChalan.id };

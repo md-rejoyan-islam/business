@@ -58,11 +58,11 @@ export const englishDate = (today) => {
 
 export const banglaDate = (today) => {
   const cal = new Calendar();
-  const bnDateObj = cal.fromDate(today);
+  const bnDateObj = cal?.fromDate(today);
 
   const calendar = new Calendar(bnDateObj.year, bnDateObj.month, bnDateObj.day);
 
-  return calendar.format("D MMMM Y");
+  return calendar?.format("D MMMM Y");
 };
 
 export const dayName = (today) => {

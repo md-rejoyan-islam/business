@@ -20,7 +20,7 @@ import { useCreateGrayDyeingProductMutation } from "@/features/products/productA
 import SubmitLoader from "../SubmitLoader";
 import { RiTestTubeFill } from "react-icons/ri";
 
-export default function BuyProduct({ setOpen, refetchGrays }) {
+export default function BuyProduct({ setOpen, refetchGrays, date }) {
   const { data: grays, refetch } = useGetAllGraysQuery();
   const [createGrayDyeingProduct, { isLoading }] =
     useCreateGrayDyeingProductMutation();
@@ -130,6 +130,7 @@ export default function BuyProduct({ setOpen, refetchGrays }) {
       gray_name,
       gray_address: gray?.address || values.gray_address,
       gray_phone: gray?.phone || values.gray_phone,
+      date: formatISO(date).split("T")[0],
       products,
     };
 

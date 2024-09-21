@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import { formatISO } from "date-fns";
 import { useAddOthersCostMutation } from "@/features/daily/dailyApi";
 
-export default function CashOutTab({ setOpen }) {
+export default function CashOutTab({ setOpen, date }) {
   const { data: { data: dyeings = [] } = {} } = useGetAllDyeingsQuery();
   const { data: { data: grays = [] } = {} } = useGetAllGraysQuery();
 
@@ -57,7 +57,8 @@ export default function CashOutTab({ setOpen }) {
     const response = await grayPayment({
       grayId: +grayInputs.id,
       amount: grayInputs.amount,
-      date: formatISO(new Date()),
+      // date: formatISO(new Date()),
+      date: formatISO(date).split("T")[0],
     });
     if (response?.data?.success) {
       toast.success(response?.data?.message);
@@ -75,7 +76,8 @@ export default function CashOutTab({ setOpen }) {
     const response = await dyeingPayment({
       dyeingId: +dyeingInputs.id,
       amount: dyeingInputs.amount,
-      date: formatISO(new Date()),
+      date: formatISO(date).split("T")[0],
+      // date: formatISO(new Date()),
     });
     if (response?.data?.success) {
       toast.success(response?.data?.message);
@@ -92,7 +94,8 @@ export default function CashOutTab({ setOpen }) {
     if (!amount) return toast.error("Amount is required");
     const response = await othersPayment({
       amount: othersInputs.amount,
-      date: formatISO(new Date()),
+      date: formatISO(date).split("T")[0],
+      // date: formatISO(new Date()),
       name: othersInputs.name,
     });
     if (response?.data?.success) {
@@ -166,7 +169,10 @@ export default function CashOutTab({ setOpen }) {
               </div>
               <div className="py-3">
                 <Button type="submit">
-                  <SubmitLoader label={"Submit"} loading={false} />
+                  <SubmitLoader
+                    label={"Submit"}
+                    loading={isGrayPaymentLoading}
+                  />
                 </Button>
               </div>
             </form>
@@ -221,7 +227,10 @@ export default function CashOutTab({ setOpen }) {
               </div>
               <div className="py-3">
                 <Button type="submit">
-                  <SubmitLoader label={"Submit"} loading={false} />
+                  <SubmitLoader
+                    label={"Submit"}
+                    loading={isDyeingPaymentLoading}
+                  />
                 </Button>
               </div>
             </form>
@@ -263,7 +272,10 @@ export default function CashOutTab({ setOpen }) {
               </div>
               <div className="py-3">
                 <Button type="submit">
-                  <SubmitLoader label={"Submit"} loading={false} />
+                  <SubmitLoader
+                    label={"Submit"}
+                    loading={isOtherPaymentLoading}
+                  />
                 </Button>
               </div>
             </form>

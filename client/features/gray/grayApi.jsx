@@ -75,7 +75,7 @@ const grayApi = graySlice.injectEndpoints({
         url: `/all-gray-payments${query ? query : ""}`,
         method: "GET",
       }),
-      providesTags: ["CustomersPayments", "GrayPayments"],
+      providesTags: ["GrayPayments"],
     }),
   }),
 });

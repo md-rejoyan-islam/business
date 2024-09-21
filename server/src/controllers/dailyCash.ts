@@ -138,7 +138,7 @@ export const addBalance = asyncHandler(async (req: Request, res: Response) => {
 
   const todayCash = await prismaClient.dailyCash.findUnique({
     where: {
-      date: formatISO(new Date()).split("T")[0],
+      date: req.body.date,
     },
   });
 
@@ -193,18 +193,19 @@ export const deleteDailyCashById = asyncHandler(
 // add others cost
 export const addOthersCost = asyncHandler(
   async (req: Request, res: Response) => {
+    console.log(req.body);
+
     const dailyCash = await prismaClient.dailyCash.findUnique({
       where: {
-        date: new Date().toISOString().split("T")[0],
+        date: req.body.date,
       },
     });
-    console.log(dailyCash);
 
     if (!dailyCash) throw createError.NotFound("Daily Cash not found.");
 
     const other = await prismaClient.dailyOthersCost.create({
       data: {
-        date: req.body.date.split("T")[0],
+        date: req.body.date,
         amount: req.body.amount,
         name: req.body.name,
         dailyCashId: dailyCash?.id,
