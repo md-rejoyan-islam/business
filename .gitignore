@@ -2,4 +2,3 @@
 **/dist/
 **/logs/
 **/.env/
-**/client/node_modules/
